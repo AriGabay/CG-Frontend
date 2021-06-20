@@ -59,7 +59,7 @@ export default function SimpleSnackbar() {
       onClose={handleClose}
     >
       <Alert onClose={handleClose} severity="success">
-        {msg}
+        {JSON.stringify(msg)}
       </Alert>
     </Snackbar>
   );

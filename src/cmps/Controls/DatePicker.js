@@ -1,7 +1,11 @@
 import React from 'react';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import DateFnsUtils from '@date-io/date-fns';
-import { AirlineSeatIndividualSuite } from '@material-ui/icons';
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
+import DatePickerComp from '@material-ui/lab/DatePicker';
+import TextField from '@material-ui/core/TextField';
+import isBefore from 'date-fns/isBefore';
+import startOfToday from 'date-fns/startOfToday';
+import isFriday from 'date-fns/isFriday';
 
 export default function DatePicker(props) {
   const { name, label, value, onChange, required = false } = props;
@@ -18,21 +22,20 @@ export default function DatePicker(props) {
   };
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <KeyboardDatePicker
-        disableToolbar
-        required={required}
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePickerComp
         variant="inline"
         inputVariant="outlined"
         label={label}
         format="dd/MM/yyyy"
         name={name}
         value={value}
-        disablePast={true}
+        shouldDisableDate={(day) => isBefore(day, startOfToday()) || !isFriday(day)}
+        renderInput={(params) => <TextField {...params} />}
         onChange={(date) => {
           onChange(convertToDefEventPara(name, dateToStr(date)));
         }}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 }

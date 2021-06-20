@@ -1,7 +1,7 @@
 import './AppHeader.scss';
 import React, { useCallback, useState, useEffect } from 'react';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Box from '@material-ui/core/Box';
@@ -14,13 +14,15 @@ import { cartService } from '../../services/cartService';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: customTheme.spacing(2),
   },
   title: {
     flexGrow: 1,
@@ -55,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
   colorWhite: {
     color: 'white',
-    paddingRight: theme.spacing(1),
+    paddingRight: customTheme.spacing(1),
   },
   Header: {
     display: 'flex',

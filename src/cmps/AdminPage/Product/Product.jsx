@@ -9,7 +9,7 @@ import { pricesService } from '../../../services/pricesService';
 import { sizePriceService } from '../../../services/sizePriceService';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(() => ({
   gridTag: {
     marginTop: '15px!important',

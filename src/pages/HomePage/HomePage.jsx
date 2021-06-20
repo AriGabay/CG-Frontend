@@ -1,12 +1,12 @@
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import './HomePage.scss';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import useViewport from '../../hooks/useViewport';
 import BackButton from '../../cmps/Controls/BackButton';
-import getCostumeTheme from '../../hooks/getCostumeTheme';
-const costumeTheme = getCostumeTheme();
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -39,10 +39,10 @@ const useStyles = makeStyles(() => ({
     backgroundColor: 'whitesmoke',
   },
   buttonMenuBgc: {
-    backgroundColor: costumeTheme.palette.primary.light + '!important',
+    backgroundColor: customTheme.palette.primary.light + '!important',
   },
   buttonMenuText: {
-    color: costumeTheme.palette.primary.contrastText,
+    color: customTheme.palette.primary.contrastText,
   },
 }));
 

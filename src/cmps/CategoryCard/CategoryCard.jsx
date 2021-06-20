@@ -1,5 +1,5 @@
 import './CategoryCard.scss';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -9,8 +9,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { useHistory } from 'react-router-dom';
-import getCostumeTheme from '../../hooks/getCostumeTheme';
-const costumeTheme = getCostumeTheme();
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 
 export const CategoryCard = ({ category, index }) => {
   const useStyles = makeStyles({
@@ -18,7 +18,7 @@ export const CategoryCard = ({ category, index }) => {
       maxWidth: 345,
     },
     moreProductBtn: {
-      color: costumeTheme.palette.primary.contrastText,
+      color: customTheme.palette.primary.contrastText,
     },
   });
   let history = useHistory();

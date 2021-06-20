@@ -1,6 +1,6 @@
 import './ProductCard.scss';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -9,15 +9,15 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
-import getCostumeTheme from '../../hooks/getCostumeTheme';
-const costumeTheme = getCostumeTheme();
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 const useStyles = makeStyles({
   root: {
     maxWidth: 345,
     marginBottom: 20,
   },
   label: {
-    color: costumeTheme.palette.primary.contrastText + '!important',
+    color: customTheme.palette.primary.contrastText + '!important',
   },
 });
 

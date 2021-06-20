@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '../Controls/Button';
 import { cartService } from '../../services/cartService';
 import { eventBus } from '../../services/event-bus';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = makeStyles(() => ({

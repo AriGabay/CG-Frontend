@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(() => ({
   flexTag: {
     marginTop: '15px!important',

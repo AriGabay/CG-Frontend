@@ -1,16 +1,17 @@
 import React from 'react';
-import { Button as MuiButton, makeStyles } from '@material-ui/core';
-import getCostumeTheme from '../../hooks/getCostumeTheme';
-const costumeTheme = getCostumeTheme();
+import { Button as MuiButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: theme.spacing(0.5),
-    backgroundColor: costumeTheme.palette.primary.light + '!important',
+    margin: customTheme.spacing(0.5),
+    backgroundColor: customTheme.palette.primary.light + '!important',
   },
   label: {
     textTransform: 'none',
-    color: costumeTheme.palette.primary.contrastText,
+    color: customTheme.palette.primary.contrastText,
   },
 }));
 

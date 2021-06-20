@@ -1,19 +1,20 @@
 import React from 'react';
-import { Button as MuiButton, makeStyles } from '@material-ui/core';
+import { Button as MuiButton } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
 import { NavLink } from 'react-router-dom';
-import getCostumeTheme from '../../hooks/getCostumeTheme';
-const costumeTheme = getCostumeTheme();
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: costumeTheme.palette.primary.light + '!important',
+    backgroundColor: customTheme.palette.primary.light + '!important',
   },
   label: {
-    color: costumeTheme.palette.primary.contrastText,
+    color: customTheme.palette.primary.contrastText,
     textTransform: 'none',
   },
   NavLink: {
     textDecoration: 'none',
-    marginBottom: theme.spacing(1) + '!important',
+    marginBottom: customTheme.spacing(1) + '!important',
   },
   marginBottom: {},
 }));

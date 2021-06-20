@@ -7,7 +7,7 @@ import { SizePrice as AdminPageSizePrice } from '../../cmps/AdminPage/SizePrice'
 import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(() => ({
   marginLeft: {
     marginLeft: '10px!important',
