@@ -1,0 +1,1 @@
+export { PriceForBox } from './PriceForBox'

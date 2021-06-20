@@ -1,0 +1,54 @@
+//flex
+.flex {
+    display: flex;
+
+    &.columns {
+        flex-direction: column;
+    }
+
+    &.j-between {
+        justify-content: space-between;
+    }
+
+    &.j-around {
+        justify-content: space-around;
+    }
+
+    &.j-center {
+        justify-content: center;
+    }
+
+    &.a-flex-end {
+        align-items: flex-end;
+    }
+
+    &.a-center {
+        align-items: center;
+    }
+
+    &.center {
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+//flex
+.grid {
+    display: grid;
+}
+
+.site-block {
+    margin-bottom: rem(20px);
+}
+
+
+// Aspect ratios
+
+//
+
+// border none
+.bn {
+    border: none;
+    outline: none;
+    text-decoration: none;
+}

@@ -1,0 +1,1 @@
+export { SizePrice } from './SizePrice'
