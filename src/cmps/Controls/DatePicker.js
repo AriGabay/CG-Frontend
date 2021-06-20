@@ -30,6 +30,7 @@ export default function DatePicker(props) {
         format="dd/MM/yyyy"
         name={name}
         value={value}
+        required={required}
         shouldDisableDate={(day) => isBefore(day, startOfToday()) || !isFriday(day)}
         renderInput={(params) => <TextField {...params} />}
         onChange={(date) => {

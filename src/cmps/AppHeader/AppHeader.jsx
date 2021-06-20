@@ -1,5 +1,5 @@
 import './AppHeader.scss';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -91,7 +91,7 @@ export const AppHeader = () => {
   const getProductCart = useCallback(async () => {
     const data = await cartService.getCart();
     setCart(data);
-  });
+  }, [setCart]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

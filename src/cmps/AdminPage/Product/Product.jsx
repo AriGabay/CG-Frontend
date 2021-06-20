@@ -6,7 +6,6 @@ import Controls from '../../Controls/Controls';
 import { useEffect, useState } from 'react';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
-import { sizePriceService } from '../../../services/sizePriceService';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
 import { makeStyles } from '@material-ui/styles';
@@ -36,24 +35,24 @@ const val = {
 export const Product = (props) => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
-  const [sizePrices, setSizePrices] = useState();
+  // const [sizePrices, setSizePrices] = useState();
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
 
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(val, false);
+  const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
     pricesService.getPrices().then((res) => setPrices(res));
     categoryService.getCategories().then((res) => {
       setCategories(res);
     });
-    sizePriceService.getSizePrices().then((data) => {
-      var arr = [];
-      data.map((sizePrice) => {
-        const newObj = { ...sizePrice, displayName: 'מחיר:  ' + sizePrice.amount + ' ' + 'כמות: ' + sizePrice.size };
-        arr.push(newObj);
-      });
-      setSizePrices(arr);
-    });
+    // sizePriceService.getSizePrices().then((data) => {
+    //   var arr = [];
+    //   data.map((sizePrice) => {
+    //     const newObj = { ...sizePrice, displayName: 'מחיר:  ' + sizePrice.amount + ' ' + 'כמות: ' + sizePrice.size };
+    //     arr.push(newObj);
+    //   });
+    //   setSizePrices(arr);
+    // });
     productService.getProducts(false).then((res) => {
       setProducts(res);
     });

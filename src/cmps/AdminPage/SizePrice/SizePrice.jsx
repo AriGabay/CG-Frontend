@@ -44,11 +44,10 @@ export const SizePrice = (props) => {
       setPrices(res);
     });
     sizePriceService.getSizePrices().then((data) => {
-      var arr = [];
-      data.map((sizePrice) => {
-        const newObj = { ...sizePrice, displayName: 'מחיר:  ' + sizePrice.amount + ' ' + 'כמות: ' + sizePrice.size };
-        arr.push(newObj);
-      });
+      const arr = data.map((sizePrice) => ({
+        ...sizePrice,
+        displayName: `מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`,
+      }));
       setSizePrices(arr);
     });
   }, []);

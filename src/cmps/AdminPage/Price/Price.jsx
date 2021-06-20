@@ -28,7 +28,7 @@ const val = {
 export const Price = () => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(val, false);
+  const { values, handleInputChange } = useForm(val, false);
   const items = [
     { id: 1, title: 'קופסה' },
     {
@@ -43,17 +43,20 @@ export const Price = () => {
   useEffect(() => {
     pricesService.getPrices({ include: true }).then((data) => {
       console.log('data:', data);
-      var arr = [];
-      data.map((price) => {
-        var str = '';
-        price.SizePrices.map((sizePrices) => {
-          str += ' size: ' + sizePrices.size + ' ';
-          str += ' amount: ' + sizePrices.amount + ' ';
-        });
-        const newObj = { ...price, displayName: price.displayName + str };
-        arr.push(newObj);
+
+      const concatenateStrings = (sizePrices) => {
+        return sizePrices
+          .map((sizePrice) => {
+            return `Size: ${sizePrice.size}, Amount: ${sizePrice.amount}.`;
+          })
+          .join(' ');
+      };
+
+      const arr = data.map((price) => {
+        const displayName = `${price.displayName} ${concatenateStrings(price.SizePrices)}`;
+        return { ...price, displayName };
       });
-      console.log('arr:', arr);
+
       setPrices(arr);
     });
   }, []);

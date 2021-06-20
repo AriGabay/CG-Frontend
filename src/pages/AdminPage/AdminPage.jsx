@@ -1,5 +1,5 @@
 import './AdminPage.scss';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Button from '../../cmps/Controls/Button';
 import { Category as AdminPageCategory } from '../../cmps/AdminPage/Category';
 import { Price as AdminPagePrice } from '../../cmps/AdminPage/Price';

@@ -30,7 +30,7 @@ const val = {
 export const Category = (props) => {
   const classes = useStyles();
   const [categories, setCategories] = useState(null);
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(val, false);
+  const { values, handleInputChange } = useForm(val, false);
 
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((res) => {

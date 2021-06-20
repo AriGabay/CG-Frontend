@@ -41,7 +41,7 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
   const setProps = useCallback(() => {
     setProduct(productProps);
     setProductOrder(productOrder);
-  }, [setProductOrder, setProduct]);
+  }, [setProductOrder, setProduct, productOrder, productProps]);
   useEffect(() => {
     setProps();
   }, [setProps]);

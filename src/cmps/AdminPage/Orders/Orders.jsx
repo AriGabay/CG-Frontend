@@ -6,7 +6,6 @@ import { DataGrid } from '@material-ui/data-grid';
 
 export const Orders = (props) => {
   const [orders, setOrders] = useState();
-  const [productLength, setProductLength] = useState();
   useEffect(() => {
     ordersService.getOrders(true).then((res) => {
       console.log('res:', res);
@@ -16,8 +15,7 @@ export const Orders = (props) => {
 
   const rows = () => {
     var arr = [];
-    orders.map((order) => {
-      // setProductLength(order.order.products.length);
+    orders.foreach((order) => {
       arr.push({
         id: order.id,
         fullName: order.order.fullName,
