@@ -1,6 +1,7 @@
 import './Product.scss';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Controls from '../../Controls/Controls';
 import { useEffect, useState } from 'react';
 import { useForm } from '../../../hooks/useForm';
@@ -30,6 +31,7 @@ const val = {
   imgUrl: '',
   priceId: '',
   productToRemove: '',
+  description: '',
 };
 export const Product = (props) => {
   const classes = useStyles();
@@ -57,13 +59,14 @@ export const Product = (props) => {
     });
   }, []);
   const addProduct = () => {
-    const { displayName, categoryId, inStock, imgUrl, priceId } = values;
+    const { displayName, categoryId, inStock, imgUrl, priceId, description } = values;
     const data = {
       displayName,
       categoryId,
       inStock,
       imgUrl,
       priceId,
+      description,
     };
     productService.addProduct(data).then((res) => {
       console.log('add product');
@@ -119,6 +122,15 @@ export const Product = (props) => {
             onChange={handleInputChange}
           />
         )}
+        <TextareaAutosize
+          className={classes.marginTop}
+          aria-label="maximum height"
+          placeholder="Maximum 5 rows"
+          defaultValue="נא להכניס תיאור מוצר"
+          name="description"
+          value={values.description}
+          onChange={handleInputChange}
+        />
         <Controls.Button className={classes.marginTop} text="הוסף מוצר" onClick={() => addProduct()}></Controls.Button>
       </Grid>
       <Grid className={classes.gridTag}>
@@ -141,36 +153,3 @@ export const Product = (props) => {
     </Grid>
   );
 };
-
-// export const SizePrice = (props) => {
-//   const addSizePrice = () => {
-
-//   return (
-//     <Grid>
-//       <Grid display="flex" mt={2} justifyContent="center" alignItems="flex-start" flexDirection="column">
-//         <Controls.Input label="כמות" value={values.size} onChange={handleInputChange} name="size"></Controls.Input>
-//         {prices && (
-//           <Controls.Select
-//             label="שיוך מחיר למחירון"
-//             name="priceForSizePrice"
-//             value={values.priceForSizePrice}
-//             options={prices}
-//             onChange={handleInputChange}
-//           />
-//         )}
-//         <Controls.Button text="הוסף מחיר" onClick={() => addSizePrice()}></Controls.Button>
-//       </Grid>
-//       <Grid display="flex" mt={2} justifyContent="center" alignItems="flex-start" flexDirection="column">
-//         {sizePrices && (
-//           <Controls.Select
-//             label="מחיר למחיקה"
-//             name="removeSizePrice"
-//             value={values.removeSizePrice}
-//             options={sizePrices}
-//             onChange={handleInputChange}
-//           />
-//         )}
-//       </Grid>
-//     </Grid>
-//   );
-// };

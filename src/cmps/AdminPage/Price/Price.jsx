@@ -41,7 +41,8 @@ export const Price = () => {
     },
   ];
   useEffect(() => {
-    pricesService.getPrices().then((data) => {
+    pricesService.getPrices({ include: true }).then((data) => {
+      console.log('data:', data);
       var arr = [];
       data.map((price) => {
         var str = '';

@@ -10,7 +10,8 @@ import BackButton from '../../cmps/Controls/BackButton';
 export const Menu = () => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-    categoryService.getCategories().then((categor) => {
+    categoryService.getCategories({ include: false }).then((categor) => {
+      console.log('categor:', categor);
       setCategories(categor);
     });
   }, []);

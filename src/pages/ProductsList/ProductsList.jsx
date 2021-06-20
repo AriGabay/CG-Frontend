@@ -24,11 +24,12 @@ export const ProductsList = () => {
   const { categoryId } = useParams();
 
   useEffect(() => {
-    productService.getProducts({ categoryId, include: true }).then((res) => {
+    productService.getProducts({ categoryId, include: false }).then((res) => {
       setProducts(res);
     });
-    // צריך לשנות את ה include ל  false
-    categoryService.getCategories({ id: categoryId, include: true }).then((res) => setCategory(res[0]));
+    categoryService.getCategories({ id: categoryId, include: false }).then((res) => {
+      setCategory(res[0]);
+    });
   }, [categoryId]);
   return category ? (
     <div>

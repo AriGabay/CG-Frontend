@@ -1,8 +1,8 @@
 import { httpService } from './http.service';
 const endpoint = 'price/';
-async function getPrices() {
+async function getPrices(include) {
   try {
-    const res = await httpService.get(endpoint, { include: true });
+    const res = await httpService.get(endpoint, include);
     return res;
   } catch (error) {
     console.error('error', error);

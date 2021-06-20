@@ -64,9 +64,8 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal, cart })
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      checkOutTotal(cart, values);
+      checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
       resetForm();
-      eventBus.dispatch('checkOutOrder', { message: 'הזמנה בוצעה, סיכום הזמנה נשלח במייל' });
     }
   };
   return (
@@ -143,7 +142,6 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal, cart })
             label="תאריך איסוף"
             value={values.hireDate}
             onChange={handleInputChange}
-            shouldDisableDate={date.getDay() === 0 || date.getDay() === 6}
           />
         </Grid>
         <Grid mt={2} mb={2}>

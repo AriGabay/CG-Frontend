@@ -33,7 +33,7 @@ export const Category = (props) => {
   const { values, errors, setErrors, handleInputChange, resetForm } = useForm(val, false);
 
   useEffect(() => {
-    categoryService.getCategories().then((res) => {
+    categoryService.getCategories({ include: false }).then((res) => {
       setCategories(res);
     });
   }, []);

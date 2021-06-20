@@ -10,10 +10,10 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
   const handleInputChange = (e) => {
     var { name, value } = e.target;
     console.log('value:');
-    if (isNumber(value)) {
+    console.log('name:', name);
+    if (isNumber(value) && name !== 'mobile' && name !== 'idPersonal') {
       console.log('in');
       value = Number(value);
-      // console.log('obj:', obj);
     }
     console.log('value:', value);
     console.log('value:', typeof value);

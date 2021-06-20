@@ -130,10 +130,10 @@ export const AppHeader = () => {
             <NavLink className={classes.Navlink} to="/menu">
               <Typography className={classes.ColorNavLink}>תפריט</Typography>
             </NavLink>
-            <NavLink className={classes.Navlink} to="/">
+            <NavLink className={classes.Navlink} to="/about">
               <Typography className={classes.ColorNavLink}>אודות</Typography>
             </NavLink>
-            <NavLink className={classes.Navlink} to="/">
+            <NavLink className={classes.Navlink} to="/contact">
               <Typography className={classes.ColorNavLink}>צור קשר</Typography>
             </NavLink>
             <Button

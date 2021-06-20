@@ -71,9 +71,9 @@ export const ProductPreview = () => {
 
   return product ? (
     <Grid className={classes.Grid} container>
-      <Grid item lg={6} md={6} sm={12}>
-        <Typography variant="h2">{product.displayName}</Typography>
-        <Grid ml={2} className={classes.imgContainer}>
+      <Grid item mt={2} lg={6} md={6} sm={12}>
+        <Typography variant="h3">{product.displayName}</Typography>
+        <Grid ml={2} mt={2} className={classes.imgContainer}>
           <ImageCloud imageId={product.imgUrl} />
         </Grid>
         <Grid>
@@ -96,14 +96,11 @@ export const ProductPreview = () => {
           <BackButton to={`/products/${product.Category.id}`} text="חזור"></BackButton>
         </Grid>
       </Grid>
-      <Grid item lg={3} md={3} sm={12}>
-        {
-          <Typography mt={2} mb={2}>
-            תיאור מוצר:
-            <br /> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nulla dolorem porro odio corporis.
-            Exercitationem ea non consequatur odio veritatis maiores!
-          </Typography>
-        }
+      <Grid item mt={2} lg={3} md={3} sm={12}>
+        <Typography variant="h5">תיאור:</Typography>
+        <Typography mt={2} mb={2}>
+          {product.description}
+        </Typography>
       </Grid>
     </Grid>
   ) : (

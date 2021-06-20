@@ -6,6 +6,7 @@ export const httpService = {
     const queryStr = Object.keys(query)
       .map((key) => key + '=' + query[key])
       .join('&');
+    console.log('queryStr:', queryStr);
     return axios.get(`http://localhost:3030/api/${endpoint}?${queryStr}`).then((response) => response.data);
   },
   post(endpoint, data) {

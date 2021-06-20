@@ -84,10 +84,13 @@ export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) =>
     setAnchorEl(null);
   };
   const checkOutOrder = () => {
-    cartService.checkOutOrder(cart);
-    setAnchorEl(null);
-    setIsOpenMenu(false);
-    history.push('/checkout');
+    cartService.checkOutOrder(cart).then((res) => {
+      console.log('res:', res);
+      eventBus.dispatch('checkOutOrder', { message: res });
+      setAnchorEl(null);
+      setIsOpenMenu(false);
+      history.push('/checkout');
+    });
   };
   const removeFromCart = async (id) => {
     cartService.removeProductFromCart(id).then((newCart) => {

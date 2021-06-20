@@ -11,8 +11,7 @@ async function addToCart(product) {
     delete product.product.Category.createdAt;
     delete product.product.Category.updatedAt;
     delete product.product.Category.imgUrl;
-    await storageService.post(KEY, product);
-    console.log('add to cart');
+    return await storageService.post(KEY, product);
   } catch (error) {
     console.error('error', error);
   }
@@ -33,12 +32,10 @@ async function checkOutOrder(cart) {
     console.log('error:', error);
   }
 }
-async function checkOutTotal(xxx, userDetails) {
+async function checkOutTotal(userDetails) {
   try {
     const cart = await getCart();
-    console.log('cart', cart);
-    console.log('userDetails', userDetails);
-    await httpService.post(`${endPoint}sendOrder`, { userDetails, cart });
+    return await httpService.post(`${endPoint}sendOrder`, { userDetails, cart });
   } catch (error) {
     console.log('error:', error);
   }

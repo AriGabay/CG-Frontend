@@ -27,14 +27,22 @@ const val = {
   priceForSizePrice: '',
   removeSizePrice: '',
 };
+// idToEdit: '',
+// editSizePrice: {
+//   amount: '',
+//   size: '',
+//   priceForSizePrice: '',
+// }
 
 export const SizePrice = (props) => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
   const [sizePrices, setSizePrices] = useState();
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(val, false);
+  const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
-    pricesService.getPrices().then((res) => setPrices(res));
+    pricesService.getPrices({ include: false }).then((res) => {
+      setPrices(res);
+    });
     sizePriceService.getSizePrices().then((data) => {
       var arr = [];
       data.map((sizePrice) => {
