@@ -84,9 +84,7 @@ export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) =>
     setAnchorEl(null);
   };
   const checkOutOrder = () => {
-    cartService.checkOutOrder(cart).then((res) => {
-      console.log('res:', res);
-      eventBus.dispatch('checkOutOrder', { message: res });
+    cartService.checkOutOrder(cart).then(() => {
       setAnchorEl(null);
       setIsOpenMenu(false);
       history.push('/checkout');

@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
   NavLink: {
     textDecoration: 'none',
-    marginBottom: customTheme.spacing(1) + '!important',
+    marginBottom: theme.spacing(1) + '!important',
   },
   marginBottom: {},
 }));
@@ -29,7 +29,7 @@ export default function Button(props) {
         variant={variant || 'contained'}
         size={size || 'large'}
         color={color || 'primary'}
-        classes={{ root: classes.root, label: classes.label }}
+        classes={{ label: classes.label }}
       >
         {text}
       </MuiButton>

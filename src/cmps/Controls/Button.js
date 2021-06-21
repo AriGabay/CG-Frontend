@@ -6,8 +6,7 @@ const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: customTheme.spacing(0.5),
-    backgroundColor: customTheme.palette.primary.light + '!important',
+    margin: theme.spacing(0.5),
   },
   label: {
     textTransform: 'none',

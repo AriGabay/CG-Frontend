@@ -11,7 +11,7 @@ import { Contact } from './pages/Contact/Contact';
 import { CheckoutOrder } from './pages/CheckoutOrder/CheckoutOrder';
 import { Route, BrowserRouter } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
 const customTheme = getCustomTheme();
 

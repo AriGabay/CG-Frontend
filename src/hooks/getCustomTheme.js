@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
 
 const customTheme = createTheme({
   palette: {
@@ -8,11 +8,22 @@ const customTheme = createTheme({
       dark: '#897e5f',
       contrastText: '#000000',
     },
-    secondary: {
-      light: '#ff7961',
-      main: '#f44336',
-      dark: '#ba000d',
-      contrastText: '#000',
+    // secondary: {
+    //   light: '#ff7961',
+    //   main: '#f44336',
+    //   dark: '#ba000d',
+    //   contrastText: '#000',
+    // },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {},
+        containedPrimary: {
+          backgroundColor: '#ecdfbc',
+          color: '#000000',
+        },
+      },
     },
   },
   direction: 'rtl',

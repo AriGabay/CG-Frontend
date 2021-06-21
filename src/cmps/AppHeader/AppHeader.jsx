@@ -14,15 +14,13 @@ import { cartService } from '../../services/cartService';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
-import getCustomTheme from '../../hooks/getCustomTheme';
-const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   menuButton: {
-    marginRight: customTheme.spacing(2),
+    marginRight: theme.spacing(2),
   },
   title: {
     flexGrow: 1,
@@ -57,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
   colorWhite: {
     color: 'white',
-    paddingRight: customTheme.spacing(1),
+    paddingRight: theme.spacing(1),
   },
   Header: {
     display: 'flex',
@@ -143,6 +141,7 @@ export const AppHeader = () => {
               aria-haspopup="true"
               onClick={(event) => handleClick(event)}
               sx={{ color: 'white' }}
+              color="secondary"
               startIcon={<ShoppingCartOutlinedIcon color="white" />}
             >
               <Typography className={classes.colorWhite}>עגלת קניות</Typography>

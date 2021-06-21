@@ -5,8 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import useViewport from '../../hooks/useViewport';
 import BackButton from '../../cmps/Controls/BackButton';
-import getCustomTheme from '../../hooks/getCustomTheme';
-const customTheme = getCustomTheme();
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -21,7 +19,7 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    flexDirection: 'column',
+    flexDirection: 'column !important',
   },
 
   textImageHomePage: {
@@ -37,12 +35,6 @@ const useStyles = makeStyles(() => ({
     borderRadius: '2em',
     padding: '0.5em',
     backgroundColor: 'whitesmoke',
-  },
-  buttonMenuBgc: {
-    backgroundColor: customTheme.palette.primary.light + '!important',
-  },
-  buttonMenuText: {
-    color: customTheme.palette.primary.contrastText,
   },
 }));
 

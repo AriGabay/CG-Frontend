@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import getCustomTheme from './getCustomTheme';
-const customTheme = getCustomTheme();
 
 const isNumber = (n) => {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);
@@ -45,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiFormControl-root': {
       width: '80%',
-      margin: customTheme.spacing(1),
+      margin: theme.spacing(1),
     },
   },
 }));
