@@ -32,32 +32,24 @@ const val = {
   productToRemove: '',
   description: '',
 };
-export const Product = (props) => {
+export const Product = () => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
-  // const [sizePrices, setSizePrices] = useState();
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
 
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
-    pricesService.getPrices().then((res) => setPrices(res));
-    categoryService.getCategories().then((res) => {
-      setCategories(res);
+    pricesService.getPrices(false).then((prices) => setPrices(prices));
+    categoryService.getCategories(false).then((category) => {
+      setCategories(category);
     });
-    // sizePriceService.getSizePrices().then((data) => {
-    //   var arr = [];
-    //   data.map((sizePrice) => {
-    //     const newObj = { ...sizePrice, displayName: 'מחיר:  ' + sizePrice.amount + ' ' + 'כמות: ' + sizePrice.size };
-    //     arr.push(newObj);
-    //   });
-    //   setSizePrices(arr);
-    // });
     productService.getProducts(false).then((res) => {
       setProducts(res);
     });
   }, []);
   const addProduct = () => {
+    console.log('values:', values);
     const { displayName, categoryId, inStock, imgUrl, priceId, description } = values;
     const data = {
       displayName,
@@ -67,6 +59,7 @@ export const Product = (props) => {
       priceId,
       description,
     };
+    console.log('data:', data);
     productService.addProduct(data).then((res) => {
       console.log('add product');
     });
@@ -123,9 +116,7 @@ export const Product = (props) => {
         )}
         <TextareaAutosize
           className={classes.marginTop}
-          aria-label="maximum height"
-          placeholder="Maximum 5 rows"
-          defaultValue="נא להכניס תיאור מוצר"
+          placeholder="נא להכניס תיאור מוצר"
           name="description"
           value={values.description}
           onChange={handleInputChange}

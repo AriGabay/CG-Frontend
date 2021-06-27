@@ -1,6 +1,7 @@
 const axios = require('axios');
+// const BASE_URL = 'http://localhost:3030/api/';
 const BASE_URL = process.env.REACT_APP_API_HOST;
-console.log('BASE_URL:', BASE_URL);
+console.log('BASE_URL:', process.env);
 export const httpService = {
   get(endpoint, query) {
     const queryStr = Object.keys(query)
