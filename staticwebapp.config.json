@@ -5,5 +5,23 @@
       "*.{css,scss,js,ico,svg,jpg,gif,png}",
       "assets/*"
     ]
-  }
+  },
+  "routes": [
+    {
+      "route": "/admin",
+      "allowedRoles": [
+        "administrator"
+      ]
+    },
+    {
+      "route": "/api/*",
+      "methods": [
+        "PUT",
+        "POST",
+        "PATCH",
+        "DELETE",
+        "GET"
+      ]
+    }
+  ]
 }
