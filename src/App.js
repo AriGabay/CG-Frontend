@@ -9,7 +9,7 @@ import { AdminPage } from './pages/AdminPage/AdminPage';
 import { About } from './pages/About/About';
 import { Contact } from './pages/Contact/Contact';
 import { CheckoutOrder } from './pages/CheckoutOrder/CheckoutOrder';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, HashRouter } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
@@ -20,7 +20,7 @@ function App() {
     <CssBaseline>
       <ThemeProvider theme={customTheme}>
         <div className="App">
-          <BrowserRouter>
+          <HashRouter>
             <AppHeader />
             <Route component={Menu} path="/menu/" />
             <Route exact={true} component={ProductsList} path="/products/:categoryId/" />
@@ -31,7 +31,7 @@ function App() {
             <Route exact component={Contact} path="/contact" />
             <Route exact component={HomePage} path="/" />
             <SimpleSnackbar></SimpleSnackbar>
-          </BrowserRouter>
+          </HashRouter>
         </div>
       </ThemeProvider>
     </CssBaseline>
