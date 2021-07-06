@@ -1,8 +1,6 @@
 const axios = require('axios');
-// const BASE_URL = 'http://localhost:3030/api/';
 require('dotenv').config();
 const BASE_URL = process.env.REACT_APP_API_HOST;
-console.log('BASE_URL:', BASE_URL);
 export const httpService = {
   get(endpoint, query) {
     const queryStr = Object.keys(query)
@@ -18,6 +16,5 @@ export const httpService = {
   },
   delete(endpoint, id) {
     return axios.delete(BASE_URL + endpoint + id);
-    // return axios.delete(`http://localhost:3030/api/${endpoint}${id}`);
   },
 };

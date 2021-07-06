@@ -27,7 +27,7 @@ const val = {
   description: '',
   removeCategory: '',
 };
-export const Category = (props) => {
+export const Category = () => {
   const classes = useStyles();
   const [categories, setCategories] = useState(null);
   const { values, handleInputChange } = useForm(val, false);
@@ -37,13 +37,8 @@ export const Category = (props) => {
       setCategories(res);
     });
   }, []);
-  // const setRemoveCategory = (e) => {
-  //   const { value, name } = e.target;
-  //   values.categoryToRemove = value;
-  //   return name;
-  // };
   const removeCategory = () => {
-    categoryService.removeCategory(values.categoryToRemove);
+    categoryService.removeCategory(values.removeCategory);
   };
   const addCategory = () => {
     const data = {

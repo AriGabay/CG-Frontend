@@ -9,14 +9,9 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
   const [errors, setErrors] = useState({});
   const handleInputChange = (e) => {
     var { name, value } = e.target;
-    console.log('value:');
-    console.log('name:', name);
     if (isNumber(value) && name !== 'mobile' && name !== 'idPersonal') {
-      console.log('in');
       value = Number(value);
     }
-    console.log('value:', value);
-    console.log('value:', typeof value);
     setValues({
       ...values,
       [name]: value,
