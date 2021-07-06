@@ -40,16 +40,25 @@ export const SizePrice = (props) => {
   const [sizePrices, setSizePrices] = useState();
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
-    pricesService.getPrices({ include: false }).then((res) => {
-      setPrices(res);
-    });
-    sizePriceService.getSizePrices().then((data) => {
-      const arr = data.map((sizePrice) => ({
-        ...sizePrice,
-        displayName: `מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`,
-      }));
+    async function x() {
+      const prices = await pricesService.getPrices({ include: false });
+      setPrices(prices);
+      const data = await sizePriceService.getSizePrices();
+      const arr = [];
+      data.forEach((sizePrice) => {
+        prices.forEach((price) => {
+          if (sizePrice.priceId === price.id) {
+            arr.push({
+              ...sizePrice,
+              displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`,
+            });
+          }
+        });
+      });
+
       setSizePrices(arr);
-    });
+    }
+    x();
   }, []);
   const addSizePrice = () => {
     const data = {
@@ -102,7 +111,7 @@ export const SizePrice = (props) => {
       </Grid>
       <Grid className={classes.gridTag}>
         <Typography variant="h5">מחיקה</Typography>
-        {sizePrices && (
+        {sizePrices && prices && (
           <Controls.Select
             className={classes.marginTop}
             label="מחיר למחיקה"

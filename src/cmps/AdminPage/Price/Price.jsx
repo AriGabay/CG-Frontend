@@ -42,8 +42,6 @@ export const Price = () => {
   ];
   useEffect(() => {
     pricesService.getPrices({ include: true }).then((data) => {
-      console.log('data:', data);
-
       const concatenateStrings = (sizePrices) => {
         return sizePrices
           .map((sizePrice) => {
@@ -68,7 +66,10 @@ export const Price = () => {
     pricesService.addPrice(data);
   };
   const removePrice = () => {
-    pricesService.removePrice(values.removePrice).then(() => console.log('end remove'));
+    pricesService
+      .removePrice(values.removePrice)
+      .then(() => console.log('end remove Price'))
+      .catch((error) => console.error('can not remove Price', error));
   };
   return (
     <Grid>
