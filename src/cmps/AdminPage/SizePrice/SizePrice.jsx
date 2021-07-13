@@ -122,6 +122,8 @@ export const SizePrice = (props) => {
             onChange={handleInputChange}
           />
         )}
+        <Typography>משקל - לפי 100 גרם</Typography>
+        <Typography> יחידה- דוגמה : אם מוסיפים מחיר לפי 2 יחידות המינימום הזמנה של המוצר הזה יהיה 2 יחידות </Typography>
         <Controls.Button
           className={classes.marginTop}
           text="הוסף מחיר"

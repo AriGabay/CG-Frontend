@@ -45,7 +45,7 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
     setProps();
   }, [setProps]);
   const updateOrder = (size) => {
-    const calc = size * product.Price.SizePrices[0].amount;
+    const calc = (size / product.Price.SizePrices[0].size) * product.Price.SizePrices[0].amount;
     setPriceToShow(calc);
     setProductOrder({ sizeToOrder: Number(size), product, priceToShow: calc });
   };

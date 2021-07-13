@@ -40,7 +40,7 @@ export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
             }}
           >
             <Box className={classes.typography}>
-              <Typography>גודל: {price.size} גרם</Typography>
+              <Typography>קופסה בגודל של {price.size} גרם</Typography>
               <Typography>
                 מחיר: {price.amount}
                 {shekel}

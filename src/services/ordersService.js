@@ -9,16 +9,6 @@ async function getOrders(query = { include: false }) {
   }
 }
 
-// async function addCategory(category) {
-//   await httpService.post(endpoint, category);
-// }
-
-// async function removeCategory(id) {
-//   await httpService.delete(endpoint, id);
-// }
-
 export const ordersService = {
   getOrders,
-  // addCategory,
-  // removeCategory,
 };
