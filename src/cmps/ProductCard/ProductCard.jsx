@@ -42,10 +42,7 @@ export const ProductCard = ({ product }) => {
           </Box>
           <Box component="div" display="flex" alignItems="center" justifyContent="center">
             <Typography variant="body2" color="textSecondary" component="p">
-              {/* {product.description} */}
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aperiam, commodi vel similique eius perferendis,
-              mollitia accusantium explicabo nihil officia, id veniam. Ut architecto eligendi cupiditate! Deleniti quia
-              porro animi accusamus.
+              {product.description}
             </Typography>
           </Box>
         </CardContent>
