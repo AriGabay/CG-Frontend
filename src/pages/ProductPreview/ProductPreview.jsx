@@ -54,7 +54,6 @@ export const ProductPreview = () => {
     });
   }, [productId]);
   const addToCart = () => {
-    console.log('product.sizeToOrder:');
     if (
       product.sizeToOrder === null &&
       product.sizeToOrder === undefined &&

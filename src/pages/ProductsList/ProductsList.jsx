@@ -16,6 +16,11 @@ const useStyles = makeStyles({
     marginRight: '0!important',
     marginBottom: '10px!important',
   },
+  marginCenter: {
+    '@media (max-width: 700px)': {
+      margin: '0 auto !important',
+    },
+  },
 });
 export const ProductsList = () => {
   const classes = useStyles();
@@ -40,7 +45,7 @@ export const ProductsList = () => {
         {products &&
           products.map((product) => {
             return (
-              <Grid item xs={12} md={6} lg={4} key={product.id}>
+              <Grid className={classes.marginCenter} item key={product.id}>
                 <Container>
                   <ProductCard product={product} />
                 </Container>
@@ -49,8 +54,8 @@ export const ProductsList = () => {
           })}
         <Container>{!products && <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>}</Container>
       </Grid>
-      <Grid container mr={0} mt={2}>
-        <Container className={classes.marginRight0}>
+      <Grid mr={0} mt={2}>
+        <Container>
           <BackButton to="/menu" text="חזור"></BackButton>
         </Container>
       </Grid>

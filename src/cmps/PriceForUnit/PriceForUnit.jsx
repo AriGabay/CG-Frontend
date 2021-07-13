@@ -64,7 +64,8 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
           InputProps={{
             inputProps: {
               max: 100,
-              min: 1,
+              min: product.Price.SizePrices[0].size,
+              step: product.Price.SizePrices[0].size,
             },
           }}
           label="יחידות"

@@ -12,26 +12,31 @@ import { useHistory } from 'react-router-dom';
 import getCustomTheme from '../../hooks/getCustomTheme';
 const customTheme = getCustomTheme();
 
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 345,
+    marginBottom: 20,
+    '@media (max-width: 700px)': {
+      maxWidth: '270px !important',
+      margin: '0 auto',
+      marginBottom: 20,
+    },
+  },
+  // label: {
+  //   color: customTheme.palette.primary.contrastText + '!important',
+  // },
+  // color: {
+  //   color: customTheme.palette.primary.contrastText + '!important',
+  // },
+});
 export const ProductCard = ({ product }) => {
   let history = useHistory();
-  const useStyles = makeStyles({
-    root: {
-      maxWidth: 345,
-      marginBottom: 20,
-      '@media (max-width: 700px)': {
-        maxWidth: 250,
-      },
-    },
-    label: {
-      color: customTheme.palette.primary.contrastText + '!important',
-    },
-  });
   const classes = useStyles();
   const handleClick = () => {
     history.push(`/product/${product.id}`);
   };
   return (
-    <Card className={`${classes.root} product-card`} onClick={() => handleClick()}>
+    <Card className={classes.root} onClick={() => handleClick()}>
       <CardActionArea>
         <ImageCloud imageId={product.imgUrl} maxWidth={350} maxHeight={250}></ImageCloud>
         <CardContent>
@@ -49,7 +54,7 @@ export const ProductCard = ({ product }) => {
       </CardActionArea>
       <Box display="flex" alignItems="center" justifyContent="center">
         <CardActions>
-          <Button className={classes.label} size="small" color="primary">
+          <Button size="small" color="primary">
             הוסף לסל
           </Button>
         </CardActions>
