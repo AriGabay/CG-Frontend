@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     flexDirection: 'row',
     '@media (max-width: 700px)': {
-      flexDirection: 'column',
+      flexDirection: 'column!important',
     },
   },
   Paper: {

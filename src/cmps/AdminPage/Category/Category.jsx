@@ -30,6 +30,7 @@ const val = {
 export const Category = () => {
   const classes = useStyles();
   const [categories, setCategories] = useState(null);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
   const { values, handleInputChange } = useForm(val, false);
 
   useEffect(() => {
@@ -49,6 +50,21 @@ export const Category = () => {
     categoryService.addCategory(data).then(() => {
       console.log('add category!');
     });
+  };
+  const getCategoryById = ({ target }) => {
+    categoryService.getCategoryById(target.value, false).then((res) => {
+      setCategoryToEdit(res[0]);
+    });
+  };
+  const editCategory = ({ target }) => {
+    const { name, value } = target;
+    const newCategory = { ...categoryToEdit, [name]: value };
+    setCategoryToEdit(newCategory);
+  };
+  const updateCategory = () => {
+    categoryService
+      .updateCategory(categoryToEdit)
+      .then(() => console.log(`complete edit: ${categoryToEdit.displayName}`));
   };
   return (
     <Grid className={classes.flexTag}>
@@ -95,6 +111,44 @@ export const Category = () => {
           onClick={() => removeCategory()}
         ></Controls.Button>
       </Grid>
+      <Typography variant="h5">עריכה</Typography>
+      {categories && (
+        <Controls.Select
+          label="קטגוריה לעריכה"
+          name="editCategory"
+          value={''}
+          options={categories}
+          onChange={(event) => getCategoryById(event)}
+        />
+      )}
+      {categoryToEdit && (
+        <Grid className={classes.flexTag}>
+          <Typography variant="h5">הוספה</Typography>
+          <Controls.Input
+            label="שם הקטגוריה להוספה"
+            name="displayName"
+            value={categoryToEdit.displayName}
+            onChange={(event) => editCategory(event)}
+          ></Controls.Input>
+          <Controls.Input
+            label="שם התמונה"
+            name="imgUrl"
+            value={categoryToEdit.imgUrl}
+            onChange={(event) => editCategory(event)}
+          ></Controls.Input>
+          <Controls.Input
+            label="תיאור הקטגוריה בקצרה"
+            name="description"
+            value={categoryToEdit.description}
+            onChange={(event) => editCategory(event)}
+          ></Controls.Input>
+          <Controls.Button
+            className={classes.marginTop}
+            text="עדכן מוצר"
+            onClick={() => updateCategory()}
+          ></Controls.Button>
+        </Grid>
+      )}
     </Grid>
   );
 };

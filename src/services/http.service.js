@@ -11,8 +11,8 @@ export const httpService = {
   post(endpoint, data) {
     return axios.post(BASE_URL + endpoint, data).then((res) => res.data);
   },
-  put(endpoint, data) {
-    return axios.put(endpoint, data);
+  put(endpoint, id, data) {
+    return axios.put(`${BASE_URL}${endpoint}${id}`, data);
   },
   delete(endpoint, id) {
     return axios.delete(BASE_URL + endpoint + id);

@@ -11,7 +11,6 @@ export const Menu = () => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
-      console.log('categor:', categor);
       setCategories(categor);
     });
   }, []);

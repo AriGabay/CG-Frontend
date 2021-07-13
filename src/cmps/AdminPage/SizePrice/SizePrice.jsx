@@ -26,6 +26,7 @@ const val = {
   size: '',
   priceForSizePrice: '',
   removeSizePrice: '',
+  editSizePrice: '',
 };
 // idToEdit: '',
 // editSizePrice: {
@@ -38,6 +39,7 @@ export const SizePrice = (props) => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
   const [sizePrices, setSizePrices] = useState();
+  const [sizePriceToEdit, setSizePriceToEdit] = useState();
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
     async function x() {
@@ -74,6 +76,23 @@ export const SizePrice = (props) => {
     sizePriceService.removeSizePrice(values.removeSizePrice).then((res) => {
       console.log('remove size price');
     });
+  };
+  const getSizePriceById = ({ target }) => {
+    sizePriceService.getSizePriceById(target.value, false).then((res) => {
+      setSizePriceToEdit(res[0]);
+    });
+  };
+  const editSizePrice = (e) => {
+    console.log('e:', e);
+    const { target } = e;
+    const { name, value } = target;
+    const newSizePrice = { ...sizePriceToEdit, [name]: Number(value) };
+    setSizePriceToEdit(newSizePrice);
+  };
+  const updateSizePrice = () => {
+    sizePriceService
+      .updateSizePrice(sizePriceToEdit)
+      .then(() => console.log(`complete edit: ${sizePriceToEdit.displayName}`));
   };
   return (
     <Grid>
@@ -126,6 +145,51 @@ export const SizePrice = (props) => {
           text="מחק מחיר"
           onClick={() => removeSizePrice()}
         ></Controls.Button>
+      </Grid>
+      <Grid className={classes.gridTag}>
+        <Typography variant="h5">עריכה</Typography>
+        {sizePrices && (
+          <Controls.Select
+            label="מחירון לעריכה"
+            name="editSizePrice"
+            value={values.editSizePrice}
+            options={sizePrices}
+            onChange={(event) => getSizePriceById(event)}
+          />
+        )}
+        {sizePriceToEdit && (
+          <Grid className={classes.gridTag}>
+            <Controls.Input
+              className={classes.marginTop}
+              label="מחיר"
+              value={sizePriceToEdit.amount}
+              onChange={(event) => editSizePrice(event)}
+              name="amount"
+            ></Controls.Input>
+            <Controls.Input
+              className={classes.marginTop}
+              label="כמות"
+              value={sizePriceToEdit.size}
+              onChange={(event) => editSizePrice(event)}
+              name="size"
+            ></Controls.Input>
+            {prices && (
+              <Controls.Select
+                className={classes.marginTop}
+                label="שיוך מחיר למחירון"
+                name="priceId"
+                value={sizePriceToEdit.priceId}
+                options={prices}
+                onChange={(event) => editSizePrice(event)}
+              />
+            )}
+            <Controls.Button
+              className={classes.marginTop}
+              text="עדכן מוצר"
+              onClick={() => updateSizePrice()}
+            ></Controls.Button>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

@@ -24,9 +24,26 @@ async function removeSizePrice(id) {
     console.error('error', error);
   }
 }
-
+async function getSizePriceById(id, include) {
+  try {
+    const res = await httpService.get(endpoint, { id, include });
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+async function updateSizePrice(sizePrice) {
+  try {
+    const res = await httpService.put(endpoint, sizePrice.id, sizePrice);
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
 export const sizePriceService = {
   getSizePrices,
   addSizePrice,
   removeSizePrice,
+  getSizePriceById,
+  updateSizePrice,
 };

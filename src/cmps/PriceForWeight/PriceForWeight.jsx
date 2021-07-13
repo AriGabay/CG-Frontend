@@ -13,8 +13,7 @@ const useStyles = makeStyles({
     padding: 0,
   },
   addToCartBtn: {
-    background:
-      'linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 38, 121, 0.919502835313813) 0%, rgba(0, 212, 255, 1) 100%)',
+    background: 'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
     borderRadius: 3,
     color: 'white',
     height: 48,

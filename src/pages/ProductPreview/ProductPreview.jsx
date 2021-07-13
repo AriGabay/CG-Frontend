@@ -20,9 +20,9 @@ import { eventBus } from '../../services/event-bus';
 
 const useStyles = makeStyles({
   addToCartBtn: {
-    background: 'linear-gradient(315deg, rgba(236,223,188,1) 0%, rgba(47,72,99,1) 100%)',
+    background: 'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
     borderRadius: 3,
-    color: 'white',
+    color: 'white!important',
     height: 48,
     padding: 30,
     paddingTop: 0,
@@ -50,7 +50,6 @@ export const ProductPreview = () => {
   const classes = useStyles();
   useEffect(() => {
     productService.getProducts({ id: productId, include: true }).then((res) => {
-      console.log('res:', res[0]);
       setProduct(res[0]);
     });
   }, [productId]);

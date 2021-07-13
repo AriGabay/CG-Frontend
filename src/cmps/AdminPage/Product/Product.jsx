@@ -31,12 +31,14 @@ const val = {
   priceId: '',
   productToRemove: '',
   description: '',
+  productToEdit: '',
 };
 export const Product = () => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
+  const [productToEdit, setProductToEdit] = useState();
 
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
@@ -49,7 +51,6 @@ export const Product = () => {
     });
   }, []);
   const addProduct = () => {
-    console.log('values:', values);
     const { displayName, categoryId, inStock, imgUrl, priceId, description } = values;
     const data = {
       displayName,
@@ -59,7 +60,6 @@ export const Product = () => {
       priceId,
       description,
     };
-    console.log('data:', data);
     productService.addProduct(data).then((res) => {
       console.log('add product');
     });
@@ -68,6 +68,19 @@ export const Product = () => {
     productService.removeProduct(values.productToRemove).then((res) => {
       console.log('remove product');
     });
+  };
+  const getProductById = ({ target }) => {
+    productService.getProductById(target.value, false).then((res) => {
+      setProductToEdit(res[0]);
+    });
+  };
+  const editProduct = ({ target }) => {
+    const { name, value } = target;
+    const newProduct = { ...productToEdit, [name]: value };
+    setProductToEdit(newProduct);
+  };
+  const updateProduct = () => {
+    productService.updateProduct(productToEdit).then(() => console.log(`complete edit: ${productToEdit.displayName}`));
   };
   return (
     <Grid>
@@ -139,6 +152,76 @@ export const Product = () => {
           text="מחק מוצר"
           onClick={() => removeProduct()}
         ></Controls.Button>
+      </Grid>
+      <Grid className={classes.gridTag}>
+        <Typography variant="h5">עריכה</Typography>
+        {products && (
+          <Controls.Select
+            label="מוצר לעריכה"
+            name="productToEdit"
+            value={values.productToEdit}
+            options={products}
+            onChange={(event) => getProductById(event)}
+          />
+        )}
+        {productToEdit && (
+          <Grid className={classes.gridTag}>
+            <Typography variant="h5">{productToEdit.displayName}</Typography>
+            <Controls.Input
+              className={classes.marginTop}
+              label="שם המוצר"
+              value={productToEdit.displayName}
+              onChange={(event) => editProduct(event)}
+              name="displayName"
+            />
+            {categories && (
+              <Controls.Select
+                className={classes.marginTop}
+                label="קטגוריה"
+                name="categoryId"
+                value={productToEdit.categoryId}
+                options={categories}
+                onChange={(event) => editProduct(event)}
+              />
+            )}
+            <Controls.Checkbox
+              label="מלאי"
+              className={classes.marginTop}
+              name="inStock"
+              value={productToEdit.inStock}
+              onChange={(event) => editProduct(event)}
+            ></Controls.Checkbox>
+            <Controls.Input
+              label="שם התמונה בענן"
+              className={classes.marginTop}
+              value={productToEdit.imgUrl}
+              onChange={(event) => editProduct(event)}
+              name="imgUrl"
+            />
+            {prices && (
+              <Controls.Select
+                className={classes.marginTop}
+                label="מחירון"
+                name="priceId"
+                value={productToEdit.priceId}
+                options={prices}
+                onChange={(event) => editProduct(event)}
+              />
+            )}
+            <TextareaAutosize
+              className={classes.marginTop}
+              placeholder="נא להכניס תיאור מוצר"
+              name="description"
+              value={productToEdit.description}
+              onChange={(event) => editProduct(event)}
+            />
+            <Controls.Button
+              className={classes.marginTop}
+              text="עדכן מוצר"
+              onClick={() => updateProduct()}
+            ></Controls.Button>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

@@ -6,7 +6,6 @@ import TextField from '@material-ui/core/TextField';
 import isBefore from 'date-fns/isBefore';
 import startOfToday from 'date-fns/startOfToday';
 import isFriday from 'date-fns/isFriday';
-
 export default function DatePicker(props) {
   const { name, label, value, onChange, required = false } = props;
 

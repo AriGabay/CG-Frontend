@@ -25,15 +25,16 @@ const useStyles = makeStyles(() => ({
   textImageHomePage: {
     textAlign: 'center',
     width: '50%',
+    height: 'auto',
     color: 'black',
     display: 'block',
     textOverflow: 'ellipsis',
     wordWrap: 'break-word',
     overflow: 'hidden',
     lineHeight: '1.8em',
-    border: '8px solid #ecdfbc',
+    border: '8px solid #937446',
     borderRadius: '2em',
-    padding: '0.5em',
+    padding: '1em',
     backgroundColor: 'whitesmoke',
   },
 }));

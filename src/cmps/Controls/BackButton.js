@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: customTheme.palette.primary.light + '!important',
   },
   label: {
-    color: customTheme.palette.primary.contrastText,
+    color: customTheme.palette.primary.contrastText + '!important',
     textTransform: 'none',
   },
   NavLink: {

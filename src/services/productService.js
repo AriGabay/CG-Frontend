@@ -24,8 +24,26 @@ async function removeProduct(id) {
     console.error('error', error);
   }
 }
+async function getProductById(id, include) {
+  try {
+    const res = await httpService.get(endpoint, { id, include });
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+async function updateProduct(product) {
+  try {
+    const res = await httpService.put(endpoint, product.id, product);
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
 export const productService = {
   getProducts,
   addProduct,
   removeProduct,
+  getProductById,
+  updateProduct,
 };

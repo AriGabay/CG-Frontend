@@ -5,6 +5,7 @@ export default function Input(props) {
   const { name, label, value, error = null, onChange, required = false, ...other } = props;
   return (
     <TextField
+      style={{ width: '80%!important' }}
       variant="outlined"
       label={label}
       name={name}

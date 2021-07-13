@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: 'flex-start',
       flexDirection: 'column',
       position: 'fixed!important',
-      backgroundColor: '#2f4863',
+      backgroundColor: '#543912',
       top: '10%',
       right: '0',
       height: '40%',
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     width: '90%',
   },
   paper: {
-    backgroundColor: '#2f4863!important',
+    backgroundColor: '#8C6F44!important',
   },
 }));
 
