@@ -11,18 +11,21 @@ import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import getCustomTheme from '../../hooks/getCustomTheme';
 const customTheme = getCustomTheme();
-const useStyles = makeStyles({
-  root: {
-    maxWidth: 345,
-    marginBottom: 20,
-  },
-  label: {
-    color: customTheme.palette.primary.contrastText + '!important',
-  },
-});
 
 export const ProductCard = ({ product }) => {
   let history = useHistory();
+  const useStyles = makeStyles({
+    root: {
+      maxWidth: 345,
+      marginBottom: 20,
+      '@media (max-width: 700px)': {
+        maxWidth: 250,
+      },
+    },
+    label: {
+      color: customTheme.palette.primary.contrastText + '!important',
+    },
+  });
   const classes = useStyles();
   const handleClick = () => {
     history.push(`/product/${product.id}`);
