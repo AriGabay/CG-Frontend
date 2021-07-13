@@ -9,8 +9,6 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
-import getCustomTheme from '../../hooks/getCustomTheme';
-const customTheme = getCustomTheme();
 
 const useStyles = makeStyles({
   root: {
@@ -22,12 +20,6 @@ const useStyles = makeStyles({
       marginBottom: 20,
     },
   },
-  // label: {
-  //   color: customTheme.palette.primary.contrastText + '!important',
-  // },
-  // color: {
-  //   color: customTheme.palette.primary.contrastText + '!important',
-  // },
 });
 export const ProductCard = ({ product }) => {
   let history = useHistory();
