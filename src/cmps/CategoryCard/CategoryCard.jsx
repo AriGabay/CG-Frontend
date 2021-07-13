@@ -32,7 +32,7 @@ export const CategoryCard = ({ category, index }) => {
         <ImageCloud imageId={category.imgUrl} maxWidth={350} maxHeight={250}></ImageCloud>
         <CardContent>
           <Box component="div" display="flex" alignItems="center" justifyContent="center">
-            <Typography className={classes.moreProductBtn} gutterBottom variant="h5" component="h2">
+            <Typography classes={{ label: classes.moreProductBtn }} gutterBottom variant="h5" component="h2">
               {category.displayName}
             </Typography>
           </Box>

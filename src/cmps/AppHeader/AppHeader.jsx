@@ -14,6 +14,8 @@ import { cartService } from '../../services/cartService';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
+import getCustomTheme from '../../hooks/getCustomTheme';
+const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: 'flex-start',
       flexDirection: 'column',
       position: 'fixed!important',
-      backgroundColor: '#543912',
+      backgroundColor: customTheme.palette.primary.main,
       top: '10%',
       right: '0',
       height: '40%',
@@ -71,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     width: '90%',
   },
   paper: {
-    backgroundColor: '#8C6F44!important',
+    backgroundColor: `${customTheme.palette.primary.main}!important`,
   },
 }));
 
@@ -124,16 +126,16 @@ export const AppHeader = () => {
         ) : null}
         {(matches || isOpenMenu) && (
           <Toolbar classes={{ root: classes.toolBar }} className={classes.CenterToolBar}>
-            <NavLink className={classes.Navlink} to="/">
+            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/">
               <Typography className={classes.ColorNavLink}>בית</Typography>
             </NavLink>
-            <NavLink className={classes.Navlink} to="/menu">
+            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/menu">
               <Typography className={classes.ColorNavLink}>תפריט</Typography>
             </NavLink>
-            <NavLink className={classes.Navlink} to="/about">
+            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/about">
               <Typography className={classes.ColorNavLink}>אודות</Typography>
             </NavLink>
-            <NavLink className={classes.Navlink} to="/contact">
+            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/contact">
               <Typography className={classes.ColorNavLink}>צור קשר</Typography>
             </NavLink>
             <Button

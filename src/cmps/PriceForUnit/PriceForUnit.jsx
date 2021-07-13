@@ -60,6 +60,7 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
         <TextField
           required
           type="number"
+          style={{ width: '150px' }}
           InputProps={{
             inputProps: {
               max: 100,
