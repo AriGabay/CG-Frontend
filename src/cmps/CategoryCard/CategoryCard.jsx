@@ -10,17 +10,19 @@ import Button from '@material-ui/core/Button';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { useHistory } from 'react-router-dom';
 import getCustomTheme from '../../hooks/getCustomTheme';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 const customTheme = getCustomTheme();
 
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 345,
+  },
+  moreProductBtn: {
+    color: customTheme.palette.primary.contrastText,
+  },
+});
 export const CategoryCard = ({ category, index }) => {
-  const useStyles = makeStyles({
-    root: {
-      maxWidth: 345,
-    },
-    moreProductBtn: {
-      color: customTheme.palette.primary.contrastText,
-    },
-  });
+  const matches = useMediaQuery('(min-width:700px)');
   let history = useHistory();
   const handleClick = () => {
     history.push(`/products/${category.id}`);
@@ -29,7 +31,11 @@ export const CategoryCard = ({ category, index }) => {
   return (
     <Card key={index} className={`${classes.root} category-card`} onClick={() => handleClick()}>
       <CardActionArea>
-        <ImageCloud imageId={category.imgUrl} maxWidth={350} maxHeight={250}></ImageCloud>
+        <ImageCloud
+          imageId={category.imgUrl}
+          maxWidth={matches ? 350 : 250}
+          maxHeight={matches ? 250 : 150}
+        ></ImageCloud>
         <CardContent>
           <Box component="div" display="flex" alignItems="center" justifyContent="center">
             <Typography classes={{ label: classes.moreProductBtn }} gutterBottom variant="h5" component="h2">
