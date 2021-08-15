@@ -16,5 +16,6 @@ export const httpService = {
   },
   delete(endpoint, id) {
     return axios.delete(BASE_URL + endpoint + id);
-  },
+    //
+  }
 };
