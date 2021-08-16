@@ -14,18 +14,18 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important',
+    flexDirection: 'column!important'
   },
   marginTop: {
-    marginTop: '10px!important',
-  },
+    marginTop: '10px!important'
+  }
 }));
 
 const val = {
   displayName: '',
   imgUrl: '',
   description: '',
-  removeCategory: '',
+  removeCategory: ''
 };
 export const Category = () => {
   const classes = useStyles();
@@ -45,7 +45,7 @@ export const Category = () => {
     const data = {
       displayName: values.displayName,
       imgUrl: values.imgUrl,
-      description: values.description,
+      description: values.description
     };
     categoryService.addCategory(data).then(() => {
       console.log('add category!');
@@ -123,9 +123,8 @@ export const Category = () => {
       )}
       {categoryToEdit && (
         <Grid className={classes.flexTag}>
-          <Typography variant="h5">הוספה</Typography>
           <Controls.Input
-            label="שם הקטגוריה להוספה"
+            label="שם הקטגוריה לעריכה"
             name="displayName"
             value={categoryToEdit.displayName}
             onChange={(event) => editCategory(event)}

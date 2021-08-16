@@ -15,8 +15,8 @@ ImageCloud.propsTypes = {
   maxHeight: PropTypes.number,
   maxWidth: PropTypes.number,
   alt: PropTypes.string,
-  imageId: PropTypes.element.isRequired,
+  imageId: PropTypes.element.isRequired
 };
 ImageCloud.defaultProps = {
-  maxHeight: 250,
+  maxHeight: 250
 };

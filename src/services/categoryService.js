@@ -37,5 +37,5 @@ export const categoryService = {
   addCategory,
   removeCategory,
   getCategoryById,
-  updateCategory,
+  updateCategory
 };
