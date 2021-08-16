@@ -22,10 +22,10 @@ const useStyles = makeStyles(() => ({
     right: '0',
     left: '0!important',
     width: '100vw',
-    height: '100vh',
+    height: '100vh'
   },
   zIndex: {
-    zIndex: 520,
+    zIndex: 520
   },
   paper: {
     top: '80px!important',
@@ -37,38 +37,38 @@ const useStyles = makeStyles(() => ({
       bottom: '0',
       right: '0',
       left: '0!important',
-      width: '100vw',
-      height: '100vh',
-    },
+      minWidth: '100% !important',
+      minHeight: '100% !important'
+    }
   },
   MenuItem: {
     height: 'auto',
-    width: 'auto',
+    width: 'auto'
   },
   rtl: {
-    textAlign: 'right',
+    textAlign: 'right'
   },
   containerText: {
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    textAlign: 'right',
+    textAlign: 'right'
   },
   ldld: {
     width: '100px',
     height: '100px',
     backgroundColor: 'black',
     '@media (min-width: 700px)': {
-      backgroundColor: 'red',
-    },
+      backgroundColor: 'red'
+    }
   },
   textCartProduct: {
     display: 'block',
     textOverflow: 'ellipsis',
     wordWrap: 'break-word',
     lineHeight: '1.8em',
-    whiteSpace: 'pre-wrap',
-  },
+    whiteSpace: 'pre-wrap'
+  }
 }));
 
 export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) => {
@@ -107,7 +107,6 @@ export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) =>
   };
   return (
     <Menu
-      id="simple-menu"
       classes={{ paper: classes.paper }}
       anchorEl={anchorEl}
       keepMounted

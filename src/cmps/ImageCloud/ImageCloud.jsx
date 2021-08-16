@@ -1,7 +1,7 @@
 import './ImageCloud.scss';
 import { Image } from 'cloudinary-react';
 import PropTypes from 'prop-types';
-export function ImageCloud({ alt, maxHeight, maxWidth, imageId }) {
+export function ImageCloud({ alt, maxHeight, maxWidth, imageId, ClassName }) {
   const src = () => {
     const width = maxWidth;
     const height = maxHeight;
@@ -9,14 +9,26 @@ export function ImageCloud({ alt, maxHeight, maxWidth, imageId }) {
       width && height ? ',' : ''
     }${height ? 'h_' + height : ''}/v1614944384/${imageId}`;
   };
-  return <Image alt={alt} src={src()} gravity="faces" loading="lazy" height={maxHeight} width={maxWidth} />;
+  return (
+    <Image
+      className={ClassName}
+      alt={alt}
+      src={src()}
+      gravity="faces"
+      loading="lazy"
+      height={maxHeight}
+      width={maxWidth}
+    />
+  );
 }
 ImageCloud.propsTypes = {
   maxHeight: PropTypes.number,
   maxWidth: PropTypes.number,
   alt: PropTypes.string,
-  imageId: PropTypes.element.isRequired
+  imageId: PropTypes.element.isRequired,
+  ClassName: PropTypes.string
 };
 ImageCloud.defaultProps = {
-  maxHeight: 250
+  maxHeight: 250,
+  ClassName: ' '
 };

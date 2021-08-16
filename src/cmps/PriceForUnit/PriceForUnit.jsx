@@ -1,7 +1,6 @@
 import './PriceForUnit.scss';
 import { useEffect, useState, useCallback } from 'react';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
@@ -9,7 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles({
   marginTop: {
-    marginTop: '25px',
+    marginTop: '25px'
   },
   addToCartBtn: {
     background: 'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
@@ -19,7 +18,7 @@ const useStyles = makeStyles({
     padding: 30,
     paddingTop: 0,
     paddingBottom: 0,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)'
   },
   Grid: {
     display: 'flex',
@@ -28,8 +27,8 @@ const useStyles = makeStyles({
     justify: 'space-evenly',
     alignItems: 'center',
     paddingRight: 30,
-    paddingLeft: 30,
-  },
+    paddingLeft: 30
+  }
 });
 
 export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) => {
@@ -51,7 +50,7 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
   };
 
   return product ? (
-    <div>
+    <Grid>
       <Typography mt={2}>
         מחיר ליחידה :{product.Price.SizePrices[0].amount}
         {shekel}{' '}
@@ -65,14 +64,18 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
             inputProps: {
               max: 100,
               min: product.Price.SizePrices[0].size,
-              step: product.Price.SizePrices[0].size,
-            },
+              step: product.Price.SizePrices[0].size
+            }
           }}
           label="יחידות"
           onChange={(event) => updateOrder(event.target.value)}
+          onKeyDown={(event) => {
+            event.preventDefault();
+          }}
         />
+        <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
       </Grid>
-      <Box>
+      <Grid>
         {priceToShow !== 0 ? (
           priceToShow && (
             <Typography mt={2} mb={2}>
@@ -85,8 +88,8 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
             נא לבחור כמות יחידות
           </Typography>
         )}
-      </Box>
-    </div>
+      </Grid>
+    </Grid>
   ) : (
     <CircularProgress></CircularProgress>
   );

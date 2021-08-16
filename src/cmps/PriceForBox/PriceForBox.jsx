@@ -4,19 +4,19 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import Stack from '@material-ui/core/Stack';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
   optionsBtn: {
-    maxWidth: 175,
+    maxWidth: 175
   },
   typography: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    textAlign: 'center',
-  },
+    textAlign: 'center'
+  }
 });
 
 export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
@@ -29,7 +29,7 @@ export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
   };
 
   return product ? (
-    <div>
+    <Grid>
       {product.Price.SizePrices.map((price) => (
         <Stack key={price.id} direction="row" spacing={1} my={2}>
           <Button
@@ -39,13 +39,13 @@ export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
               updateOrder(price);
             }}
           >
-            <Box className={classes.typography}>
+            <Grid className={classes.typography}>
               <Typography>קופסה בגודל של {price.size} גרם</Typography>
               <Typography>
                 מחיר: {price.amount}
                 {shekel}
               </Typography>
-            </Box>
+            </Grid>
           </Button>
         </Stack>
       ))}
@@ -57,7 +57,7 @@ export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
             </Typography>
           )
         : 'נא לבחור גודל מוצר'}
-    </div>
+    </Grid>
   ) : (
     <CircularProgress></CircularProgress>
   );

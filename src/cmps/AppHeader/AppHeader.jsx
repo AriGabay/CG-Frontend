@@ -1,6 +1,4 @@
-import './AppHeader.scss';
 import React, { useCallback, useState } from 'react';
-import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,77 +13,82 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
+import './AppHeader.scss';
 const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   menuButton: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   title: {
-    flexGrow: 1,
+    flexGrow: 1
   },
   ColorNavLink: {
     color: 'white',
-    textDecoration: 'none',
+    textDecoration: 'none'
   },
   Navlink: {
     textDecoration: 'none',
     marginLeft: 5,
-    marginRight: 5,
+    marginRight: 5
   },
   CenterToolBar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     Width: '90%',
-    marginLeft: '10%',
+    marginLeft: '10%'
   },
   toolBar: {
     '@media (max-width: 700px)': {
+      transition: 'top 600ms cubic-bezier(0.17, 0.04, 0.03, 0.94)',
       alignItems: 'flex-start',
       flexDirection: 'column',
       position: 'fixed!important',
       backgroundColor: customTheme.palette.primary.main,
-      top: '10%',
       right: '0',
-      height: '40%',
-      zIndex: 2,
-    },
+      left: '0',
+      height: '100%',
+      // transition: '0.6s',
+      zIndex: 2
+    }
   },
   colorWhite: {
     color: 'white',
-    paddingRight: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   },
   Header: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'inherit',
+    flexDirection: 'inherit'
   },
 
   LogoContainer: {
-    width: '10%',
+    width: '10%'
   },
   Width90: {
-    width: '90%',
+    width: '90%'
   },
   paper: {
-    backgroundColor: `${customTheme.palette.primary.main}!important`,
-  },
+    backgroundColor: `${customTheme.palette.primary.main}!important`
+  }
 }));
 
 const style = {
   flexDirection: 'row',
-  justifyContent: 'space-between',
+  justifyContent: 'center'
 };
 export const AppHeader = () => {
   const matches = useMediaQuery('(min-width:700px)');
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isOpenMenu, setIsOpenMenu] = React.useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  // eslint-disable-next-line
+  const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [cart, setCart] = useState();
 
   const getProductCart = useCallback(async () => {
@@ -93,12 +96,12 @@ export const AppHeader = () => {
     setCart(data);
   }, [setCart]);
 
+  const handleChange = () => {
+    setChecked((prev) => !prev);
+  };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     getProductCart();
-  };
-  const openMenu = () => {
-    setIsOpenMenu(!isOpenMenu);
   };
 
   return (
@@ -109,9 +112,6 @@ export const AppHeader = () => {
       className={classes.Header}
       classes={{ root: classes.paper }}
     >
-      <Box className={classes.LogoContainer} p={0} mt={1} mr={1}>
-        <ImageCloud imageId="clean_logo_pid6mc" maxHeight={70} />
-      </Box>
       <Box className={classes.Width90}>
         {!matches ? (
           <IconButton
@@ -119,23 +119,23 @@ export const AppHeader = () => {
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
-            onClick={() => openMenu()}
+            onClick={() => handleChange()}
           >
             <MenuIcon />
           </IconButton>
         ) : null}
-        {(matches || isOpenMenu) && (
+        {(matches || checked) && (
           <Toolbar classes={{ root: classes.toolBar }} className={classes.CenterToolBar}>
-            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/">
+            <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/">
               <Typography className={classes.ColorNavLink}>בית</Typography>
             </NavLink>
-            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/menu">
+            <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu">
               <Typography className={classes.ColorNavLink}>תפריט</Typography>
             </NavLink>
-            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/about">
+            <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/about">
               <Typography className={classes.ColorNavLink}>אודות</Typography>
             </NavLink>
-            <NavLink onClick={() => setIsOpenMenu(false)} className={classes.Navlink} to="/contact">
+            <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/contact">
               <Typography className={classes.ColorNavLink}>צור קשר</Typography>
             </NavLink>
             <Button
