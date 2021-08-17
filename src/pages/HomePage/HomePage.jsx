@@ -25,20 +25,26 @@ const useStyles = makeStyles(() => ({
     opacity: 0.9,
     with: '20px !important'
   },
+  fixLineHeight: {
+    lineHeight: '0 !important'
+  },
   textImageHomePage: {
     textAlign: 'center',
     minWidth: 'auto',
-    maxHeight: 'auto',
+    minHeight: 'auto',
     color: 'black',
     display: 'block',
+    overflowWrap: 'break-word',
     textOverflow: 'ellipsis',
     wordWrap: 'break-word',
     overflow: 'hidden',
-    lineHeight: '1.8em',
-    border: '8px solid #937446',
+    border: '4px solid #937446',
     borderRadius: '2em',
     padding: '1em',
-    backgroundColor: 'whitesmoke'
+    backgroundColor: 'whitesmoke',
+    '@media (max-width: 550px)': {
+      fontSize: '1em !important'
+    }
   }
 }));
 
@@ -49,7 +55,12 @@ export const HomePage = () => {
   return (
     <Grid mt={2} className={classes.root}>
       <Grid className={classes.imageContainer}>
-        <Typography className={classes.textImageHomePage} variant="h5" gutterBottom>
+        <Typography
+          classes={{ root: classes.fixLineHeight }}
+          className={classes.textImageHomePage}
+          variant="h5"
+          gutterBottom
+        >
           יום שישי קייטרינג גבאי פתוח החל מהשעה 7:00-14:30
         </Typography>
         <BackButton to="/menu" text="לתפריט"></BackButton>

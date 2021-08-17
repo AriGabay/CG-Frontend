@@ -17,9 +17,14 @@ const useStyles = makeStyles({
     '@media (max-width: 700px)': {
       maxWidth: '270px !important',
       margin: '0 auto',
-      marginBottom: 20,
-    },
+      marginBottom: 20
+    }
   },
+  productDescription: {
+    width: '100%',
+    textAlign: 'center',
+    height: 'auto'
+  }
 });
 export const ProductCard = ({ product }) => {
   let history = useHistory();
@@ -38,7 +43,7 @@ export const ProductCard = ({ product }) => {
             </Typography>
           </Box>
           <Box component="div" display="flex" alignItems="center" justifyContent="center">
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography className={classes.productDescription} variant="body2" color="textSecondary" component="p">
               {product.description}
             </Typography>
           </Box>
