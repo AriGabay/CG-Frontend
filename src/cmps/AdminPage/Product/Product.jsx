@@ -16,11 +16,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important',
+    flexDirection: 'column!important'
   },
   marginTop: {
-    marginTop: '10px!important',
-  },
+    marginTop: '10px!important'
+  }
 }));
 
 const val = {
@@ -32,13 +32,19 @@ const val = {
   productToRemove: '',
   description: '',
   productToEdit: '',
+  kitniyot: false,
+  typeMenu: [],
+  tishray: false
 };
-export const Product = () => {
+export const Product = ({ eventBus }) => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
   const [productToEdit, setProductToEdit] = useState();
+  const [isMenuPesach, setIsMenuPesach] = useState(false);
+  const [isMenuTishray, setIsMenuTishray] = useState(false);
+  const [isMenuWeekend, setIsMenuWeekend] = useState(false);
 
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
@@ -46,12 +52,12 @@ export const Product = () => {
     categoryService.getCategories(false).then((category) => {
       setCategories(category);
     });
-    productService.getProducts(false).then((res) => {
+    productService.getAllProducts({ include: false }).then((res) => {
       setProducts(res);
     });
   }, []);
   const addProduct = () => {
-    const { displayName, categoryId, inStock, imgUrl, priceId, description } = values;
+    const { displayName, categoryId, inStock, imgUrl, priceId, description, kitniyot } = values;
     const data = {
       displayName,
       categoryId,
@@ -59,9 +65,16 @@ export const Product = () => {
       imgUrl,
       priceId,
       description,
+      kitniyot,
+      isMenuPesach,
+      isMenuWeekend,
+      isMenuTishray
     };
+    if (isMenuPesach === true) data.isMenuPesach = true;
+    if (isMenuWeekend === true) data.isMenuWeekend = true;
+    if (isMenuTishray === true) data.isMenuTishray = true;
     productService.addProduct(data).then((res) => {
-      console.log('add product');
+      eventBus.dispatch('addProduct', { message: `${res.displayName} נוסף בהצלחה` });
     });
   };
   const removeProduct = () => {
@@ -80,8 +93,11 @@ export const Product = () => {
     setProductToEdit(newProduct);
   };
   const updateProduct = () => {
-    productService.updateProduct(productToEdit).then(() => console.log(`complete edit: ${productToEdit.displayName}`));
+    productService.updateProduct(productToEdit).then((res) => {
+      eventBus.dispatch('updateProduct', { message: res.data });
+    });
   };
+
   return (
     <Grid>
       <Grid className={classes.gridTag}>
@@ -104,10 +120,38 @@ export const Product = () => {
           />
         )}
         <Controls.Checkbox
+          label="תפריט פסח"
+          className={classes.marginTop}
+          name="pesach"
+          value={isMenuPesach}
+          onChange={() => setIsMenuPesach(!isMenuPesach)}
+        ></Controls.Checkbox>
+        <Controls.Checkbox
+          label="תפריט סוף שבוע"
+          className={classes.marginTop}
+          name="weekend"
+          value={isMenuWeekend}
+          onChange={() => setIsMenuWeekend(!isMenuWeekend)}
+        ></Controls.Checkbox>
+        <Controls.Checkbox
+          label="תפריט חגי תשרי"
+          className={classes.marginTop}
+          name="tishray"
+          value={isMenuTishray}
+          onChange={() => setIsMenuTishray(!isMenuTishray)}
+        ></Controls.Checkbox>
+        <Controls.Checkbox
           label="מלאי"
           className={classes.marginTop}
           name="inStock"
           value={values.inStock}
+          onChange={handleInputChange}
+        ></Controls.Checkbox>
+        <Controls.Checkbox
+          label="מכיל קיטניות"
+          className={classes.marginTop}
+          name="kitniyot"
+          value={values.kitniyot}
           onChange={handleInputChange}
         ></Controls.Checkbox>
         <Controls.Input
@@ -184,6 +228,27 @@ export const Product = () => {
                 onChange={(event) => editProduct(event)}
               />
             )}
+            <Controls.Checkbox
+              label="תפריט פסח"
+              className={classes.marginTop}
+              name="isMenuPesach"
+              value={productToEdit.isMenuPesach}
+              onChange={(event) => editProduct(event)}
+            ></Controls.Checkbox>
+            <Controls.Checkbox
+              label="תפריט ראש השנה"
+              className={classes.marginTop}
+              name="isMenuTishray"
+              value={productToEdit.isMenuTishray}
+              onChange={(event) => editProduct(event)}
+            ></Controls.Checkbox>
+            <Controls.Checkbox
+              label="תפריט סוף שבוע"
+              className={classes.marginTop}
+              name="isMenuWeekend"
+              value={productToEdit.isMenuWeekend}
+              onChange={(event) => editProduct(event)}
+            ></Controls.Checkbox>
             <Controls.Checkbox
               label="מלאי"
               className={classes.marginTop}

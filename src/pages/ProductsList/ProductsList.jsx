@@ -11,31 +11,41 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import BackButton from '../../cmps/Controls/BackButton';
 import { makeStyles } from '@material-ui/styles';
+import { useHistory } from 'react-router-dom';
 const useStyles = makeStyles({
   marginRight0: {
     marginRight: '0!important',
-    marginBottom: '10px!important',
+    marginBottom: '10px!important'
   },
   marginCenter: {
     '@media (max-width: 700px)': {
-      margin: '0 auto !important',
-    },
-  },
+      margin: '0 auto !important'
+    }
+  }
 });
-export const ProductsList = () => {
+export const ProductsList = ({ productsType }) => {
   const classes = useStyles();
+  const history = useHistory();
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();
   const { categoryId } = useParams();
+  const pathName = history.location.pathname;
 
   useEffect(() => {
-    productService.getProducts({ categoryId, include: false }).then((res) => {
+    productService.getProducts({ categoryId, include: false, pathName }).then((res) => {
       setProducts(res);
     });
     categoryService.getCategories({ id: categoryId, include: false }).then((res) => {
       setCategory(res[0]);
     });
-  }, [categoryId]);
+  }, [categoryId, pathName]);
+  const backButton = () => {
+    if (history.location.pathname.includes('weekend')) {
+      return '/menu/weekend';
+    } else if (history.location.pathname.includes('pesach')) {
+      return '/menu/pesach';
+    } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
+  };
   return category ? (
     <div>
       <Box p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
@@ -56,7 +66,8 @@ export const ProductsList = () => {
       </Grid>
       <Grid mr={0} mt={2}>
         <Container>
-          <BackButton to="/menu" text="חזור"></BackButton>
+          {/* <BackButton to="/menu" text="חזור"></BackButton> */}
+          <BackButton to={() => backButton()} text="חזור"></BackButton>
         </Container>
       </Grid>
     </div>

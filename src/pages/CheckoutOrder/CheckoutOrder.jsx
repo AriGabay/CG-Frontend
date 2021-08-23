@@ -17,12 +17,12 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     flexDirection: 'row',
     '@media (max-width: 700px)': {
-      flexDirection: 'column!important',
-    },
+      flexDirection: 'column!important'
+    }
   },
   Paper: {
     minWidth: '250px',
-    minHeight: '450px',
+    minHeight: '450px'
   },
   formSide: {
     position: 'sticky',
@@ -31,12 +31,10 @@ const useStyles = makeStyles(() => ({
       position: 'unset',
 
       marginRight: '20px!important',
-      marginLeft: '20px!important',
-    },
+      marginLeft: '20px!important'
+    }
   },
   productCard: {
-    // mr={8}
-    // mb={3}
     marginRight: '64px',
     marginBottom: '24px!important',
     display: 'flex',
@@ -45,10 +43,9 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     '@media (max-width: 700px)': {
       marginRight: '20px!important',
-      marginLeft: '20px!important',
-    },
-  },
-  title: {},
+      marginLeft: '20px!important'
+    }
+  }
 }));
 
 export const CheckoutOrder = () => {

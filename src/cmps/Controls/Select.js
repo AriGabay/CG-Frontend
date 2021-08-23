@@ -4,8 +4,8 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(() => ({
   size: {
-    width: '200px!important',
-  },
+    width: '200px!important'
+  }
 }));
 
 export default function Select(props) {

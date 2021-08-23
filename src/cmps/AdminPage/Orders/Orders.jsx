@@ -8,7 +8,6 @@ export const Orders = () => {
   const [orders, setOrders] = useState();
   useEffect(() => {
     ordersService.getOrders(true).then((res) => {
-      console.log('res:', res);
       setOrders(res);
     });
   }, []);
@@ -21,7 +20,7 @@ export const Orders = () => {
         fullName: order.order.fullName,
         totalPrice: order.order.totalPrice,
         date: order.order.time,
-        products: productsStr(order.order.products),
+        products: productsStr(order.order.products)
       });
     });
 
@@ -37,7 +36,7 @@ export const Orders = () => {
     { field: 'fullName', headerName: 'שם מלא', width: 150 },
     { field: 'totalPrice', headerName: 'סכום', type: 'number', width: 125 },
     { field: 'date', headerName: 'תאריך ביצוע ההזמנה', width: 210 },
-    { field: 'products', headerName: 'מוצרים', width: 'auto' },
+    { field: 'products', headerName: 'מוצרים', width: 'auto' }
   ];
 
   return (

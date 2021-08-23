@@ -7,7 +7,9 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import BackButton from '../../cmps/Controls/BackButton';
-export const Menu = () => {
+import { useHistory } from 'react-router-dom';
+export const Menu = ({ menuType }) => {
+  const history = useHistory();
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
@@ -18,9 +20,21 @@ export const Menu = () => {
   return (
     <Box className="menu">
       <Box display="flex" alignItems="center" justifyContent="center">
-        <Typography variant="h2" gutterBottom>
-          Menu
-        </Typography>
+        {history.location.pathname.includes('weekend') ? (
+          <Typography variant="h2" gutterBottom>
+            תפריט סוף שבוע
+          </Typography>
+        ) : null}
+        {history.location.pathname.includes('tishray') ? (
+          <Typography variant="h2" gutterBottom>
+            תפריט סוף שבוע
+          </Typography>
+        ) : null}
+        {history.location.pathname.includes('pesach') ? (
+          <Typography variant="h2" gutterBottom>
+            תפריט פסח
+          </Typography>
+        ) : null}
       </Box>
       <Box
         className="category-container"
@@ -32,7 +46,7 @@ export const Menu = () => {
       >
         {categories &&
           categories.map((category, index) => {
-            return <CategoryCard key={index} category={category} />;
+            return <CategoryCard key={index} category={category} menuType={menuType} />;
           })}
       </Box>
       <Grid mt={2} mb={2} container display="flex" justifyContent="center" alignContent="center">

@@ -6,26 +6,30 @@ import getCustomTheme from '../../hooks/getCustomTheme';
 const customTheme = getCustomTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: customTheme.palette.primary.light + '!important',
+    backgroundColor: customTheme.palette.primary.light + '!important'
   },
   label: {
     color: customTheme.palette.primary.contrastText + '!important',
-    textTransform: 'none',
+    textTransform: 'none'
   },
   NavLink: {
     textDecoration: 'none',
-    marginBottom: theme.spacing(1) + '!important',
+    marginBottom: theme.spacing(1) + '!important'
   },
-  marginBottom: {},
+  menuButton: {
+    width: '100px'
+  },
+  marginBottom: {}
 }));
 
 export default function Button(props) {
-  const { text, size, color, variant, to } = props;
+  const { text, size, color, variant, to, classProp = '' } = props;
   const classes = useStyles();
 
   return (
     <NavLink className={classes.NavLink} to={to}>
       <MuiButton
+        className={classes[classProp]}
         variant={variant || 'contained'}
         size={size || 'large'}
         color={color || 'primary'}

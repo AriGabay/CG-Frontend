@@ -14,7 +14,7 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
     }
     setValues({
       ...values,
-      [name]: value,
+      [name]: value
     });
     if (validateOnChange) validate({ [name]: value });
   };
@@ -30,7 +30,7 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
     errors,
     setErrors,
     handleInputChange,
-    resetForm,
+    resetForm
   };
 }
 
@@ -38,9 +38,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     '& .MuiFormControl-root': {
       width: '80%',
-      margin: theme.spacing(1),
-    },
-  },
+      margin: theme.spacing(1)
+    }
+  }
 }));
 
 export function Form(props) {

@@ -45,6 +45,15 @@ const useStyles = makeStyles(() => ({
     '@media (max-width: 550px)': {
       fontSize: '1em !important'
     }
+  },
+  GridMenuButton: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '50% !important',
+    '@media (max-width: 730px)': {
+      width: '90% !important'
+    }
   }
 }));
 
@@ -63,7 +72,11 @@ export const HomePage = () => {
         >
           יום שישי קייטרינג גבאי פתוח החל מהשעה 7:00-14:30
         </Typography>
-        <BackButton to="/menu" text="לתפריט"></BackButton>
+        <Grid className={classes.GridMenuButton}>
+          <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע"></BackButton>
+          <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח"></BackButton>
+          <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי"></BackButton>
+        </Grid>
         <ImageCloud
           ClassName={classes.imgHomePage}
           imageId="old_logo_rssqwk"

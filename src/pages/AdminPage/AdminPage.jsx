@@ -8,15 +8,16 @@ import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
+import { eventBus } from '../../services/event-bus';
 const useStyles = makeStyles(() => ({
   marginLeft: {
-    marginLeft: '10px!important',
+    marginLeft: '10px!important'
   },
   marginTop: {
     '@media (max-width: 700px)': {
-      marginTop: '10px!important',
-    },
-  },
+      marginTop: '10px!important'
+    }
+  }
 }));
 
 export const AdminPage = (props) => {
@@ -35,27 +36,27 @@ export const AdminPage = (props) => {
       <Button className={classes.marginLeft} text="הזמנות" onClick={() => handleClick('Orders')} />
       {status && status === 'Category' ? (
         <Grid mt={2}>
-          <AdminPageCategory></AdminPageCategory>
+          <AdminPageCategory eventBus={eventBus}></AdminPageCategory>
         </Grid>
       ) : null}
       {status && status === 'Price' ? (
         <Grid mt={2}>
-          <AdminPagePrice></AdminPagePrice>
+          <AdminPagePrice eventBus={eventBus}></AdminPagePrice>
         </Grid>
       ) : null}
       {status && status === 'SizePrice' ? (
         <Grid mt={2}>
-          <AdminPageSizePrice></AdminPageSizePrice>
+          <AdminPageSizePrice eventBus={eventBus}></AdminPageSizePrice>
         </Grid>
       ) : null}
       {status && status === 'Product' ? (
         <Grid mt={2}>
-          <AdminPageProduct></AdminPageProduct>
+          <AdminPageProduct eventBus={eventBus}></AdminPageProduct>
         </Grid>
       ) : null}
       {status && status === 'Orders' ? (
         <Grid mt={2}>
-          <AdminPageOrders></AdminPageOrders>
+          <AdminPageOrders eventBus={eventBus}></AdminPageOrders>
         </Grid>
       ) : null}
     </Grid>

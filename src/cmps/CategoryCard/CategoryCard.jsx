@@ -15,19 +15,19 @@ const customTheme = getCustomTheme();
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    maxWidth: 345
   },
   moreProductBtn: {
-    color: customTheme.palette.primary.contrastText,
-  },
+    color: customTheme.palette.primary.contrastText
+  }
 });
-export const CategoryCard = ({ category, index }) => {
+export const CategoryCard = ({ category, index, menuType }) => {
   const matches = useMediaQuery('(min-width:700px)');
   let history = useHistory();
   const handleClick = () => {
-    history.push(`/products/${category.id}`);
+    history.push(`/products/${category.id}/${menuType}`);
   };
-  const classes = useStyles();
+  const classes = useStyles({ menuType });
   return (
     <Card key={index} className={`${classes.root} category-card`} onClick={() => handleClick()}>
       <CardActionArea>

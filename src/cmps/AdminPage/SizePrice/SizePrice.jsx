@@ -14,11 +14,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important',
+    flexDirection: 'column!important'
   },
   marginTop: {
-    marginTop: '10px!important',
-  },
+    marginTop: '10px!important'
+  }
 }));
 
 const val = {
@@ -26,7 +26,7 @@ const val = {
   size: '',
   priceForSizePrice: '',
   removeSizePrice: '',
-  editSizePrice: '',
+  editSizePrice: ''
 };
 // idToEdit: '',
 // editSizePrice: {
@@ -52,7 +52,7 @@ export const SizePrice = (props) => {
           if (sizePrice.priceId === price.id) {
             arr.push({
               ...sizePrice,
-              displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`,
+              displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`
             });
           }
         });
@@ -66,7 +66,7 @@ export const SizePrice = (props) => {
     const data = {
       size: values.size,
       amount: values.amount,
-      priceId: values.priceForSizePrice,
+      priceId: values.priceForSizePrice
     };
     sizePriceService.addSizePrice(data).then((res) => {
       console.log('add Size Price');
@@ -83,7 +83,6 @@ export const SizePrice = (props) => {
     });
   };
   const editSizePrice = (e) => {
-    console.log('e:', e);
     const { target } = e;
     const { name, value } = target;
     const newSizePrice = { ...sizePriceToEdit, [name]: Number(value) };

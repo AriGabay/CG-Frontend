@@ -22,8 +22,26 @@ function App() {
         <div className="App">
           <HashRouter>
             <AppHeader />
-            <Route component={Menu} path="/menu/" />
-            <Route exact={true} component={ProductsList} path="/products/:categoryId/" />
+            {/* <Route component={Menu} path="/menu/" /> */}
+            <Route path="/menu/weekend">
+              <Menu menuType="weekend" />
+            </Route>
+            <Route path="/menu/tishray">
+              <Menu menuType="tishray" />
+            </Route>
+            <Route path="/menu/pesach">
+              <Menu menuType="pesach" />
+            </Route>
+            <Route path="/products/:categoryId/weekend/">
+              <ProductsList productsType="weekend" />
+            </Route>
+            <Route path="/products/:categoryId/tishray/">
+              <ProductsList productsType="tishray" />
+            </Route>
+            <Route path="/products/:categoryId/pesach/">
+              <ProductsList productsType="pesach" />
+            </Route>
+            {/* <Route component={ProductsList} path="/products/:categoryId/" /> */}
             <Route component={ProductPreview} path="/product/:productId/" />
             <Route exact component={AdminPage} path="/admin" />
             <Route exact component={CheckoutOrder} path="/checkout" />

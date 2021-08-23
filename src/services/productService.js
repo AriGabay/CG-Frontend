@@ -40,10 +40,19 @@ async function updateProduct(product) {
     console.error('error', error);
   }
 }
+async function getAllProducts(query) {
+  try {
+    const res = await httpService.get(endpoint + 'all', query);
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
 export const productService = {
   getProducts,
   addProduct,
   removeProduct,
   getProductById,
   updateProduct,
+  getAllProducts
 };

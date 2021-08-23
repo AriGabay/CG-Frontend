@@ -33,8 +33,24 @@ export default function SimpleSnackbar() {
       setMsg(data.message);
       handleOpen();
     });
+    eventBus.on('addProduct', (data) => {
+      setMsg(data.message);
+      handleOpen();
+    });
+    eventBus.on('updateProduct', (data) => {
+      setMsg(data.message);
+      handleOpen();
+    });
     return () => {
       eventBus.remove('addProductToCart', () => {
+        setMsg(null);
+        handleClose(null, 'clickaway');
+      });
+      eventBus.remove('addProduct', () => {
+        setMsg(null);
+        handleClose(null, 'clickaway');
+      });
+      eventBus.remove('updateProduct', () => {
         setMsg(null);
         handleClose(null, 'clickaway');
       });
@@ -52,10 +68,10 @@ export default function SimpleSnackbar() {
     <Snackbar
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'center',
+        horizontal: 'center'
       }}
       open={open}
-      autoHideDuration={1500}
+      autoHideDuration={2500}
       onClose={handleClose}
     >
       <Alert onClose={handleClose} severity="success">

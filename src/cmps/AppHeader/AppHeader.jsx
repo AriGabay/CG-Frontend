@@ -39,8 +39,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    Width: '90%',
-    marginLeft: '10%'
+    Width: '90%'
   },
   CenterToolBarr: {
     display: 'flex',
@@ -154,7 +153,7 @@ export const AppHeader = () => {
               <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/">
                 <Typography className={classes.ColorNavLink}>בית</Typography>
               </NavLink>
-              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu">
+              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu/weekend">
                 <Typography className={classes.ColorNavLink}>תפריט</Typography>
               </NavLink>
               <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/about">

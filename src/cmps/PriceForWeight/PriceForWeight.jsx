@@ -38,8 +38,8 @@ export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
   const shekel = '₪';
   const classes = useStyles();
   const updateOrder = (weight) => {
-    weight = weight / 10;
-    const calc = product.Price.SizePrices[0].amount * weight;
+    if (!weight && weight === '0') return;
+    const calc = product.Price.SizePrices[0].amount * (weight / 100);
     setPriceToShow(calc.toFixed(2));
     setProductOrder({ sizeToOrder: Number(weight * 10), product, priceToShow: Number(calc.toFixed(2)) });
   };
@@ -47,7 +47,7 @@ export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
   return product ? (
     <div>
       <Typography>
-        מחיר לקילו : {product.Price.SizePrices[0].amount * 100}
+        מחיר לקילו : {product.Price.SizePrices[0].amount * 10}
         {shekel}
       </Typography>
       <Grid className={classes.marginTop}>
@@ -65,8 +65,9 @@ export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
           label="גרם"
           onChange={(event) => updateOrder(event.target.value)}
           onKeyDown={(event) => {
-            event.preventDefault();
+            if (event.target.value === 0 || event.target.value === '0') event.preventDefault();
           }}
+          onKeyPress={(event) => event.preventDefault()}
         />
         <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
       </Grid>

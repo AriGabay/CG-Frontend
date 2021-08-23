@@ -47,6 +47,25 @@ export const ProductCard = ({ product }) => {
               {product.description}
             </Typography>
           </Box>
+          {history.location.pathname.includes('pesach') ? (
+            <Box component="div" display="flex" alignItems="center" justifyContent="center">
+              {product.kitniyot === true ? (
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  מכיל קיטניות
+                </Typography>
+              ) : (
+                <Typography>לא מכיל קיטניות</Typography>
+              )}
+            </Box>
+          ) : (
+            <Typography></Typography>
+          )}
         </CardContent>
       </CardActionArea>
       <Box display="flex" alignItems="center" justifyContent="center">
