@@ -26,7 +26,7 @@ const initialFValues = {
   idPersonal: '',
   pickup: '',
   street: '',
-  hireDate: new Date()
+  pickUpDate: new Date()
 };
 
 const pickupItems = [
@@ -84,7 +84,7 @@ const DialogActions = withStyles((theme) => ({
     padding: theme.spacing(1)
   }
 }))(MuiDialogActions);
-export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal, cart }) => {
+export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
   const shekel = '₪';
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
@@ -102,7 +102,6 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal, cart })
         fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9 ? '' : 'must be 9 numbers required.';
     if ('city' in fieldValues) temp.city = fieldValues.city.length ? '' : 'This  field is required.';
     if ('street' in fieldValues) temp.street = fieldValues.street.length ? '' : 'This  field is required.';
-    console.log('terms:', terms);
     if (terms === false) return;
     setErrors({
       ...temp
@@ -194,9 +193,9 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal, cart })
         <Grid>
           <Controls.DatePicker
             required={true}
-            name="hireDate"
+            name="pickUpDate"
             label="תאריך איסוף"
-            value={values.hireDate}
+            value={values.pickUpDate}
             onChange={handleInputChange}
           />
         </Grid>
