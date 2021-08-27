@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     padding: 30,
     paddingTop: 0,
     paddingBottom: 0,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)'
   },
   Grid: {
     display: 'flex',
@@ -36,11 +36,11 @@ const useStyles = makeStyles({
     justify: 'space-evenly',
     alignItems: 'center',
     paddingRight: 30,
-    paddingLeft: 30,
+    paddingLeft: 30
   },
   imgContainer: {
-    maxWidth: '300px',
-  },
+    maxWidth: '300px'
+  }
 });
 
 export const ProductPreview = () => {
@@ -83,7 +83,7 @@ export const ProductPreview = () => {
             <PriceForBox product={product} productOrder={productOrder} setProductOrder={setProductOrder} />
           ) : null}
           {product.Price.priceType === 'weight' ? (
-            <PriceForWeight product={product} productOrder={productOrder} setProductOrder={setProductOrder} />
+            <PriceForWeight product={product} setProductOrder={setProductOrder} />
           ) : null}
         </Grid>
         <Grid>

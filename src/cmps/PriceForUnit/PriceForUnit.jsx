@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { PlusMinus } from '../PlusMinus';
 
 const useStyles = makeStyles({
   marginTop: {
@@ -28,12 +29,23 @@ const useStyles = makeStyles({
     alignItems: 'center',
     paddingRight: 30,
     paddingLeft: 30
+  },
+  buttonPlusMinus: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 0,
+    padding: 0
   }
 });
 
 export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) => {
   const [product, setProduct] = useState();
+  const [unitInput, setUnitInput] = useState(0);
   const [priceToShow, setPriceToShow] = useState(0);
+  // const [unitInput, setUnitInput] = useState(productProps.Price.SizePrices[0].size);
+  // const [priceToShow, setPriceToShow] = useState(productProps.Price.SizePrices[0].amount);
   const shekel = '₪';
   const classes = useStyles();
   const setProps = useCallback(() => {
@@ -44,6 +56,9 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
     setProps();
   }, [setProps]);
   const updateOrder = (size) => {
+    if (size === 0 || size === '0' || !size) return;
+    console.log('size:', size);
+    setUnitInput(size);
     const calc = (size / product.Price.SizePrices[0].size) * product.Price.SizePrices[0].amount;
     setPriceToShow(calc);
     setProductOrder({ sizeToOrder: Number(size), product, priceToShow: calc });
@@ -55,7 +70,7 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
         מחיר ליחידה :{product.Price.SizePrices[0].amount}
         {shekel}{' '}
       </Typography>
-      <Grid className={classes.marginTop}>
+      <Grid className={classes.buttonPlusMinus}>
         <TextField
           required
           type="number"
@@ -68,13 +83,16 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
             }
           }}
           label="יחידות"
+          value={unitInput}
           onChange={(event) => updateOrder(event.target.value)}
-          onKeyDown={(event) => {
-            event.preventDefault();
-          }}
+          onKeyDown={(event) => (event.target.value === '0' || event.target.value === 0) ?? event.preventDefault()}
+          onKeyPress={(event) => event.preventDefault()}
         />
-        <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
+        {product.Price && (
+          <PlusMinus type="unit" size={product.Price} input={unitInput} updateOrder={updateOrder}></PlusMinus>
+        )}
       </Grid>
+      <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
       <Grid>
         {priceToShow !== 0 ? (
           priceToShow && (

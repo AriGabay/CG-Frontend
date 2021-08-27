@@ -32,6 +32,7 @@ export const GetOrdersByData = (props) => {
   const [startDay, setStartDay] = useState(new Date());
   const [endDay, setEndDay] = useState(new Date());
   const [orders, setOrders] = useState();
+  const [totalProducts, setTotalProducts] = useState(null);
   const classes = useStyles();
   const formatDate = (date) => {
     var d = new Date(date),
@@ -54,11 +55,18 @@ export const GetOrdersByData = (props) => {
         end: endDay
       };
       const orders = await ordersService.getOrdersByDates(dates);
-      setOrders(orders);
+      setOrders(orders[0]);
+      setTotalProducts(orders[1]);
       console.log('orders:', orders);
     } catch (error) {
       console.log('error:', error);
     }
+  };
+  const displayDate = (dateObj) => {
+    const month = dateObj.getMonth();
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    return day + '.' + month + '.' + year;
   };
   return (
     <Grid>
@@ -133,6 +141,22 @@ export const GetOrdersByData = (props) => {
               </Accordion>
             );
           })}
+        <Grid>
+          <Typography mt={2} mb={2} variant="h5">{`סיכום מוצרים לתקופת זמן ${displayDate(startDay)} - ${displayDate(
+            endDay
+          )}`}</Typography>
+          {totalProducts &&
+            totalProducts.map((product, index) => {
+              return (
+                <Grid key={index}>
+                  <Typography>{product.displayName}</Typography>
+                  <Typography>{product.sizeToOrder}</Typography>
+                  <Typography>{product.Price.priceType}</Typography>
+                  <hr />
+                </Grid>
+              );
+            })}
+        </Grid>
       </Grid>
     </Grid>
   );

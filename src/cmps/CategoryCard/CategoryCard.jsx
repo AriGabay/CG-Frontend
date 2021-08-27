@@ -19,6 +19,9 @@ const useStyles = makeStyles({
   },
   moreProductBtn: {
     color: customTheme.palette.primary.contrastText
+  },
+  maxWidth: {
+    maxWidth: '100%'
   }
 });
 export const CategoryCard = ({ category, index, menuType }) => {
@@ -43,7 +46,7 @@ export const CategoryCard = ({ category, index, menuType }) => {
             </Typography>
           </Box>
           <Box component="div" display="flex" alignItems="center" justifyContent="center">
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography classes={{ root: classes.maxWidth }} variant="body2" color="textSecondary" component="p">
               {category.description}
             </Typography>
           </Box>

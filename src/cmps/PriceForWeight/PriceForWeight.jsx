@@ -5,7 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/styles';
-
+import { PlusMinus } from '../PlusMinus';
 const useStyles = makeStyles({
   marginTop: {
     marginTop: 20,
@@ -30,27 +30,36 @@ const useStyles = makeStyles({
     alignItems: 'center',
     paddingRight: 30,
     paddingLeft: 30
+  },
+  buttonPlusMinus: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 0,
+    padding: 0
   }
 });
 
-export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
+export const PriceForWeight = ({ product, setProductOrder }) => {
   const [priceToShow, setPriceToShow] = useState(0);
+  const [weightInput, setWeightInput] = useState(0);
   const shekel = '₪';
   const classes = useStyles();
   const updateOrder = (weight) => {
     if (!weight && weight === '0') return;
+    setWeightInput(weight);
     const calc = product.Price.SizePrices[0].amount * (weight / 100);
     setPriceToShow(calc.toFixed(2));
-    setProductOrder({ sizeToOrder: Number(weight * 10), product, priceToShow: Number(calc.toFixed(2)) });
+    setProductOrder({ sizeToOrder: Number(weight), product, priceToShow: Number(calc.toFixed(2)) });
   };
-
   return product ? (
-    <div>
+    <Grid>
       <Typography>
         מחיר לקילו : {product.Price.SizePrices[0].amount * 10}
         {shekel}
       </Typography>
-      <Grid className={classes.marginTop}>
+      <Grid className={classes.buttonPlusMinus}>
         <TextField
           required
           autoFocus
@@ -63,14 +72,16 @@ export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
             }
           }}
           label="גרם"
+          value={weightInput}
           onChange={(event) => updateOrder(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.target.value === 0 || event.target.value === '0') event.preventDefault();
-          }}
+          onKeyDown={(event) => (event.target.value === '0' || event.target.value === 0) ?? event.preventDefault()}
           onKeyPress={(event) => event.preventDefault()}
         />
-        <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
+        {product.Price && (
+          <PlusMinus type="weight" size={product.Price} input={weightInput} updateOrder={updateOrder}></PlusMinus>
+        )}
       </Grid>
+      <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
       {priceToShow !== 0
         ? priceToShow && (
             <Typography>
@@ -79,7 +90,7 @@ export const PriceForWeight = ({ product, productOrder, setProductOrder }) => {
             </Typography>
           )
         : 'נא לבחור גודל מוצר'}
-    </div>
+    </Grid>
   ) : (
     <CircularProgress></CircularProgress>
   );
