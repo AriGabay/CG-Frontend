@@ -48,8 +48,6 @@ export const GetOrdersByData = (props) => {
   const searchOrder = async () => {
     try {
       if (!endDay && !startDay) return;
-      console.log('startDay: ', startDay);
-      console.log('endDay: ', endDay);
       const dates = {
         start: startDay,
         end: endDay
@@ -57,7 +55,6 @@ export const GetOrdersByData = (props) => {
       const orders = await ordersService.getOrdersByDates(dates);
       setOrders(orders[0]);
       setTotalProducts(orders[1]);
-      console.log('orders:', orders);
     } catch (error) {
       console.log('error:', error);
     }
