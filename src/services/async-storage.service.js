@@ -5,6 +5,7 @@ export const storageService = {
   postMany,
   put,
   remove,
+  clearAll
 };
 
 function query(entityType) {
@@ -29,7 +30,7 @@ function postMany(entityType, newEntities) {
   return query(entityType).then((entities) => {
     newEntities = newEntities.map((entity) => ({
       ...entity,
-      _id: _makeId(),
+      _id: _makeId()
     }));
     entities.push(...newEntities);
     _save(entityType, entities);
@@ -66,4 +67,11 @@ function _makeId(length = 5) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
+}
+async function clearAll() {
+  try {
+    await sessionStorage.clear();
+  } catch (error) {
+    console.log('error:', error);
+  }
 }

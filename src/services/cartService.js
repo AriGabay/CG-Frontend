@@ -35,7 +35,9 @@ async function checkOutOrder(cart) {
 async function checkOutTotal(userDetails) {
   try {
     const cart = await getCart();
-    return await httpService.post(`${endPoint}sendOrder`, { userDetails, cart });
+    const res = await httpService.post(`${endPoint}sendOrder`, { userDetails, cart });
+    await storageService.clearAll();
+    return res;
   } catch (error) {
     console.log('error:', error);
   }
@@ -52,5 +54,5 @@ export const cartService = {
   getCart,
   checkOutOrder,
   checkOutTotal,
-  removeProductFromCart,
+  removeProductFromCart
 };
