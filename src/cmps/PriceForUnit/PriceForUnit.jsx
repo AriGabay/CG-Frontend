@@ -44,8 +44,6 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
   const [product, setProduct] = useState();
   const [unitInput, setUnitInput] = useState(0);
   const [priceToShow, setPriceToShow] = useState(0);
-  // const [unitInput, setUnitInput] = useState(productProps.Price.SizePrices[0].size);
-  // const [priceToShow, setPriceToShow] = useState(productProps.Price.SizePrices[0].amount);
   const shekel = '₪';
   const classes = useStyles();
   const setProps = useCallback(() => {
@@ -57,7 +55,6 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
   }, [setProps]);
   const updateOrder = (size) => {
     if (size === 0 || size === '0' || !size) return;
-    console.log('size:', size);
     setUnitInput(size);
     const calc = (size / product.Price.SizePrices[0].size) * product.Price.SizePrices[0].amount;
     setPriceToShow(calc);

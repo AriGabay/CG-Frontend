@@ -12,9 +12,18 @@ export const Menu = ({ menuType }) => {
   const history = useHistory();
   const [categories, setCategories] = useState([]);
   useEffect(() => {
+    let sec = 0;
+    const intervalId = setInterval(() => {
+      sec = sec + 1;
+    }, 1);
     categoryService.getCategories({ include: false }).then((categor) => {
       setCategories(categor);
+      console.log(`get Menu Take : ${sec} miliSec`);
+      clearInterval(intervalId);
     });
+    return () => {
+      sec = 0;
+    };
   }, []);
 
   return (
@@ -27,7 +36,7 @@ export const Menu = ({ menuType }) => {
         ) : null}
         {history.location.pathname.includes('tishray') ? (
           <Typography variant="h2" gutterBottom>
-            תפריט סוף שבוע
+            תפריט חגי תשרי
           </Typography>
         ) : null}
         {history.location.pathname.includes('pesach') ? (

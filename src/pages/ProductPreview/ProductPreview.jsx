@@ -17,6 +17,7 @@ import { makeStyles } from '@material-ui/styles';
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { eventBus } from '../../services/event-bus';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles({
   addToCartBtn: {
@@ -48,6 +49,8 @@ export const ProductPreview = () => {
   const [productOrder, setProductOrder] = useState({ sizeToOrder: null, product: null, priceToShow: null });
   const { productId } = useParams();
   const classes = useStyles();
+  let history = useHistory();
+
   useEffect(() => {
     productService.getProducts({ id: productId, include: true }).then((res) => {
       setProduct(res[0]);
@@ -92,7 +95,7 @@ export const ProductPreview = () => {
           </Button>
         </Grid>
         <Grid mt={2}>
-          <BackButton to={`/products/${product.Category.id}`} text="חזור"></BackButton>
+          <BackButton to={history.location.state} text="חזור"></BackButton>
         </Grid>
       </Grid>
       <Grid item mt={2} lg={3} md={3} sm={12}>

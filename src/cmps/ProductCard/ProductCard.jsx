@@ -30,7 +30,10 @@ export const ProductCard = ({ product }) => {
   let history = useHistory();
   const classes = useStyles();
   const handleClick = () => {
-    history.push(`/product/${product.id}`);
+    history.push({
+      pathname: `/product/${product.id}`,
+      state: history.location.pathname
+    });
   };
   return (
     <Card className={classes.root} onClick={() => handleClick()}>

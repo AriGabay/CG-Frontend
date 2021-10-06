@@ -13,7 +13,6 @@ const useStyles = makeStyles(() => ({
     height: '100%'
   },
   imageContainer: {
-    // opacity: 0.75,
     width: '100%',
     height: '100%',
     display: 'flex',

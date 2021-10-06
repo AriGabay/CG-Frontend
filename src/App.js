@@ -13,6 +13,8 @@ import { Route, HashRouter } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
+import dotenv from 'dotenv';
+dotenv.config();
 const customTheme = getCustomTheme();
 
 function App() {
@@ -22,7 +24,6 @@ function App() {
         <div className="App">
           <HashRouter>
             <AppHeader />
-            {/* <Route component={Menu} path="/menu/" /> */}
             <Route path="/menu/weekend">
               <Menu menuType="weekend" />
             </Route>
@@ -41,7 +42,6 @@ function App() {
             <Route path="/products/:categoryId/pesach/">
               <ProductsList productsType="pesach" />
             </Route>
-            {/* <Route component={ProductsList} path="/products/:categoryId/" /> */}
             <Route component={ProductPreview} path="/product/:productId/" />
             <Route exact component={AdminPage} path="/admin" />
             <Route exact component={CheckoutOrder} path="/checkout" />

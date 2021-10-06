@@ -30,14 +30,22 @@ export const ProductsList = ({ productsType }) => {
   const [category, setCategory] = useState();
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
-
   useEffect(() => {
+    let sec = 0;
+    const intervalId = setInterval(() => {
+      sec = sec + 1;
+    }, 1);
     productService.getProducts({ categoryId, include: false, pathName }).then((res) => {
       setProducts(res);
+      clearInterval(intervalId);
+      console.log(`get Product List Take : ${sec} miliSec`);
     });
     categoryService.getCategories({ id: categoryId, include: false }).then((res) => {
       setCategory(res[0]);
     });
+    return () => {
+      sec = 0;
+    };
   }, [categoryId, pathName]);
   const backButton = () => {
     if (history.location.pathname.includes('weekend')) {
@@ -66,7 +74,6 @@ export const ProductsList = ({ productsType }) => {
       </Grid>
       <Grid mr={0} mt={2}>
         <Container>
-          {/* <BackButton to="/menu" text="חזור"></BackButton> */}
           <BackButton to={() => backButton()} text="חזור"></BackButton>
         </Container>
       </Grid>
