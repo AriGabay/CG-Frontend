@@ -5,7 +5,7 @@ import Controls from '../../Controls/Controls';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
 import { sizePriceService } from '../../../services/sizePriceService';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(() => ({
   gridTag: {

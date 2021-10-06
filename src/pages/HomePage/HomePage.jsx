@@ -1,4 +1,5 @@
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import './HomePage.scss';
 import Grid from '@material-ui/core/Grid';

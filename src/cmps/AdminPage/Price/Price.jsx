@@ -1,9 +1,9 @@
 import './Price.scss';
+import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../../Controls/Controls';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
-import { useEffect, useState } from 'react';
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 const useStyles = makeStyles(() => ({
@@ -13,11 +13,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important',
+    flexDirection: 'column!important'
   },
   marginTop: {
-    marginTop: '10px!important',
-  },
+    marginTop: '10px!important'
+  }
 }));
 
 const val = {
@@ -25,7 +25,7 @@ const val = {
   displayName: '',
   removePrice: '',
   editPrice: '',
-  priceTypeEdit: '',
+  priceTypeEdit: ''
 };
 export const Price = () => {
   const classes = useStyles();
@@ -36,12 +36,12 @@ export const Price = () => {
     { id: 1, title: 'קופסה' },
     {
       id: 2,
-      title: 'משקל',
+      title: 'משקל'
     },
     {
       id: 3,
-      title: 'יחידה',
-    },
+      title: 'יחידה'
+    }
   ];
   useEffect(() => {
     pricesService.getPrices({ include: true }).then((data) => {
@@ -64,7 +64,7 @@ export const Price = () => {
   const addPrice = () => {
     const data = {
       priceType: values.selectPriceType,
-      displayName: values.displayName,
+      displayName: values.displayName
     };
     pricesService.addPrice(data);
   };

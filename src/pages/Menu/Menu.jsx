@@ -12,18 +12,11 @@ export const Menu = ({ menuType }) => {
   const history = useHistory();
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-    let sec = 0;
-    const intervalId = setInterval(() => {
-      sec = sec + 1;
-    }, 1);
+    console.time('get Categories : ');
     categoryService.getCategories({ include: false }).then((categor) => {
+      console.timeEnd('get Categories : ');
       setCategories(categor);
-      console.log(`get Menu Take : ${sec} miliSec`);
-      clearInterval(intervalId);
     });
-    return () => {
-      sec = 0;
-    };
   }, []);
 
   return (

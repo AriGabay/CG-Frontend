@@ -1,5 +1,5 @@
 import './ProductPreview.scss';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BackButton from '../../cmps/Controls/BackButton';
 import { productService } from '../../services/productService';

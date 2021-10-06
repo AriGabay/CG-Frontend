@@ -1,4 +1,5 @@
 import './ImageCloud.scss';
+import React from 'react';
 import { Image } from 'cloudinary-react';
 import PropTypes from 'prop-types';
 export function ImageCloud({ alt, maxHeight, maxWidth, imageId, ClassName }) {

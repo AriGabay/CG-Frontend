@@ -1,8 +1,8 @@
 import './ProductsList.scss';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { productService } from '../../services/productService';
-import { categoryService } from '../../services/categoryService';
 import { ProductCard } from '../../cmps/ProductCard';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
@@ -23,29 +23,22 @@ const useStyles = makeStyles({
     }
   }
 });
-export const ProductsList = ({ productsType }) => {
+export const ProductsList = () => {
   const classes = useStyles();
   const history = useHistory();
   const [products, setProducts] = useState();
-  const [category, setCategory] = useState();
+  const [categoryName, setCategoryName] = useState();
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
   useEffect(() => {
-    let sec = 0;
-    const intervalId = setInterval(() => {
-      sec = sec + 1;
-    }, 1);
-    productService.getProducts({ categoryId, include: false, pathName }).then((res) => {
-      setProducts(res);
-      clearInterval(intervalId);
-      console.log(`get Product List Take : ${sec} miliSec`);
+    console.time('getProduct');
+    productService.getProducts({ categoryId, include: true, pathName }).then((res) => {
+      if (res && res.length) {
+        console.timeEnd('getProduct');
+        setProducts(res);
+        setCategoryName(res[0].Category.displayName);
+      }
     });
-    categoryService.getCategories({ id: categoryId, include: false }).then((res) => {
-      setCategory(res[0]);
-    });
-    return () => {
-      sec = 0;
-    };
   }, [categoryId, pathName]);
   const backButton = () => {
     if (history.location.pathname.includes('weekend')) {
@@ -54,10 +47,10 @@ export const ProductsList = ({ productsType }) => {
       return '/menu/pesach';
     } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
   };
-  return category ? (
+  return categoryName ? (
     <div>
       <Box p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
-        {<Typography variant="h3">{category.displayName}</Typography>}
+        {<Typography variant="h3">{categoryName}</Typography>}
       </Box>
       <Grid container>
         {products &&

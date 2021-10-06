@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import Controls from '../../Controls/Controls';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
 import { productService } from '../../../services/productService';
