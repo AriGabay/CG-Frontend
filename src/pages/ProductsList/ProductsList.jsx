@@ -7,7 +7,6 @@ import { ProductCard } from '../../cmps/ProductCard';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import BackButton from '../../cmps/Controls/BackButton';
 import { makeStyles } from '@material-ui/styles';
@@ -20,6 +19,18 @@ const useStyles = makeStyles({
   marginCenter: {
     '@media (max-width: 700px)': {
       margin: '0 auto !important'
+    }
+  },
+  progressScreen: {
+    minWidth: '100vw',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column !important',
+    '& > *': {
+      marginBottom: '35px'
     }
   }
 });
@@ -47,22 +58,21 @@ export const ProductsList = () => {
       return '/menu/pesach';
     } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
   };
-  return categoryName ? (
+  return products && categoryName ? (
     <div>
-      <Box p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
-        {<Typography variant="h3">{categoryName}</Typography>}
-      </Box>
+      <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
+        <Typography variant="h3">{categoryName}</Typography>
+      </Grid>
       <Grid container>
-        {products &&
-          products.map((product) => {
-            return (
-              <Grid className={classes.marginCenter} item key={product.id}>
-                <Container>
-                  <ProductCard product={product} />
-                </Container>
-              </Grid>
-            );
-          })}
+        {products.map((product) => {
+          return (
+            <Grid className={classes.marginCenter} item key={product.id}>
+              <Container>
+                <ProductCard product={product} />
+              </Container>
+            </Grid>
+          );
+        })}
         <Container>{!products && <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>}</Container>
       </Grid>
       <Grid mr={0} mt={2}>
@@ -72,6 +82,9 @@ export const ProductsList = () => {
       </Grid>
     </div>
   ) : (
-    <CircularProgress />
+    <Grid className={classes.progressScreen}>
+      <CircularProgress />
+      <BackButton to={() => backButton()} text="חזור"></BackButton>
+    </Grid>
   );
 };

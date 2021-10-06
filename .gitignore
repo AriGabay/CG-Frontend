@@ -10,7 +10,8 @@
 
 # production
 /build
-
+# files 
+upload-to-cdn.yml
 # misc
 .DS_Store
 .env
