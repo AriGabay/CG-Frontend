@@ -35,6 +35,7 @@ const useStyles = makeStyles({
   }
 });
 export const ProductsList = () => {
+  console.time('all component product list component');
   const classes = useStyles();
   const history = useHistory();
   const [products, setProducts] = useState();
@@ -48,6 +49,9 @@ export const ProductsList = () => {
         console.timeEnd('getProduct');
         setProducts(res);
         setCategoryName(res[0].Category.displayName);
+      } else {
+        console.log('run');
+        setCategoryName(' ');
       }
     });
   }, [categoryId, pathName]);
@@ -58,28 +62,38 @@ export const ProductsList = () => {
       return '/menu/pesach';
     } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
   };
-  return products && categoryName ? (
+  const render = categoryName ? (
     <div>
-      <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
-        <Typography variant="h3">{categoryName}</Typography>
-      </Grid>
-      <Grid container>
-        {products.map((product) => {
-          return (
-            <Grid className={classes.marginCenter} item key={product.id}>
-              <Container>
-                <ProductCard product={product} />
-              </Container>
-            </Grid>
-          );
-        })}
-        <Container>{!products && <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>}</Container>
-      </Grid>
+      {console.time('start render')}
+      {categoryName && (
+        <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
+          <Typography variant="h3">{categoryName}</Typography>
+        </Grid>
+      )}
+      {products && products.length ? (
+        <Grid container>
+          {products.map((product) => {
+            return (
+              <Grid className={classes.marginCenter} item key={product.id}>
+                <Container>
+                  <ProductCard product={product} />
+                </Container>
+              </Grid>
+            );
+          })}
+        </Grid>
+      ) : (
+        <Container>
+          {console.log('products:', products)}
+          <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>
+        </Container>
+      )}
       <Grid mr={0} mt={2}>
         <Container>
           <BackButton to={() => backButton()} text="חזור"></BackButton>
         </Container>
       </Grid>
+      {console.timeEnd('start render')}
     </div>
   ) : (
     <Grid className={classes.progressScreen}>
@@ -87,4 +101,6 @@ export const ProductsList = () => {
       <BackButton to={() => backButton()} text="חזור"></BackButton>
     </Grid>
   );
+  console.timeEnd('all component product list component');
+  return render;
 };
