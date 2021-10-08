@@ -1,7 +1,8 @@
 import './ImageCloud.scss';
 import React from 'react';
-import { Image } from 'cloudinary-react';
 import PropTypes from 'prop-types';
+import { Image } from 'cloudinary-react';
+import { Placeholder } from 'cloudinary-react';
 export function ImageCloud({ alt, maxHeight, maxWidth, imageId, ClassName }) {
   const src = () => {
     const width = maxWidth;
@@ -19,7 +20,9 @@ export function ImageCloud({ alt, maxHeight, maxWidth, imageId, ClassName }) {
       loading="lazy"
       height={maxHeight}
       width={maxWidth}
-    />
+    >
+      <Placeholder type="blur"></Placeholder>
+    </Image>
   );
 }
 ImageCloud.propsTypes = {

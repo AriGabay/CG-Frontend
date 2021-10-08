@@ -95,7 +95,7 @@ export const ProductPreview = () => {
           </Button>
         </Grid>
         <Grid mt={2}>
-          <BackButton to={history.location.state} text="חזור"></BackButton>
+          <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
         </Grid>
       </Grid>
       <Grid item mt={2} lg={3} md={3} sm={12}>

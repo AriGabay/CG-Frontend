@@ -6,7 +6,12 @@ export const httpService = {
     const queryStr = Object.keys(query)
       .map((key) => key + '=' + query[key])
       .join('&');
-    return axios.get(`${BASE_URL}${endpoint}?${queryStr}`).then((response) => response.data);
+    console.time('get request');
+    const res = axios.get(`${BASE_URL}${endpoint}?${queryStr}`).then((response) => {
+      console.timeEnd('get request');
+      return response.data;
+    });
+    return res;
   },
   post(endpoint, data) {
     return axios.post(BASE_URL + endpoint, data).then((res) => res.data);
@@ -16,6 +21,5 @@ export const httpService = {
   },
   delete(endpoint, id) {
     return axios.delete(BASE_URL + endpoint + id);
-    //
   }
 };
