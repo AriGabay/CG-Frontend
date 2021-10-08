@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import BackButton from '../../cmps/Controls/BackButton';
 import { useHistory } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
 export const Menu = ({ menuType }) => {
   console.time('all component menu component');
   const history = useHistory();
@@ -47,10 +48,13 @@ export const Menu = ({ menuType }) => {
         justifyContent="center"
         flexWrap="wrap"
       >
-        {categories &&
+        {categories.length ? (
           categories.map((category, index) => {
             return <CategoryCard key={index} category={category} menuType={menuType} />;
-          })}
+          })
+        ) : (
+          <CircularProgress></CircularProgress>
+        )}
       </Grid>
       <Grid mt={2} mb={2} container display="flex" justifyContent="center" alignContent="center">
         <BackButton text="חזור" to="/"></BackButton>
