@@ -17,6 +17,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { termsTxt } from '../../text/terms.js';
+import { useHistory } from 'react-router-dom';
 
 const initialFValues = {
   id: 0,
@@ -90,6 +91,7 @@ const requiredInputStr = 'שדה חובה';
 
 export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
   const shekel = '₪';
+  const history = useHistory();
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
   const validate = (fieldValues = values) => {
@@ -120,6 +122,8 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
     if (validate()) {
       checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
       resetForm();
+      console.log('history:', history);
+      history.push('/');
     }
   };
   const handleClickOpen = () => {

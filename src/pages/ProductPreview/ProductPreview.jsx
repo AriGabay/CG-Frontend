@@ -109,7 +109,7 @@ export const ProductPreview = () => {
             הוסף לעגלה <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
           </Button>
         </Grid>
-        <Grid mt={2}>
+        <Grid mt={2} mb={2}>
           <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
         </Grid>
       </Grid>
