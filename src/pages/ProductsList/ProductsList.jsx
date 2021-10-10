@@ -11,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import BackButton from '../../cmps/Controls/BackButton';
 import { makeStyles } from '@material-ui/styles';
 import { useHistory } from 'react-router-dom';
+
 const useStyles = makeStyles({
   marginRight0: {
     marginRight: '0!important',
@@ -50,7 +51,6 @@ export const ProductsList = () => {
         setProducts(res);
         setCategoryName(res[0].Category.displayName);
       } else {
-        console.log('run');
         setCategoryName(' ');
       }
     });
@@ -84,7 +84,6 @@ export const ProductsList = () => {
         </Grid>
       ) : (
         <Container>
-          {console.log('products:', products)}
           <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>
         </Container>
       )}

@@ -18,6 +18,7 @@ import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import { eventBus } from '../../services/event-bus';
 import { useHistory } from 'react-router-dom';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const useStyles = makeStyles({
   addToCartBtn: {
@@ -41,10 +42,16 @@ const useStyles = makeStyles({
   },
   imgContainer: {
     maxWidth: '300px'
+  },
+  textOver: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   }
 });
 
 export const ProductPreview = () => {
+  const isMobile = useMediaQuery('(max-width:960px)');
   const [product, setProduct] = useState();
   const [productOrder, setProductOrder] = useState({ sizeToOrder: null, product: null, priceToShow: null });
   const { productId } = useParams();
@@ -78,6 +85,14 @@ export const ProductPreview = () => {
         <Grid ml={2} mt={2} className={classes.imgContainer}>
           <ImageCloud imageId={product.imgUrl} />
         </Grid>
+        {isMobile && (
+          <Grid item mt={2} lg={3} md={3} sm={12}>
+            <Typography variant="h5">תיאור:</Typography>
+            <Typography className={classes.textOver} mt={2} mb={2}>
+              {product.description}
+            </Typography>
+          </Grid>
+        )}
         <Grid>
           {product.Price.priceType === 'unit' ? (
             <PriceForUnit productProps={product} productOrderProps={productOrder} setProductOrder={setProductOrder} />
@@ -98,12 +113,14 @@ export const ProductPreview = () => {
           <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
         </Grid>
       </Grid>
-      <Grid item mt={2} lg={3} md={3} sm={12}>
-        <Typography variant="h5">תיאור:</Typography>
-        <Typography mt={2} mb={2}>
-          {product.description}
-        </Typography>
-      </Grid>
+      {isMobile === false && (
+        <Grid item mt={2} lg={3} md={3} sm={12}>
+          <Typography variant="h5">תיאור:</Typography>
+          <Typography mt={2} mb={2} className={classes.textOver}>
+            {product.description}
+          </Typography>
+        </Grid>
+      )}
     </Grid>
   ) : (
     <Box height={500} display="flex" justifyContent="center" alignItems="center">

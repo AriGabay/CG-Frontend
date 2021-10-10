@@ -13,6 +13,7 @@ import withStyles from '@material-ui/styles/withStyles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { termsTxt } from '../../text/terms.js';
@@ -84,25 +85,29 @@ const DialogActions = withStyles((theme) => ({
     padding: theme.spacing(1)
   }
 }))(MuiDialogActions);
+
+const requiredInputStr = 'שדה חובה';
+
 export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
   const shekel = '₪';
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ('fullName' in fieldValues) temp.fullName = fieldValues.fullName ? '' : 'This field is required.';
+    if ('fullName' in fieldValues) temp.fullName = fieldValues.fullName ? '' : requiredInputStr;
     if ('email' in fieldValues)
       temp.email = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(fieldValues.email)
         ? ''
-        : 'Email is not valid.';
-    if ('mobile' in fieldValues) temp.mobile = fieldValues.mobile.length > 9 ? '' : 'Minimum 10 numbers required.';
-    if ('pickup' in fieldValues) temp.pickup = fieldValues.pickup.length ? '' : '.select time to pickup';
+        : 'כתובת מייל לא חוקית';
+    if ('mobile' in fieldValues) temp.mobile = fieldValues.mobile.length > 9 ? '' : 'מספר פלאפון לא תקין';
+    if ('pickup' in fieldValues) temp.pickup = fieldValues.pickup.length ? '' : 'נא לבחור שעת אסיפה';
     if ('idPersonal' in fieldValues)
       temp.idPersonal =
-        fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9 ? '' : 'must be 9 numbers required.';
-    if ('city' in fieldValues) temp.city = fieldValues.city.length ? '' : 'This  field is required.';
-    if ('street' in fieldValues) temp.street = fieldValues.street.length ? '' : 'This  field is required.';
+        fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9 ? '' : 'תעודת זהות לא חוקית';
+    if ('city' in fieldValues) temp.city = fieldValues.city.length ? '' : requiredInputStr;
+    if ('street' in fieldValues) temp.street = fieldValues.street.length ? '' : requiredInputStr;
     if (terms === false) return;
+    if ('pickUpDate' in fieldValues) temp.pickUpDate = fieldValues.pickUpDate.length ? '' : requiredInputStr;
     setErrors({
       ...temp
     });
@@ -197,14 +202,16 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             label="תאריך איסוף"
             value={values.pickUpDate}
             onChange={handleInputChange}
+            error={errors.pickUpDate}
           />
         </Grid>
         <Grid display="flex" justifyContent="flex-start" alignContent="center">
           <Grid display="flex" justifyContent="flex-start" alignContent="center">
             <Checkbox name="terms" required={true} label="" value={terms} onChange={() => setTerms(!terms)}></Checkbox>
             <Button onClick={handleClickOpen}>
-              <Typography textAlign="center">לתקנון</Typography>
+              <Typography textAlign="center">תקנון</Typography>
             </Button>
+            {terms === false && <FormHelperText>{requiredInputStr}</FormHelperText>}
           </Grid>
           <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
@@ -228,7 +235,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             {shekel}
           </Typography>
           <Typography>
-            מחיר כולל : {totalPrice}
+            מחיר משוער : {totalPrice}
             {shekel}
           </Typography>
         </Grid>

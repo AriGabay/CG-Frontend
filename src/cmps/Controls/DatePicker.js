@@ -3,17 +3,18 @@ import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
 import DatePickerComp from '@material-ui/lab/DatePicker';
 import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import isBefore from 'date-fns/isBefore';
 import startOfToday from 'date-fns/startOfToday';
 import isFriday from 'date-fns/isFriday';
 export default function DatePicker(props) {
-  const { name, label, value, onChange, required = false } = props;
+  const { name, label, value, onChange, required = false, error } = props;
 
   const convertToDefEventPara = (name, value) => ({
     target: {
       name,
-      value,
-    },
+      value
+    }
   });
   const dateToStr = (date) => {
     date = date + '';
@@ -36,6 +37,7 @@ export default function DatePicker(props) {
           onChange(convertToDefEventPara(name, dateToStr(date)));
         }}
       />
+      {error && <FormHelperText>{error}</FormHelperText>}
     </LocalizationProvider>
   );
 }

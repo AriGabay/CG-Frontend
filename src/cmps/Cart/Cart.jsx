@@ -38,7 +38,9 @@ const useStyles = makeStyles(() => ({
       right: '0',
       left: '0!important',
       minWidth: '100% !important',
-      minHeight: '100% !important'
+      minHeight: '100% !important',
+      maxHeight: '16px'
+      // maxWidth: '16px !important'
     }
   },
   MenuItem: {
@@ -53,14 +55,6 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
     textAlign: 'right'
-  },
-  ldld: {
-    width: '100px',
-    height: '100px',
-    backgroundColor: 'black',
-    '@media (min-width: 700px)': {
-      backgroundColor: 'red'
-    }
   },
   textCartProduct: {
     display: 'block',
@@ -84,11 +78,9 @@ export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) =>
     setAnchorEl(null);
   };
   const checkOutOrder = () => {
-    cartService.checkOutOrder(cart).then(() => {
-      setAnchorEl(null);
-      setIsOpenMenu(false);
-      history.push('/checkout');
-    });
+    setAnchorEl(null);
+    setIsOpenMenu(false);
+    history.push('/checkout');
   };
   const removeFromCart = async (id) => {
     cartService.removeProductFromCart(id).then((newCart) => {

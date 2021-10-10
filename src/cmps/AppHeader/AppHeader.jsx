@@ -122,6 +122,7 @@ export const AppHeader = () => {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     getProductCart();
+    setChecked(false);
   };
 
   return (
@@ -134,15 +135,36 @@ export const AppHeader = () => {
     >
       <Grid className={classes.Width90}>
         {!matches ? (
-          <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="menu"
-            onClick={() => handleChange()}
-          >
-            <MenuIcon />
-          </IconButton>
+          <Grid>
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+              onClick={() => handleChange()}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Button
+              aria-controls="simple-menu"
+              aria-haspopup="true"
+              onClick={(event) => handleClick(event)}
+              sx={{ color: 'black' }}
+              color="secondary"
+              startIcon={<ShoppingCartOutlinedIcon color="black" />}
+            >
+              <Typography style={{ paddingRight: '10px' }}>עגלת קניות</Typography>
+            </Button>
+            {anchorEl && (
+              <Cart
+                cart={cart}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+                setCart={setCart}
+                setIsOpenMenu={setIsOpenMenu}
+              ></Cart>
+            )}
+          </Grid>
         ) : null}
         {(matches || checked) && (
           <Grid className={classes.CenterToolBarr}>
