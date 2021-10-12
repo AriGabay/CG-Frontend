@@ -14,6 +14,8 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import './AppHeader.scss';
+import { ShakeRotate } from 'reshake';
+
 const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
@@ -151,7 +153,7 @@ export const AppHeader = () => {
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
               color="secondary"
-              startIcon={<ShoppingCartOutlinedIcon color="black" />}
+              startIcon={<ShoppingCartOutlinedIcon color="black" className={classes.animation} />}
             >
               <Typography style={{ paddingRight: '10px' }}>עגלת קניות</Typography>
             </Button>
@@ -190,7 +192,11 @@ export const AppHeader = () => {
                 onClick={(event) => handleClick(event)}
                 sx={{ color: 'white' }}
                 color="secondary"
-                startIcon={<ShoppingCartOutlinedIcon color="white" />}
+                startIcon={
+                  <ShakeRotate active={true}>
+                    <ShoppingCartOutlinedIcon color="white" />
+                  </ShakeRotate>
+                }
               >
                 <Typography className={classes.colorWhite}>עגלת קניות</Typography>
               </Button>

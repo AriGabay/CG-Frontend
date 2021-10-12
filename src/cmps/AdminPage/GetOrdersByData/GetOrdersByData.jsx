@@ -125,16 +125,18 @@ export const GetOrdersByData = (props) => {
                   <Typography>תאריך איסוף : {formatDate(totalOrder.order.pickUpDate)}</Typography>
                   <Typography>תאריך ביצוע ההזמנה : {formatDate(totalOrder.order.time)}</Typography>
                   <hr />
-                  {totalOrder.order.products.map((product, index) => {
-                    return (
-                      <Grid key={index}>
-                        <Typography>שם המוצר : {product.displayName}</Typography>
-                        <Typography>כמות : {product.sizeToOrder}</Typography>
-                        <Typography>מחיר : {product.pricePerSize}</Typography>
-                        <br />
-                      </Grid>
-                    );
-                  })}
+                  {totalOrder.order.products &&
+                    totalOrder.order.products.length &&
+                    totalOrder.order.products.map((product, index) => {
+                      return (
+                        <Grid key={index}>
+                          <Typography>שם המוצר : {product.displayName}</Typography>
+                          <Typography>כמות : {product.sizeToOrder}</Typography>
+                          <Typography>מחיר : {product.pricePerSize}</Typography>
+                          <br />
+                        </Grid>
+                      );
+                    })}
                 </AccordionDetails>
               </Accordion>
             );

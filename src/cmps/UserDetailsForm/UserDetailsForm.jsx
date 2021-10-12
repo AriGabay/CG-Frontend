@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import './UserDetailsForm.scss';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../Controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
-import './UserDetailsForm.scss';
 import { Typography } from '@material-ui/core';
 import { eventBus } from '../../services/event-bus';
 import BackButton from '../Controls/BackButton';
@@ -48,6 +48,7 @@ const pickupItems = [
   { id: '14:00', title: '14:00' },
   { id: '14:15', title: '14:15' }
 ];
+
 const styles = (theme) => ({
   root: {
     margin: 0,
@@ -60,6 +61,7 @@ const styles = (theme) => ({
     color: theme.palette.grey[500]
   }
 });
+
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -87,13 +89,13 @@ const DialogActions = withStyles((theme) => ({
   }
 }))(MuiDialogActions);
 
-const requiredInputStr = 'שדה חובה';
-
 export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
   const shekel = '₪';
   const history = useHistory();
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
+  const requiredInputStr = 'שדה חובה';
+
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
     if ('fullName' in fieldValues) temp.fullName = fieldValues.fullName ? '' : requiredInputStr;
@@ -113,25 +115,28 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
     setErrors({
       ...temp
     });
-
     if (fieldValues === values) return Object.values(temp).every((x) => x === '');
   };
+
   const { values, errors, setErrors, handleInputChange, resetForm } = useForm(initialFValues, true, validate);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
       checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
       resetForm();
-      console.log('history:', history);
       history.push('/');
     }
   };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
+
   return (
     <Form>
       <Grid item xs={12}>
