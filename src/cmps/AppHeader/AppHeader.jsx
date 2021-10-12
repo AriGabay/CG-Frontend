@@ -97,6 +97,15 @@ const useStyles = makeStyles((theme) => ({
       cursor: 'pointer',
       backgroundColor: 'white'
     }
+  },
+  startIcon: {
+    marginRight: '0px'
+  },
+  ButtonCart: {
+    paddingRight: '0px !important',
+    '@media (max-width: 700px)': {
+      paddingTop: '0px !important'
+    }
   }
 }));
 
@@ -106,6 +115,7 @@ const style = {
 };
 export const AppHeader = () => {
   const matches = useMediaQuery('(min-width:700px)');
+  console.log('matches:', matches);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   // eslint-disable-next-line
@@ -168,6 +178,7 @@ export const AppHeader = () => {
             )}
           </Grid>
         ) : null}
+        {console.log('matches || checked:', matches || checked)}
         {(matches || checked) && (
           <Grid className={classes.CenterToolBarr}>
             <Typography className={classes.exitButtom} onClick={() => setChecked(false)}>
@@ -192,9 +203,10 @@ export const AppHeader = () => {
                 onClick={(event) => handleClick(event)}
                 sx={{ color: 'white' }}
                 color="secondary"
+                classes={{ root: classes.ButtonCart }}
                 startIcon={
-                  <ShakeRotate active={true}>
-                    <ShoppingCartOutlinedIcon color="white" />
+                  <ShakeRotate style={{ 'font-size': '0px' }} active={true}>
+                    <ShoppingCartOutlinedIcon classes={{ root: classes.startIcon }} color="white" />
                   </ShakeRotate>
                 }
               >

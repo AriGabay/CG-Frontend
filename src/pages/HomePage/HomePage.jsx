@@ -77,12 +77,14 @@ export const HomePage = () => {
           <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח"></BackButton>
           <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי"></BackButton>
         </Grid>
-        <ImageCloud
-          ClassName={classes.imgHomePage}
-          imageId="old_logo_rssqwk"
-          maxWidth={imageSize.width}
-          maxHeight={imageSize.height}
-        />
+        <Grid mb={6}>
+          <ImageCloud
+            ClassName={classes.imgHomePage}
+            imageId="old_logo_rssqwk"
+            maxWidth={imageSize.width}
+            maxHeight={imageSize.height}
+          />
+        </Grid>
       </Grid>
     </Grid>
   );
