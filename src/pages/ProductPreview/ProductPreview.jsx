@@ -59,9 +59,12 @@ export const ProductPreview = () => {
   let history = useHistory();
 
   useEffect(() => {
-    productService.getProducts({ id: productId, include: true }).then((res) => {
-      setProduct(res[0]);
-    });
+    productService
+      .getProducts({ id: productId, include: true })
+      .then((res) => {
+        setProduct(res[0]);
+      })
+      .catch((error) => console.log(error));
   }, [productId]);
   const addToCart = () => {
     if (

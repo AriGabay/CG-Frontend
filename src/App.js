@@ -1,5 +1,6 @@
 import './App.scss';
 import { HomePage } from './pages/HomePage/HomePage';
+import { LoginPage } from './pages/LoginPage/LoginPage';
 import { Menu } from './pages/Menu/Menu';
 import { ProductsList } from './pages/ProductsList/ProductsList';
 import { ProductPreview } from './pages/ProductPreview';
@@ -43,7 +44,8 @@ function App() {
               <ProductsList productsType="pesach" />
             </Route>
             <Route component={ProductPreview} path="/product/:productId/" />
-            <Route exact component={AdminPage} path="/admin" />
+            <Route exact component={AdminPage} path="/adminPage" />
+            <Route exact component={LoginPage} path="/admin" />
             <Route exact component={CheckoutOrder} path="/checkout" />
             <Route exact component={About} path="/about" />
             <Route exact component={Contact} path="/contact" />

@@ -115,7 +115,6 @@ const style = {
 };
 export const AppHeader = () => {
   const matches = useMediaQuery('(min-width:700px)');
-  console.log('matches:', matches);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   // eslint-disable-next-line
@@ -178,7 +177,6 @@ export const AppHeader = () => {
             )}
           </Grid>
         ) : null}
-        {console.log('matches || checked:', matches || checked)}
         {(matches || checked) && (
           <Grid className={classes.CenterToolBarr}>
             <Typography className={classes.exitButtom} onClick={() => setChecked(false)}>

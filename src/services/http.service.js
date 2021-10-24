@@ -16,6 +16,11 @@ export const httpService = {
   post(endpoint, data) {
     return axios.post(BASE_URL + endpoint, data).then((res) => res.data);
   },
+  valid(endpoint, data) {
+    return axios.post(BASE_URL + endpoint, data).then((res) => {
+      return res;
+    });
+  },
   put(endpoint, id, data) {
     return axios.put(`${BASE_URL}${endpoint}${id}`, data);
   },

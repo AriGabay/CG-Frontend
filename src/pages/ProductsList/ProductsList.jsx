@@ -45,15 +45,20 @@ export const ProductsList = () => {
   const pathName = history.location.pathname;
   useEffect(() => {
     console.time('getProduct');
-    productService.getProducts({ categoryId, include: true, pathName }).then((res) => {
-      if (res && res.length) {
-        console.timeEnd('getProduct');
-        setProducts(res);
-        setCategoryName(res[0].Category.displayName);
-      } else {
-        setCategoryName(' ');
-      }
-    });
+    productService
+      .getProducts({ categoryId, include: true, pathName })
+      .then((res) => {
+        if (res && res.length) {
+          console.timeEnd('getProduct');
+          setProducts(res);
+          setCategoryName(res[0].Category.displayName);
+        } else {
+          setCategoryName(' ');
+        }
+      })
+      .catch((error) => {
+        console.log('error :', error);
+      });
   }, [categoryId, pathName]);
   const backButton = () => {
     if (history.location.pathname.includes('weekend')) {
