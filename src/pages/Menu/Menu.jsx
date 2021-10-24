@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import BackButton from '../../cmps/Controls/BackButton';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 export const Menu = ({ menuType }) => {
   console.time('all component menu component');
   const history = useHistory();
@@ -25,7 +26,7 @@ export const Menu = ({ menuType }) => {
       {console.time('the render menu component')}
       <Grid display="flex" alignItems="center" justifyContent="center">
         {history.location.pathname.includes('weekend') ? (
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h3" gutterBottom>
             תפריט סוף שבוע
           </Typography>
         ) : null}
