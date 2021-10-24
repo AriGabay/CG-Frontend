@@ -1,8 +1,7 @@
 import './App.scss';
+import React from 'react';
 import { HomePage } from './pages/HomePage/HomePage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
-import { Menu } from './pages/Menu/Menu';
-import { ProductsList } from './pages/ProductsList/ProductsList';
 import { ProductPreview } from './pages/ProductPreview';
 import { AppHeader } from './cmps/AppHeader/AppHeader';
 import SimpleSnackbar from './cmps/Snackbar/Snackbar';
@@ -15,8 +14,42 @@ import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
 import dotenv from 'dotenv';
+import Loadable from 'react-loadable';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 dotenv.config();
 const customTheme = getCustomTheme();
+
+const Loading = (props) => {
+  console.log('props.error:', props);
+  if (props.error) {
+    return (
+      <div>
+        Error! <button onClick={props.retry}>Retry</button>
+      </div>
+    );
+  } else {
+    return <CircularProgress />;
+  }
+};
+
+const Menu = Loadable({
+  loader: async () => await import('./pages/Menu/Menu'),
+  loading: Loading,
+  render(loader, props) {
+    const { Menu } = loader;
+    return <Menu {...props} />;
+  }
+});
+
+const ProductsList = Loadable({
+  loader: async () => await import('./pages/ProductsList/ProductsList'),
+  loading: Loading,
+  render(loader, props) {
+    const { ProductsList } = loader;
+    return <ProductsList {...props} />;
+  }
+});
 
 function App() {
   return (
