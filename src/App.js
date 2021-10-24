@@ -45,7 +45,7 @@ function App() {
             </Route>
             <Route component={ProductPreview} path="/product/:productId/" />
             <Route exact component={AdminPage} path="/adminPage" />
-            <Route exact component={LoginPage} path="/admin" />
+            <Route exact component={LoginPage} path="/login" />
             <Route exact component={CheckoutOrder} path="/checkout" />
             <Route exact component={About} path="/about" />
             <Route exact component={Contact} path="/contact" />
