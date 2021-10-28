@@ -21,7 +21,6 @@ dotenv.config();
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
-  console.log('props.error:', props);
   if (props.error) {
     return (
       <div>

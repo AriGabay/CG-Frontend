@@ -17,7 +17,7 @@ export const Orders = () => {
     orders.forEach((order) => {
       arr.push({
         id: order.id,
-        fullName: order.order.fullName,
+        fullName: `${order.order.firstName} ${order.order.lastName}`,
         totalPrice: order.order.totalPrice,
         date: order.order.time,
         products: productsStr(order.order.products)
@@ -27,9 +27,12 @@ export const Orders = () => {
     return arr;
   };
   const productsStr = (products) => {
-    return products.map((product) => {
-      return `${product.displayName} כמות : ${product.sizeToOrder} מחיר כולל: ${product.pricePerSize}`;
-    });
+    if (products) {
+      console.log('products:', products);
+      return products.map((product) => {
+        return `${product.displayName} כמות : ${product.sizeToOrder} מחיר כולל: ${product.pricePerSize}`;
+      });
+    }
   };
   const columns = [
     { field: 'id', headerName: 'מספר הזמנה', type: 'number', width: 150 },

@@ -111,16 +111,19 @@ export const GetOrdersByData = (props) => {
                   id="panel1a-header"
                 >
                   <Typography>מספר הזמנה : {totalOrder.id}</Typography>
-                  <Typography>שם מלא : {totalOrder.order.fullName}</Typography>
+                  <Typography>שם פרטי : {totalOrder.order.firstName}</Typography>
+                  <Typography>שם משפחה : {totalOrder.order.lastName}</Typography>
                   <Typography>מחיר : {totalOrder.order.totalPrice}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>מספר הזמנה : {totalOrder.id}</Typography>
-                  <Typography>שם מלא : {totalOrder.order.fullName}</Typography>
+                  <Typography>שם פרטי : {totalOrder.order.firstName}</Typography>
+                  <Typography>שם משפחה : {totalOrder.order.lastName}</Typography>
                   <Typography>מחיר : {totalOrder.order.totalPrice}</Typography>
                   <Typography>עיר : {totalOrder.order.city}</Typography>
                   <Typography>תעודת זהות : {totalOrder.order.idPersonal}</Typography>
                   <Typography>נייד : {totalOrder.order.mobile}</Typography>
+                  <Typography>נייד נוסף : {totalOrder.order.mobileTow}</Typography>
                   <Typography>שעת איסוף : {totalOrder.order.pickup}</Typography>
                   <Typography>תאריך איסוף : {formatDate(totalOrder.order.pickUpDate)}</Typography>
                   <Typography>תאריך ביצוע ההזמנה : {formatDate(totalOrder.order.time)}</Typography>

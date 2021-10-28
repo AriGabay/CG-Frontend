@@ -46,5 +46,5 @@ export const pricesService = {
   addPrice,
   removePrice,
   getPriceById,
-  updatePrice,
+  updatePrice
 };

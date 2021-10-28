@@ -12,12 +12,15 @@ import isFriday from 'date-fns/isFriday';
 export default function DatePicker(props) {
   const { name, label, value, onChange, required = false, error } = props;
 
-  const convertToDefEventPara = (name, value) => ({
-    target: {
-      name,
-      value
-    }
-  });
+  const convertToDefEventPara = (name, value) => {
+    const e = {
+      target: {
+        name,
+        value
+      }
+    };
+    return e;
+  };
 
   const dateToStr = (date) => {
     date = date + '';
@@ -35,7 +38,7 @@ export default function DatePicker(props) {
           variant="inline"
           inputVariant="outlined"
           label={label}
-          format="dd/MM/yyyy"
+          inputFormat="dd/MM/yyyy"
           name={name}
           value={value}
           required={required}

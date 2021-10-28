@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './UserDetailsForm.scss';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../Controls/Controls';
@@ -18,12 +18,15 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { termsTxt } from '../../text/terms.js';
 import { useHistory } from 'react-router-dom';
+import format from 'date-fns/format';
 
 const initialFValues = {
   id: 0,
-  fullName: '',
+  firstName: '',
+  lastName: '',
   email: '',
   mobile: '',
+  mobileTow: '',
   city: '',
   idPersonal: '',
   pickup: '',
@@ -32,8 +35,6 @@ const initialFValues = {
 };
 
 const pickupItems = [
-  { id: '7:30', title: '7:30' },
-  { id: '8:00', title: '8:00' },
   { id: '8:30', title: '8:30' },
   { id: '9:00', title: '9:00' },
   { id: '9:30', title: '9:30' },
@@ -98,12 +99,14 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ('fullName' in fieldValues) temp.fullName = fieldValues.fullName ? '' : requiredInputStr;
+    if ('firstName' in fieldValues) temp.firstName = fieldValues.firstName ? '' : requiredInputStr;
+    if ('lastName' in fieldValues) temp.lastName = fieldValues.lastName ? '' : requiredInputStr;
     if ('email' in fieldValues)
       temp.email = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(fieldValues.email)
         ? ''
         : 'כתובת מייל לא חוקית';
     if ('mobile' in fieldValues) temp.mobile = fieldValues.mobile.length > 9 ? '' : 'מספר פלאפון לא תקין';
+    if ('mobileTow' in fieldValues) temp.mobileTow = fieldValues.mobileTow.length > 9 ? '' : 'מספר פלאפון לא תקין';
     if ('pickup' in fieldValues) temp.pickup = fieldValues.pickup.length ? '' : 'נא לבחור שעת אסיפה';
     if ('idPersonal' in fieldValues)
       temp.idPersonal =
@@ -123,11 +126,16 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
+      values.pickUpDate = format(new Date(values.pickUpDate), 'dd/MM/yyyy');
+      console.log('values.pickUpDate:', values.pickUpDate);
       checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
       resetForm();
       history.push('/');
     }
   };
+  useEffect(() => {
+    console.log('run', values.pickUpDate);
+  }, [values.pickUpDate]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -141,11 +149,19 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
     <Form>
       <Grid item xs={12}>
         <Controls.Input
-          name="fullName"
-          label="שם מלא"
-          value={values.fullName}
+          name="firstName"
+          label="שם פרטי"
+          value={values.firstName}
           onChange={handleInputChange}
-          error={errors.fullName}
+          error={errors.firstName}
+          required={true}
+        />
+        <Controls.Input
+          name="lastName"
+          label="שם משפחה"
+          value={values.lastName}
+          onChange={handleInputChange}
+          error={errors.lastName}
           required={true}
         />
         <Controls.Input
@@ -162,6 +178,14 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.mobile}
           onChange={handleInputChange}
           error={errors.mobile}
+          required={true}
+        />
+        <Controls.Input
+          label="פלאפון נוסף"
+          name="mobileTow"
+          value={values.mobileTow}
+          onChange={handleInputChange}
+          error={errors.mobileTow}
           required={true}
         />
         <Controls.Input
@@ -205,11 +229,12 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           </Typography>
         </Grid>
         <Grid>
+          {console.log('values.pickUpDate:', values.pickUpDate)}
           <Controls.DatePicker
             required={true}
             name="pickUpDate"
             label="תאריך איסוף"
-            value={values.pickUpDate}
+            value={new Date(values.pickUpDate)}
             onChange={handleInputChange}
             error={errors.pickUpDate}
           />

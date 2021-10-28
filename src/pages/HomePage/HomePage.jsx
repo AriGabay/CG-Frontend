@@ -41,18 +41,30 @@ const useStyles = makeStyles(() => ({
     border: '4px solid #937446',
     borderRadius: '2em',
     padding: '1em',
+    fontSize: '20px',
     backgroundColor: 'whitesmoke',
-    '@media (max-width: 550px)': {
-      fontSize: '1em !important'
+    '@media (max-width: 400px)': {
+      fontSize: '15px !important'
+    },
+    '@media (max-width: 290px)': {
+      fontSize: '10px !important'
     }
   },
   GridMenuButton: {
     display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     width: '50% !important',
-    '@media (max-width: 730px)': {
-      width: '90% !important'
+    alignItems: 'center',
+    marginRight: '5px',
+    marginLeft: '5px',
+    '@media (max-width: 650px)': {
+      width: '75% !important'
+    },
+    '@media (max-width: 450px)': {
+      width: '85% !important'
+    },
+    '@media (max-width: 380px)': {
+      width: '95% !important'
     }
   }
 }));
@@ -67,15 +79,15 @@ export const HomePage = () => {
         <Typography
           classes={{ root: classes.fixLineHeight }}
           className={classes.textImageHomePage}
-          variant="h5"
+          // variant="h6"
           gutterBottom
         >
-          יום שישי קייטרינג גבאי פתוח החל מהשעה 7:00-14:30
+          יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
         <Grid className={classes.GridMenuButton}>
-          <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע"></BackButton>
-          <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח"></BackButton>
-          <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי"></BackButton>
+          <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" />
+          <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח" />
+          <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי" />
         </Grid>
         <Grid mb={6}>
           <ImageCloud

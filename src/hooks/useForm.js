@@ -9,7 +9,7 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
   const [errors, setErrors] = useState({});
   const handleInputChange = (e) => {
     let { name, value } = e.target;
-    if (isNumber(value) && name !== 'mobile' && name !== 'idPersonal') {
+    if (isNumber(value) && name !== 'mobile' && name !== 'idPersonal' && name !== 'mobileTow') {
       value = Number(value);
     }
     setValues({
