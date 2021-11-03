@@ -36,7 +36,6 @@ const useStyles = makeStyles({
   }
 });
 export const ProductsList = () => {
-  console.time('all component product list component');
   const classes = useStyles();
   const history = useHistory();
   const [products, setProducts] = useState();
@@ -44,12 +43,10 @@ export const ProductsList = () => {
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
   useEffect(() => {
-    console.time('getProduct');
     productService
       .getProducts({ categoryId, include: true, pathName })
       .then((res) => {
         if (res && res.length) {
-          console.timeEnd('getProduct');
           setProducts(res);
           setCategoryName(res[0].Category.displayName);
         } else {
@@ -67,9 +64,8 @@ export const ProductsList = () => {
       return '/menu/pesach';
     } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
   };
-  const render = categoryName ? (
+  return categoryName ? (
     <div>
-      {console.time('start render')}
       {categoryName && (
         <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
           <Typography variant="h3">{categoryName}</Typography>
@@ -97,7 +93,6 @@ export const ProductsList = () => {
           <BackButton to={() => backButton()} text="חזור"></BackButton>
         </Container>
       </Grid>
-      {console.timeEnd('start render')}
     </div>
   ) : (
     <Grid className={classes.progressScreen}>
@@ -105,6 +100,4 @@ export const ProductsList = () => {
       <BackButton to={() => backButton()} text="חזור"></BackButton>
     </Grid>
   );
-  console.timeEnd('all component product list component');
-  return render;
 };

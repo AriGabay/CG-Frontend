@@ -28,7 +28,6 @@ export const Orders = () => {
   };
   const productsStr = (products) => {
     if (products) {
-      console.log('products:', products);
       return products.map((product) => {
         return `${product.displayName} כמות : ${product.sizeToOrder} מחיר כולל: ${product.pricePerSize}`;
       });

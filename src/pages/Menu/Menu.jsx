@@ -10,20 +10,16 @@ import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 export const Menu = ({ menuType }) => {
-  console.time('all component menu component');
   const history = useHistory();
   const [categories, setCategories] = useState([]);
   useEffect(() => {
-    console.time('get Categories : ');
     categoryService.getCategories({ include: false }).then((categor) => {
-      console.timeEnd('get Categories : ');
       setCategories(categor);
     });
   }, []);
 
-  const render = (
+  return (
     <Grid className="menu">
-      {console.time('the render menu component')}
       <Grid display="flex" alignItems="center" justifyContent="center">
         {history.location.pathname.includes('weekend') ? (
           <Typography variant="h3" gutterBottom>
@@ -60,9 +56,6 @@ export const Menu = ({ menuType }) => {
       <Grid mt={2} mb={2} container display="flex" justifyContent="center" alignContent="center">
         <BackButton text="חזור" to="/"></BackButton>
       </Grid>
-      {console.timeEnd('the render menu component')}
     </Grid>
   );
-  console.timeEnd('all component menu component');
-  return render;
 };

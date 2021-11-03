@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './UserDetailsForm.scss';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../Controls/Controls';
@@ -127,15 +127,11 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
     e.preventDefault();
     if (validate()) {
       values.pickUpDate = format(new Date(values.pickUpDate), 'dd/MM/yyyy');
-      console.log('values.pickUpDate:', values.pickUpDate);
       checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
       resetForm();
       history.push('/');
     }
   };
-  useEffect(() => {
-    console.log('run', values.pickUpDate);
-  }, [values.pickUpDate]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -229,7 +225,6 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           </Typography>
         </Grid>
         <Grid>
-          {console.log('values.pickUpDate:', values.pickUpDate)}
           <Controls.DatePicker
             required={true}
             name="pickUpDate"

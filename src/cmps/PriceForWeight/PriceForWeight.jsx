@@ -66,7 +66,6 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
     setPriceToShow(calc.toFixed(2));
     setProductOrder({ sizeToOrder: Number(weight), product, priceToShow: Number(calc.toFixed(2)) });
   };
-  console.log('product.Price.SizePrices[0].amount:', product.Price.SizePrices[0].amount);
   return product ? (
     <Grid>
       <Typography>

@@ -3,8 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Image } from 'cloudinary-react';
 import { Placeholder } from 'cloudinary-react';
-export function ImageCloud({ alt, maxHeight, maxWidth, imageId, ClassName }) {
+export function ImageCloud({ alt, maxHeight, maxWidth, imageId = 'old_logo_rssqwk', ClassName }) {
   const src = () => {
+    if (imageId === '') imageId = 'old_logo_rssqwk';
     const width = maxWidth;
     const height = maxHeight;
     return `https://res.cloudinary.com/cgabay/image/upload/c_scale,${width ? 'w_' + width : ''}${

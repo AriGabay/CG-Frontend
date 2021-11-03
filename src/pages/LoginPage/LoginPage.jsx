@@ -34,7 +34,6 @@ export const LoginPage = () => {
   const login = async (e) => {
     e.preventDefault();
     const res = await authService.login(userDetails);
-    console.log('res.token:', res.token);
     if (res.token) {
       history.push(`/adminPage`);
     }
