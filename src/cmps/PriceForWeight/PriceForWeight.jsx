@@ -87,6 +87,7 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
           label="גרם"
           value={weightInput}
           className={classes.inputDisableUpDown}
+          disabled={true}
           onChange={(event) => updateOrder(event.target.value)}
           onKeyDown={(event) => (event.target.value === '0' || event.target.value === 0) ?? event.preventDefault()}
           onKeyPress={(event) => event.preventDefault()}
