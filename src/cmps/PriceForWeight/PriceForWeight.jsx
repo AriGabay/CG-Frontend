@@ -38,6 +38,19 @@ const useStyles = makeStyles({
     marginTop: 20,
     marginBottom: 0,
     padding: 0
+  },
+  inputDisableUpDown: {
+    '& input[type=number]': {
+      '-moz-appearance': 'textfield'
+    },
+    '& input[type=number]::-webkit-outer-spin-button': {
+      '-webkit-appearance': 'none',
+      margin: 0
+    },
+    '& input[type=number]::-webkit-inner-spin-button': {
+      '-webkit-appearance': 'none',
+      margin: 0
+    }
   }
 });
 
@@ -53,6 +66,7 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
     setPriceToShow(calc.toFixed(2));
     setProductOrder({ sizeToOrder: Number(weight), product, priceToShow: Number(calc.toFixed(2)) });
   };
+  console.log('product.Price.SizePrices[0].amount:', product.Price.SizePrices[0].amount);
   return product ? (
     <Grid>
       <Typography>
@@ -73,6 +87,7 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
           }}
           label="גרם"
           value={weightInput}
+          className={classes.inputDisableUpDown}
           onChange={(event) => updateOrder(event.target.value)}
           onKeyDown={(event) => (event.target.value === '0' || event.target.value === 0) ?? event.preventDefault()}
           onKeyPress={(event) => event.preventDefault()}
