@@ -2,6 +2,8 @@ import { httpService } from './http.service';
 const endpoint = 'category/';
 async function getCategories(query = { include: false }) {
   try {
+    console.log('query :', query);
+    console.log('🚀 ~ file: categoryService.js ~ line 7 ~ getCategories ~ endpoint', endpoint);
     const res = await httpService.get(endpoint, query);
     return res;
   } catch (error) {
