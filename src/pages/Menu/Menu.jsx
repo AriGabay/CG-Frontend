@@ -14,7 +14,9 @@ export const Menu = ({ menuType }) => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
+      // if (categor && categor.length) {
       setCategories(categor);
+      // }
     });
   }, []);
 
@@ -45,7 +47,7 @@ export const Menu = ({ menuType }) => {
         justifyContent="center"
         flexWrap="wrap"
       >
-        {categories.length ? (
+        {categories && categories.length ? (
           categories.map((category, index) => {
             return <CategoryCard key={index} category={category} menuType={menuType} />;
           })
