@@ -95,8 +95,10 @@ export const ProductsList = () => {
   const onChangePage = (e) => {
     if (e.target.innerText) {
       setPage(e.target.innerText);
+      window.scrollTo(0, 0);
     } else {
       setPage(1);
+      window.scrollTo(0, 0);
     }
   };
   return categoryName ? (
@@ -132,6 +134,7 @@ export const ProductsList = () => {
             defaultPage={1}
             count={10}
             page={page}
+            color="primary"
           ></Pagination>
           <BackButton to={() => backButton()} classProp={'center'} text="חזור"></BackButton>
         </Grid>
