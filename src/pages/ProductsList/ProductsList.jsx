@@ -95,10 +95,14 @@ export const ProductsList = () => {
   const onChangePage = (e, page) => {
     if (page) {
       setPage(page);
-      window.scrollTo(0, 0);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 200);
     } else {
       setPage(1);
-      window.scrollTo(0, 0);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 200);
     }
   };
   return categoryName ? (
