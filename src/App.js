@@ -54,9 +54,9 @@ function App() {
   return (
     <CssBaseline>
       <ThemeProvider theme={customTheme}>
-        <div className="App">
-          <HashRouter>
-            <AppHeader />
+        <HashRouter>
+          <AppHeader />
+          <div className="App">
             <Route path="/menu/weekend">
               <Menu menuType="weekend" />
             </Route>
@@ -83,8 +83,8 @@ function App() {
             <Route exact component={Contact} path="/contact" />
             <Route exact component={HomePage} path="/" />
             <SimpleSnackbar></SimpleSnackbar>
-          </HashRouter>
-        </div>
+          </div>
+        </HashRouter>
       </ThemeProvider>
     </CssBaseline>
   );

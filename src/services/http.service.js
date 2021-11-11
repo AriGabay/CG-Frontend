@@ -1,16 +1,11 @@
 const axios = require('axios');
 require('dotenv').config();
 const BASE_URL = process.env.REACT_APP_API_HOST;
-console.log('🚀 ~ file: http.service.js ~ line 4 ~ process.env', process.env);
 export const httpService = {
   get(endpoint, query) {
-    console.log('🚀 ~ file: http.service.js ~ line 6 ~ get ~ query', query);
-    console.log('🚀 ~ file: http.service.js ~ line 6 ~ get ~ endpoint', endpoint);
     const queryStr = Object.keys(query)
       .map((key) => key + '=' + query[key])
       .join('&');
-    console.log('🚀 ~ file: http.service.js ~ line 7 ~ get ~ queryStr', queryStr);
-    console.log('🚀 ~ file: http.service.js ~ line 15 ~ returnaxios.get ~ BASE_URL', BASE_URL);
     return axios.get(`${BASE_URL}${endpoint}?${queryStr}`).then((response) => {
       return response.data;
     });

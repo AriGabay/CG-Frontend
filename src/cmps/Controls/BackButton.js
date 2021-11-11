@@ -19,13 +19,17 @@ const useStyles = makeStyles((theme) => ({
   menuButton: {
     width: '100px'
   },
-  marginBottom: {}
+  center: {
+    display: 'flex !important',
+    justifyContent: 'center !important',
+    alignItems: 'center !important',
+    margin: '0 auto !important'
+  }
 }));
 
 export default function Button(props) {
-  const { text, size, color, variant, to, classProp = '' } = props;
+  const { text, size, color, variant, to, classProp } = props;
   const classes = useStyles();
-
   return (
     <NavLink className={classes.NavLink} to={to}>
       <MuiButton

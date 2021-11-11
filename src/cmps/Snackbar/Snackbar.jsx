@@ -71,7 +71,7 @@ export default function SimpleSnackbar() {
         horizontal: 'center'
       }}
       open={open}
-      autoHideDuration={2500}
+      autoHideDuration={1500}
       onClose={handleClose}
     >
       <Alert onClose={handleClose} severity="success">
