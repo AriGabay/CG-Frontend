@@ -92,9 +92,9 @@ export const ProductsList = () => {
       return '/menu/pesach';
     } else if (history.location.pathname.includes('tishray')) return '/menu/tishray';
   };
-  const onChangePage = (e) => {
-    if (e.target.innerText) {
-      setPage(e.target.innerText);
+  const onChangePage = (e, page) => {
+    if (page) {
+      setPage(page);
       window.scrollTo(0, 0);
     } else {
       setPage(1);
@@ -130,11 +130,12 @@ export const ProductsList = () => {
           </Grid>
           <Pagination
             className={classes.paginationCenter}
-            onChange={(event) => onChangePage(event)}
+            onChange={onChangePage}
             defaultPage={1}
             count={10}
-            page={page}
+            page={Number(page)}
             color="primary"
+            showLastButton={false}
           ></Pagination>
           <BackButton to={() => backButton()} classProp={'center'} text="חזור"></BackButton>
         </Grid>
