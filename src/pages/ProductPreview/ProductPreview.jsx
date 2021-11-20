@@ -1,5 +1,5 @@
 import './ProductPreview.scss';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BackButton from '../../cmps/Controls/BackButton';
 import { productService } from '../../services/productService';
@@ -19,6 +19,7 @@ import SvgIcon from '@material-ui/core/SvgIcon';
 import { eventBus } from '../../services/event-bus';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles({
   addToCartBtn: {
@@ -82,49 +83,55 @@ export const ProductPreview = () => {
   };
 
   return product ? (
-    <Grid className={classes.Grid} container>
-      <Grid item mt={2} lg={6} md={6} sm={12}>
-        <Typography variant="h3">{product.displayName}</Typography>
-        <Grid ml={2} mt={2} className={classes.imgContainer}>
-          <ImageCloud imageId={product.imgUrl} />
+    <Fragment>
+      <Helmet>
+        <title>Catering Gabay - Products Preview</title>
+        <mete name="products preview" content="products preview" />
+      </Helmet>
+      <Grid className={classes.Grid} container>
+        <Grid item mt={2} lg={6} md={6} sm={12}>
+          <Typography variant="h3">{product.displayName}</Typography>
+          <Grid ml={2} mt={2} className={classes.imgContainer}>
+            <ImageCloud imageId={product.imgUrl} />
+          </Grid>
+          {isMobile && (
+            <Grid item mt={2} lg={3} md={3} sm={12}>
+              <Typography variant="h5">תיאור:</Typography>
+              <Typography className={classes.textOver} mt={2} mb={2}>
+                {product.description}
+              </Typography>
+            </Grid>
+          )}
+          <Grid>
+            {product.Price.priceType === 'unit' ? (
+              <PriceForUnit productProps={product} productOrderProps={productOrder} setProductOrder={setProductOrder} />
+            ) : null}
+            {product.Price.priceType === 'box' ? (
+              <PriceForBox product={product} productOrder={productOrder} setProductOrder={setProductOrder} />
+            ) : null}
+            {product.Price.priceType === 'weight' ? (
+              <PriceForWeight product={product} setProductOrder={setProductOrder} />
+            ) : null}
+          </Grid>
+          <Grid>
+            <Button variant="contained" disableElevation className={classes.addToCartBtn} onClick={() => addToCart()}>
+              הוסף לעגלה <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
+            </Button>
+          </Grid>
+          <Grid mt={2} mb={2}>
+            <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
+          </Grid>
         </Grid>
-        {isMobile && (
+        {isMobile === false && (
           <Grid item mt={2} lg={3} md={3} sm={12}>
             <Typography variant="h5">תיאור:</Typography>
-            <Typography className={classes.textOver} mt={2} mb={2}>
+            <Typography mt={2} mb={2} className={classes.textOver}>
               {product.description}
             </Typography>
           </Grid>
         )}
-        <Grid>
-          {product.Price.priceType === 'unit' ? (
-            <PriceForUnit productProps={product} productOrderProps={productOrder} setProductOrder={setProductOrder} />
-          ) : null}
-          {product.Price.priceType === 'box' ? (
-            <PriceForBox product={product} productOrder={productOrder} setProductOrder={setProductOrder} />
-          ) : null}
-          {product.Price.priceType === 'weight' ? (
-            <PriceForWeight product={product} setProductOrder={setProductOrder} />
-          ) : null}
-        </Grid>
-        <Grid>
-          <Button variant="contained" disableElevation className={classes.addToCartBtn} onClick={() => addToCart()}>
-            הוסף לעגלה <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
-          </Button>
-        </Grid>
-        <Grid mt={2} mb={2}>
-          <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
-        </Grid>
       </Grid>
-      {isMobile === false && (
-        <Grid item mt={2} lg={3} md={3} sm={12}>
-          <Typography variant="h5">תיאור:</Typography>
-          <Typography mt={2} mb={2} className={classes.textOver}>
-            {product.description}
-          </Typography>
-        </Grid>
-      )}
-    </Grid>
+    </Fragment>
   ) : (
     <Box height={500} display="flex" justifyContent="center" alignItems="center">
       <CircularProgress />

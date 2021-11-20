@@ -9,6 +9,7 @@ import BackButton from '../../cmps/Controls/BackButton';
 import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/styles';
+import { Helmet } from 'react-helmet';
 const useStyles = makeStyles({
   gridMenu: {
     display: 'grid',
@@ -38,11 +39,26 @@ export const Menu = ({ menuType }) => {
       }
     });
   }, []);
-
+  const getMenuType=()=>{
+    if(history.location.pathname){
+      
+      if(history.location.pathname.includes('weekend'))return 'סוף שבוע'
+      else if (history.location.pathname.includes('tishray')) return 'תשרי'
+      else if (history.location.pathname.includes('pesach')) return 'פסח'
+      else return ''
+    }
+  }
   return (
     <Grid className="menu">
+      <Helmet>
+        <title>Catering Gabay - menu list</title>
+        <meta name="menu list" content="menu list" />
+        </Helmet>
       <Grid display="flex" alignItems="center" justifyContent="center">
-        {history.location.pathname.includes('weekend') ? (
+        {history.location.pathname &&<Typography variant="h3" gutterBottom>
+          תפריט {getMenuType()}
+        </Typography>}
+        {/* {history.location.pathname.includes('weekend') ? (
           <Typography variant="h3" gutterBottom>
             תפריט סוף שבוע
           </Typography>
@@ -56,7 +72,7 @@ export const Menu = ({ menuType }) => {
           <Typography variant="h2" gutterBottom>
             תפריט פסח
           </Typography>
-        ) : null}
+        ) : null} */}
       </Grid>
       <Grid className={classes.gridMenu}>
         {categories && categories.length ? (

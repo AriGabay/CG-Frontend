@@ -1,5 +1,5 @@
 import './ProductsList.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { productService } from '../../services/productService';
@@ -12,6 +12,7 @@ import BackButton from '../../cmps/Controls/BackButton';
 import { makeStyles } from '@material-ui/styles';
 import { useHistory } from 'react-router-dom';
 import Pagination from '@material-ui/core/Pagination';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles({
   gridThreeRows: {
@@ -106,6 +107,11 @@ export const ProductsList = () => {
     }
   };
   return categoryName ? (
+    <Fragment>
+      <Helmet>
+        <title>Catering Gabay - Products List</title>
+        <mete name="products list" content="products list" />
+        </Helmet>
     <Grid display="flex" alignItems="center" flexDirection="column" justify="center">
       {categoryName && (
         <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
@@ -118,12 +124,12 @@ export const ProductsList = () => {
             {products.map((product) => {
               return (
                 <Grid
-                  display="flex"
-                  alignItems="center"
-                  flexDirection="column"
-                  justify="center"
-                  className={classes.marginCenter}
-                  key={product.id}
+                display="flex"
+                alignItems="center"
+                flexDirection="column"
+                justify="center"
+                className={classes.marginCenter}
+                key={product.id}
                 >
                   <Container>
                     <ProductCard product={product} />
@@ -140,7 +146,7 @@ export const ProductsList = () => {
             page={Number(page)}
             color="primary"
             showLastButton={false}
-          ></Pagination>
+            ></Pagination>
           <BackButton to={() => backButton()} classProp={'center'} text="חזור"></BackButton>
         </Grid>
       ) : (
@@ -152,6 +158,7 @@ export const ProductsList = () => {
         </Grid>
       )}
     </Grid>
+    </Fragment>
   ) : (
     <Grid className={classes.progressScreen}>
       <CircularProgress />

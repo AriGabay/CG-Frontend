@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import useViewport from '../../hooks/useViewport';
 import BackButton from '../../cmps/Controls/BackButton';
+import {Helmet} from 'react-helmet'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -75,6 +76,10 @@ export const HomePage = () => {
 
   return (
     <Grid mt={2} className={classes.root}>
+      <Helmet>
+        <title>Home Page</title>
+        <meta name="home page" content="menu and logo" />
+        </Helmet>
       <Grid className={classes.imageContainer}>
         <Typography
           classes={{ root: classes.fixLineHeight }}

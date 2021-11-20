@@ -1,9 +1,10 @@
 import './About.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import GoogleMaps from '../../cmps/GoogleMaps/GoogleMaps';
+import { Helmet } from 'react-helmet';
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
@@ -22,14 +23,20 @@ const useStyles = makeStyles(() => ({
 export const About = () => {
   const classes = useStyles();
   return (
-    <Grid classes={{ root: classes.root }}>
+    <Fragment>
+      <Helmet>
+        <title>Catering Gabay - About</title>
+        <meta name="about" content="about" />
+      </Helmet>
       <Grid classes={{ root: classes.root }}>
-        <Typography variant="h2">אודות</Typography>
-        <Typography variant="h5">קייטרינג גבאי פועל כבר יותר מעשור. אוכל בתוצרת ביתית משובח ועשיר בטעמים.</Typography>
+        <Grid classes={{ root: classes.root }}>
+          <Typography variant="h2">אודות</Typography>
+          <Typography variant="h5">קייטרינג גבאי פועל כבר יותר מעשור. אוכל בתוצרת ביתית משובח ועשיר בטעמים.</Typography>
+        </Grid>
+        <Grid className={`${classes.gridMap} ${classes.root}`}>
+          <GoogleMaps></GoogleMaps>
+        </Grid>
       </Grid>
-      <Grid className={`${classes.gridMap} ${classes.root}`}>
-        <GoogleMaps></GoogleMaps>
-      </Grid>
-    </Grid>
+    </Fragment>
   );
 };

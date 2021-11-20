@@ -1,13 +1,18 @@
 import './Contact.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { Helmet } from 'react-helmet';
 // import { makeStyles } from '@material-ui/styles';
 
 export const Contact = () => {
   return (
+    <Fragment>
+       <Helmet>
+        <title>Catering Gabay - Content</title>
+        <mete name="content" content="content" />
+      </Helmet>
     <Grid display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-      {/* <Grid display="flex" justifyContent="center" alignItems="center" flexDirection="column"> */}
       <Typography variant="h2">צור קשר</Typography>
       <Typography>כתובת: המברג 10,טבריה.</Typography>
       <Typography>
@@ -26,7 +31,7 @@ export const Contact = () => {
       </Typography>
       <Typography>להזמנות מראש ניתן לבצע בפלאפון</Typography>
       <Typography> בין 10:00-18:00.</Typography>
-      {/* </Grid> */}
     </Grid>
+    </Fragment>
   );
 };
