@@ -1,5 +1,5 @@
 import './CheckoutOrder.scss';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { cartService } from '../../services/cartService';
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
 import { UserDetailsForm } from '../../cmps/UserDetailsForm/UserDetailsForm';
@@ -67,6 +67,11 @@ export const CheckoutOrder = () => {
   }, []);
 
   return cart ? (
+    <Fragment>
+             <Helmet>
+        <title>Catering Gabay - Checkout</title>
+        <mete name="checkout" content="checkout" />
+      </Helmet>
     <Grid mt={6} className={classes.root}>
       <Grid item sm={6}>
         <Container>
@@ -104,10 +109,11 @@ export const CheckoutOrder = () => {
             unTax={unTax}
             checkOutTotal={cartService.checkOutTotal}
             cart={cart}
-          ></UserDetailsForm>
+            ></UserDetailsForm>
         </Grid>
       )}
     </Grid>
+      </Fragment>
   ) : (
     <CircularProgress />
   );
