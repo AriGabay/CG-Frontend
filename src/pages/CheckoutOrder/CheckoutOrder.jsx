@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/styles';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(() => ({
   root: {
