@@ -68,52 +68,52 @@ export const CheckoutOrder = () => {
 
   return cart ? (
     <Fragment>
-             <Helmet>
+      <Helmet>
         <title>Catering Gabay - Checkout</title>
         <mete name="checkout" content="checkout" />
       </Helmet>
-    <Grid mt={6} className={classes.root}>
-      <Grid item sm={6}>
-        <Container>
-          <Typography textAlign="center" variant="h4" component="h2">
-            סיכום הזמנה:
-          </Typography>
-        </Container>
-        {cart.map((product, index) => {
-          return (
-            <Grid mt={2} item key={index} className={classes.productCard}>
-              <Paper variant="outlined" className={classes.Paper}>
-                <Typography variant="h6" component="h2">
-                  {product.displayName}
-                </Typography>
-                <Typography>
-                  {product.Price.priceType === 'weight' && <span> {product.sizeToOrder} גרם</span>}
-                  {product.Price.priceType === 'unit' && <span>{product.sizeToOrder} יחידות </span>}
-                  {product.Price.priceType === 'box' && <span>קופסה בגודל {product.sizeToOrder} גרם</span>}
-                </Typography>
-                <Typography>
-                  מחיר : {product.pricePerSize.toFixed(2)}
-                  {shekel}
-                </Typography>
-                <ImageCloud imageId={product.imgUrl} maxWidth={350} maxHeight={300}></ImageCloud>
-              </Paper>
-            </Grid>
-          );
-        })}
-      </Grid>
-      {totalPrice && cart && tax && unTax && (
-        <Grid item sm={3} className={classes.formSide}>
-          <UserDetailsForm
-            totalPrice={totalPrice}
-            tax={tax}
-            unTax={unTax}
-            checkOutTotal={cartService.checkOutTotal}
-            cart={cart}
-            ></UserDetailsForm>
+      <Grid mt={6} className={classes.root}>
+        <Grid item sm={6}>
+          <Container>
+            <Typography textAlign="center" variant="h4" component="h2">
+              סיכום הזמנה:
+            </Typography>
+          </Container>
+          {cart.map((product, index) => {
+            return (
+              <Grid mt={2} item key={index} className={classes.productCard}>
+                <Paper variant="outlined" className={classes.Paper}>
+                  <Typography variant="h6" component="h2">
+                    {product.displayName}
+                  </Typography>
+                  <Typography>
+                    {product.Price.priceType === 'weight' && <span> {product.sizeToOrder} גרם</span>}
+                    {product.Price.priceType === 'unit' && <span>{product.sizeToOrder} יחידות </span>}
+                    {product.Price.priceType === 'box' && <span>קופסה בגודל {product.sizeToOrder} גרם</span>}
+                  </Typography>
+                  <Typography>
+                    מחיר : {product.pricePerSize.toFixed(2)}
+                    {shekel}
+                  </Typography>
+                  <ImageCloud imageId={product.imgUrl} maxWidth={350} maxHeight={300}></ImageCloud>
+                </Paper>
+              </Grid>
+            );
+          })}
         </Grid>
-      )}
-    </Grid>
-      </Fragment>
+        {totalPrice && cart && tax && unTax && (
+          <Grid item sm={3} className={classes.formSide}>
+            <UserDetailsForm
+              totalPrice={totalPrice}
+              tax={tax}
+              unTax={unTax}
+              checkOutTotal={cartService.checkOutTotal}
+              cart={cart}
+            ></UserDetailsForm>
+          </Grid>
+        )}
+      </Grid>
+    </Fragment>
   ) : (
     <CircularProgress />
   );
