@@ -51,8 +51,8 @@ export const Menu = ({ menuType }) => {
   return (
     <Grid className="menu">
       <Helmet>
-        <title>Catering Gabay - menu list</title>
-        <meta name="menu list" content="menu list" />
+        <title>Catering Gabay - Menu</title>
+        <meta name="menu-list" content="menu list" />
         </Helmet>
       <Grid display="flex" alignItems="center" justifyContent="center">
         {history.location.pathname &&<Typography variant="h3" gutterBottom>

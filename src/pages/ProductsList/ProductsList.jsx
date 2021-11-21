@@ -110,7 +110,7 @@ export const ProductsList = () => {
     <Fragment>
       <Helmet>
         <title>Catering Gabay - Products List</title>
-        <mete name="products list" content="products list" />
+        <mete name="products-list" content="products list" />
         </Helmet>
     <Grid display="flex" alignItems="center" flexDirection="column" justify="center">
       {categoryName && (

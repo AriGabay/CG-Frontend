@@ -42,25 +42,26 @@ export const SizePrice = (props) => {
   const [sizePriceToEdit, setSizePriceToEdit] = useState();
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
-    async function x() {
+    async function start() {
       const prices = await pricesService.getPrices({ include: false });
       setPrices(prices);
       const data = await sizePriceService.getSizePrices();
       const arr = [];
-      data.forEach((sizePrice) => {
-        prices.forEach((price) => {
-          if (sizePrice.priceId === price.id) {
-            arr.push({
-              ...sizePrice,
-              displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`
-            });
-          }
+      if (data && data.length) {
+        data.forEach((sizePrice) => {
+          prices.forEach((price) => {
+            if (sizePrice.priceId === price.id) {
+              arr.push({
+                ...sizePrice,
+                displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`
+              });
+            }
+          });
         });
-      });
-
+      }
       setSizePrices(arr);
     }
-    x();
+    start();
   }, []);
   const addSizePrice = () => {
     const data = {
