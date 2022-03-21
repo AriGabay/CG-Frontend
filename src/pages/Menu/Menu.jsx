@@ -10,6 +10,8 @@ import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/styles';
 import { Helmet } from 'react-helmet';
+import BasicModal from '../../cmps/BasicModal/BasicModal';
+
 const useStyles = makeStyles({
   gridMenu: {
     display: 'grid',
@@ -32,6 +34,8 @@ export const Menu = ({ menuType }) => {
   const classes = useStyles();
   const history = useHistory();
   const [categories, setCategories] = useState([]);
+  const pathName = history.location.pathname;
+
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
       if (categor && categor.length) {
@@ -41,7 +45,6 @@ export const Menu = ({ menuType }) => {
   }, []);
   const getMenuType=()=>{
     if(history.location.pathname){
-      
       if(history.location.pathname.includes('weekend'))return 'סוף שבוע'
       else if (history.location.pathname.includes('tishray')) return 'תשרי'
       else if (history.location.pathname.includes('pesach')) return 'פסח'
@@ -58,22 +61,10 @@ export const Menu = ({ menuType }) => {
         {history.location.pathname &&<Typography variant="h3" gutterBottom>
           תפריט {getMenuType()}
         </Typography>}
-        {/* {history.location.pathname.includes('weekend') ? (
-          <Typography variant="h3" gutterBottom>
-            תפריט סוף שבוע
-          </Typography>
-        ) : null}
-        {history.location.pathname.includes('tishray') ? (
-          <Typography variant="h2" gutterBottom>
-            תפריט חגי תשרי
-          </Typography>
-        ) : null}
-        {history.location.pathname.includes('pesach') ? (
-          <Typography variant="h2" gutterBottom>
-            תפריט פסח
-          </Typography>
-        ) : null} */}
       </Grid>
+      {pathName&&pathName.includes('pesach')?
+       <BasicModal />:null
+      }
       <Grid className={classes.gridMenu}>
         {categories && categories.length ? (
           categories.map((category, index) => {

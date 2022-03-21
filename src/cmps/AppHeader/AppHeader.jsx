@@ -203,7 +203,7 @@ export const AppHeader = () => {
                 color="secondary"
                 classes={{ root: classes.ButtonCart }}
                 startIcon={
-                  <ShakeRotate style={{ 'font-size': '0px' }} active={true}>
+                  <ShakeRotate style={{ 'fontSize': '0px' }} active={true}>
                     <ShoppingCartOutlinedIcon classes={{ root: classes.startIcon }} color="white" />
                   </ShakeRotate>
                 }

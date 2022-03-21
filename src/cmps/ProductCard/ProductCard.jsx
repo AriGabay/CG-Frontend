@@ -64,7 +64,11 @@ export const ProductCard = ({ product }) => {
                   מכיל קיטניות
                 </Typography>
               ) : (
-                <Typography>לא מכיל קיטניות</Typography>
+                <Typography className={classes.productDescription}
+                style={{ fontWeight: 'bold' }}
+                variant="body2"
+                color="textSecondary"
+                component="p">ללא חשש קיטניות</Typography>
               )}
             </Box>
           ) : (
