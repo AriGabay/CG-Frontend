@@ -27,16 +27,16 @@ export default function BasicModal() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
           לקוחות יקרים!
           </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
 מכירת חג הפסח מתבצעת בכפולות של חמש מנות.
           </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
 שיהיה חג שמח וכשר 
           </Typography>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
 מקייטרינג גבאי.
           </Typography>
         </Box>
