@@ -13,7 +13,6 @@ import { makeStyles } from '@material-ui/styles';
 import { useHistory } from 'react-router-dom';
 import Pagination from '@material-ui/core/Pagination';
 import { Helmet } from 'react-helmet';
-import { FormControlLabel, Switch } from '@material-ui/core';
 
 const useStyles = makeStyles({
   gridThreeRows: {
@@ -69,13 +68,12 @@ export const ProductsList = () => {
   const history = useHistory();
   const [products, setProducts] = useState();
   const [categoryName, setCategoryName] = useState();
-  const [kitniyot, setKitniyot] = useState(true);
   const [page, setPage] = useState(1);
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
   useEffect(() => {
     productService
-      .getProducts({ categoryId, include: true, pathName, page: Number(page) - 1,kitniyot })
+      .getProducts({ categoryId, include: true, pathName, page: Number(page) - 1 })
       .then((res) => {
         if (res && res.length) {
           setProducts(res);
@@ -87,7 +85,7 @@ export const ProductsList = () => {
       .catch((error) => {
         console.log('error :', error);
       });
-  }, [categoryId, pathName, page,kitniyot]);
+  }, [categoryId, pathName, page]);
   const backButton = () => {
     if (history.location.pathname.includes('weekend')) {
       return '/menu/weekend';
@@ -120,9 +118,6 @@ export const ProductsList = () => {
           <Typography variant="h3">{categoryName}</Typography>
         </Grid>
       )}
-      {pathName&&pathName.includes('pesach')?
-       <FormControlLabel control={<Switch defaultChecked />} onChange={()=>setKitniyot(!kitniyot) } label="תפריט מכיל קטניות" />:null
-      }
       {products && products.length ? (
         <Grid className={classes.gridForPagination}>
           <Grid className={classes.gridThreeRows}>
