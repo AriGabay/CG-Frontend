@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Button, Modal, Typography } from '@material-ui/core';
+import { Box, Modal, Typography } from '@material-ui/core';
 
 
 const style = {
