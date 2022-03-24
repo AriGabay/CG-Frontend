@@ -9,13 +9,14 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
   optionsBtn: {
-    maxWidth: 175
+    maxWidth: '270px'
   },
   typography: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    textAlign: 'center'
+    textAlign: 'center',
+    width:'350px'
   }
 });
 
@@ -41,6 +42,7 @@ export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
           >
             <Grid className={classes.typography}>
               <Typography>קופסה בגודל של {price.size} גרם</Typography>
+              <Typography>|</Typography>
               <Typography>
                 מחיר: {price.amount}
                 {shekel}

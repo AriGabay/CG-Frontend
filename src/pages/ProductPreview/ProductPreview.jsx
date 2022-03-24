@@ -94,7 +94,7 @@ export const ProductPreview = () => {
           <Grid ml={2} mt={2} className={classes.imgContainer}>
             <ImageCloud imageId={product.imgUrl} />
           </Grid>
-          {isMobile && (
+          {isMobile && product.description.length > 0 && (
             <Grid item mt={2} lg={3} md={3} sm={12}>
               <Typography variant="h5">תיאור:</Typography>
               <Typography className={classes.textOver} mt={2} mb={2}>
@@ -122,7 +122,7 @@ export const ProductPreview = () => {
             <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
           </Grid>
         </Grid>
-        {isMobile === false && (
+        {isMobile === false && product.description.length > 0 && (
           <Grid item mt={2} lg={3} md={3} sm={12}>
             <Typography variant="h5">תיאור:</Typography>
             <Typography mt={2} mb={2} className={classes.textOver}>
