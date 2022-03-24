@@ -68,10 +68,6 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
   };
   return product ? (
     <Grid>
-      <Typography>
-        מחיר לקילו : {product.Price.SizePrices[0].amount * 10}
-        {shekel}
-      </Typography>
       <Grid className={classes.buttonPlusMinus}>
         <TextField
           required

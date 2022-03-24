@@ -31,7 +31,7 @@ export default function BasicModal() {
           לקוחות יקרים!
           </Typography>
           <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
-מכירת חג הפסח מתבצעת בכפולות של חמש מנות.
+              הזמנות לחג הפסח מתבצעות בכפולות של חמש מנות.
           </Typography>
           <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
 שיהיה חג שמח וכשר 

@@ -63,10 +63,6 @@ export const PriceForUnit = ({ productProps, productOrder, setProductOrder }) =>
 
   return product ? (
     <Grid>
-      <Typography mt={2}>
-        מחיר ליחידה :{product.Price.SizePrices[0].amount}
-        {shekel}{' '}
-      </Typography>
       <Grid className={classes.buttonPlusMinus}>
         <TextField
           required

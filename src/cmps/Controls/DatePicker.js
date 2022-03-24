@@ -10,62 +10,65 @@ import startOfToday from 'date-fns/startOfToday';
 import isFriday from 'date-fns/isFriday';
 
 export default function DatePicker(props) {
-  const { name, label, value, onChange, required = false, error } = props;
+    const {name, label, value, onChange, required = false, error} = props;
 
-  const convertToDefEventPara = (name, value) => {
-    const e = {
-      target: {
-        name,
-        value
-      }
+    const convertToDefEventPara = (name, value) => {
+        const e = {
+            target: {
+                name,
+                value
+            }
+        };
+        return e;
     };
-    return e;
-  };
 
-  const dateToStr = (date) => {
-    date = date + '';
-    return date.slice(0, 16);
-  };
+    const dateToStr = (date) => {
+        date = date + '';
+        return date.slice(0, 16);
+    };
 
-  const color = (day) => {
-    return isBefore(day, startOfToday()) || !isFriday(day) ? { opacity: 0.25 } : { backgroundColor: '#937446' };
-  };
+    const color = (day) => {
+        return (validateDate(day) ? {opacity: 0.25} : {backgroundColor: '#937446'});
+    };
+    const validateDate = (day) => {
+        return (isBefore(day, startOfToday()) || !isFriday(day)) && !day.toString().includes('Thu Apr 14')
+    }
 
-  return (
-    <div>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePickerComp
-          variant="inline"
-          inputVariant="outlined"
-          label={label}
-          inputFormat="dd/MM/yyyy"
-          name={name}
-          value={value}
-          required={required}
-          renderInput={(params) => <TextField {...params} />}
-          onChange={(day) => {
-            onChange(convertToDefEventPara(name, dateToStr(day)));
-          }}
-          renderDay={(day, _, moreDetailsForDay) => {
-            return (
-              <PickersDay
-                day={day}
-                key={moreDetailsForDay.key}
-                outsideCurrentMonth={false}
-                disabled={isBefore(day, startOfToday()) || !isFriday(day)}
-                style={color(day)}
-                onDaySelect={() => {
-                  onChange(convertToDefEventPara(name, dateToStr(day)));
-                }}
-              />
-            );
-          }}
-        />
-        {error && <FormHelperText>{error}</FormHelperText>}
-      </LocalizationProvider>
-    </div>
-  );
+    return (
+        <div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+                <DatePickerComp
+                    variant="inline"
+                    inputVariant="outlined"
+                    label={label}
+                    inputFormat="dd/MM/yyyy"
+                    name={name}
+                    value={value}
+                    required={required}
+                    renderInput={(params) => <TextField {...params} />}
+                    onChange={(day) => {
+                        onChange(convertToDefEventPara(name, dateToStr(day)));
+                    }}
+                    renderDay={(day, _, moreDetailsForDay) => {
+                        return (
+                            <PickersDay
+                                day={day}
+                                key={moreDetailsForDay.key}
+                                outsideCurrentMonth={false}
+                                disabled={validateDate(day)}
+                                style={color(day)}
+                                onDaySelect={() => {
+                                    onChange(convertToDefEventPara(name, dateToStr(day)));
+                                }}
+                            />
+                        );
+                    }}
+                />
+                {error && <FormHelperText>{error}</FormHelperText>}
+            </LocalizationProvider>
+        </div>
+    );
 }
 DatePicker.propTypes = {
-  onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired
 };
