@@ -21,6 +21,7 @@ jobs:
         with:
           REACT_APP_API_HOST: ${{secrets.AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST}}
           REACT_APP_GOOGLE_MAPS_KEY: ${{secrets.AZURE_STATIC_WEB_APPS_REACT_APP_GOOGLE_MAPS_KEY}}
+          REACT_APP_IS_ENABLE_MENU: ${{secrets.AZURE_STATIC_WEB_APPS_REACT_APP_IS_ENABLE_MENU}}
           submodules: true
       - name: Build And Deploy
         id: builddeploy
