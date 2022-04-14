@@ -47,8 +47,8 @@ export const Menu = ({ menuType }) => {
   const history = useHistory();
   const [categories, setCategories] = useState([]);
   const pathName = history.location.pathname;
-  const isEnableMenu = (process.env.REACT_APP_IS_ENABLE_MENU === 'true') 
-
+  console.log('is',process.env.REACT_APP_IS_ENABLE_MENU);
+  const isEnableMenu = (String(process.env.REACT_APP_IS_ENABLE_MENU).toLowerCase() == "true")
   console.log('isEnableMenu',isEnableMenu);
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
