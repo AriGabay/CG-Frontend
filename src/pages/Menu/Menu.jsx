@@ -28,14 +28,28 @@ const useStyles = makeStyles({
     '@media (max-width: 800px)': {
       gridTemplateColumns: '1fr'
     }
-  }
+  },
+  progressScreen: {
+    minWidth: '100vw',
+    minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'column !important',
+    '& > *': {
+      marginBottom: '35px'
+    }
+  },
 });
 export const Menu = ({ menuType }) => {
   const classes = useStyles();
   const history = useHistory();
   const [categories, setCategories] = useState([]);
   const pathName = history.location.pathname;
+  const isEnableMenu = (process.env.REACT_APP_IS_ENABLE_MENU === 'true') 
 
+  console.log('isEnableMenu',isEnableMenu);
   useEffect(() => {
     categoryService.getCategories({ include: false }).then((categor) => {
       if (categor && categor.length) {
@@ -51,7 +65,7 @@ export const Menu = ({ menuType }) => {
       else return ''
     }
   }
-  return (
+  return isEnableMenu? (
     <Grid className="menu">
       <Helmet>
         <title>Catering Gabay - Menu</title>
@@ -77,6 +91,12 @@ export const Menu = ({ menuType }) => {
       <Grid mt={2} mb={2} container display="flex" justifyContent="center" alignContent="center">
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
+    </Grid>
+  ): (
+    <Grid className={classes.progressScreen}>
+      <CircularProgress />
+      <Typography>האתר סגור זמנית - נשוב בקרוב</Typography>
+      <BackButton to={() => '/'} text="חזור"></BackButton>
     </Grid>
   );
 };
