@@ -53,20 +53,33 @@ const useStyles = makeStyles(() => ({
   },
   GridMenuButton: {
     display: 'flex',
+        // comment for pesach
+    // justifyContent: 'space-between',
+    // width: '50% !important',
     justifyContent: 'space-between',
-    width: '50% !important',
+    width: '20% !important',
     alignItems: 'center',
     marginRight: '5px',
     marginLeft: '5px',
-    '@media (max-width: 650px)': {
-      width: '75% !important'
+    // '@media (max-width: 650px)': {
+    //   width: '75% !important'
+    // },
+    // '@media (max-width: 450px)': {
+    //   width: '85% !important'
+    // },
+    // '@media (max-width: 380px)': {
+    //   width: '95% !important'
+    // }
+    '@media (max-width: 1100px)': {
+      width: '25% !important'
     },
-    '@media (max-width: 450px)': {
-      width: '85% !important'
+    '@media (max-width: 880px)': {
+      width: '45% !important'
     },
-    '@media (max-width: 380px)': {
-      width: '95% !important'
+    '@media (max-width: 510px)': {
+      width: '60% !important'
     }
+    
   }
 }));
 
@@ -91,7 +104,7 @@ export const HomePage = () => {
         </Typography>
         <Grid className={classes.GridMenuButton}>
           <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" />
-          <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח" />
+          {/* <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח" /> */}
           <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי" />
         </Grid>
         <Grid mb={6}>
