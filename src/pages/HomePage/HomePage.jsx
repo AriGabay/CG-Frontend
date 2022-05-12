@@ -103,9 +103,9 @@ export const HomePage = () => {
           יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
         <Grid className={classes.GridMenuButton}>
-          <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" />
+          {/* <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" /> */}
           {/* <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח" /> */}
-          <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי" />
+          {/* <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי" /> */}
         </Grid>
         <Grid mb={6}>
           <ImageCloud
