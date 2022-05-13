@@ -186,9 +186,9 @@ export const AppHeader = () => {
               <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/">
                 <Typography className={classes.ColorNavLink}>בית</Typography>
               </NavLink>
-              {/* <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu/weekend">
+              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu/weekend">
                 <Typography className={classes.ColorNavLink}>תפריט</Typography>
-              </NavLink> */}
+              </NavLink>
               <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/about">
                 <Typography className={classes.ColorNavLink}>אודות</Typography>
               </NavLink>
