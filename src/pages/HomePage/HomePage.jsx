@@ -5,7 +5,7 @@ import './HomePage.scss';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import useViewport from '../../hooks/useViewport';
-import BackButton from '../../cmps/Controls/BackButton';
+// import BackButton from '../../cmps/Controls/BackButton';
 import {Helmet} from 'react-helmet'
 
 const useStyles = makeStyles(() => ({
@@ -103,7 +103,7 @@ export const HomePage = () => {
           יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
         <Grid className={classes.GridMenuButton}>
-          <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" />
+          {/* <BackButton classProp="menuButton" to="/menu/weekend" text="לתפריט סוף שבוע" /> */}
           {/* <BackButton classProp="menuButton" to="/menu/pesach" text="לתפריט פסח" /> */}
           {/* <BackButton classProp="menuButton" to="/menu/tishray" text="לתפריט חגי תשרי" /> */}
         </Grid>
