@@ -56,7 +56,7 @@ const useStyles = makeStyles(() => ({
         // comment for pesach
     // justifyContent: 'space-between',
     // width: '50% !important',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '20% !important',
     alignItems: 'center',
     marginRight: '5px',
