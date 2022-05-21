@@ -15,11 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
+      - name: echo
+        run: |
+          echo "AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST: $secrets.AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST"
       - uses: actions/checkout@v2
       - name: set environment variables
         uses: allenevans/set-env@v2.0.0
-        run: |
-          echo "AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST: $secrets.AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST"
         with:
           REACT_APP_API_HOST: ${{secrets.AZURE_STATIC_WEB_APPS_REACT_APP_API_HOST}}
           REACT_APP_GOOGLE_MAPS_KEY: ${{secrets.AZURE_STATIC_WEB_APPS_REACT_APP_GOOGLE_MAPS_KEY}}
