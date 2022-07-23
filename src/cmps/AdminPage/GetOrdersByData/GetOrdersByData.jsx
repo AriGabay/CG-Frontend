@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     width: '100% !important'
   }
 }));
-export const GetOrdersByData = (props) => {
+export const GetOrdersByData = () => {
   const [startDay, setStartDay] = useState(new Date());
   const [endDay, setEndDay] = useState(new Date());
   const [orders, setOrders] = useState();
@@ -53,9 +53,9 @@ export const GetOrdersByData = (props) => {
         start: startDay,
         end: endDay
       };
-      const orders = await ordersService.getOrdersByDates(dates);
-      setOrders(orders[0]);
-      setTotalProducts(orders[1]);
+      const totalOrders = await ordersService.getOrdersByDates(dates);
+      setOrders(totalOrders.orders);
+      setTotalProducts(totalOrders.totalProducts);
     } catch (error) {
       console.log('error:', error);
     }
@@ -149,9 +149,10 @@ export const GetOrdersByData = (props) => {
             endDay
           )}`}</Typography>
           {totalProducts &&
-            totalProducts.map((product, index) => {
+            Object.values(totalProducts).length &&
+            Object.values(totalProducts).map((product) => {
               return (
-                <Grid key={index}>
+                <Grid key={product.id}>
                   <Typography>{product.displayName}</Typography>
                   <Typography>{product.sizeToOrder}</Typography>
                   <Typography>{product.Price.priceType}</Typography>

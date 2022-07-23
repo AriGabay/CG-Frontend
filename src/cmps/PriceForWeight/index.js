@@ -1,1 +1,1 @@
-export { PriceForWeight } from './PriceForWeight'
+export { PriceForWeight } from './PriceForWeight';

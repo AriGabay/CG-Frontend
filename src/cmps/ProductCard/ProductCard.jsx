@@ -10,6 +10,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles({
   root: {
@@ -29,8 +30,10 @@ const useStyles = makeStyles({
 });
 export const ProductCard = ({ product }) => {
   let history = useHistory();
+  const dispatch = useDispatch();
   const classes = useStyles();
   const handleClick = () => {
+    dispatch({ type: 'SET_PRODUCT', payload: product });
     history.push({
       pathname: `/product/${product.id}`,
       state: history.location.pathname
@@ -64,11 +67,15 @@ export const ProductCard = ({ product }) => {
                   מכיל קיטניות
                 </Typography>
               ) : (
-                <Typography className={classes.productDescription}
-                style={{ fontWeight: 'bold' }}
-                variant="body2"
-                color="textSecondary"
-                component="p">ללא חשש קיטניות</Typography>
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  ללא חשש קיטניות
+                </Typography>
               )}
             </Box>
           ) : (

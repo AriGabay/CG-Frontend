@@ -1,1 +1,1 @@
-export { CheckoutOrder } from './CheckoutOrder'
+export { CheckoutOrder } from './CheckoutOrder';

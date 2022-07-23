@@ -1,1 +1,1 @@
-export { ImageCloud } from './ImageCloud'
+export { ImageCloud } from './ImageCloud';

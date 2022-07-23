@@ -23,7 +23,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export const AdminPage = (props) => {
+export const AdminPage = () => {
   const classes = useStyles();
   const [status, setStatus] = useState();
   const [userAuth, setUserAuth] = useState({});

@@ -35,7 +35,7 @@ const val = {
 //   priceForSizePrice: '',
 // }
 
-export const SizePrice = (props) => {
+export const SizePrice = () => {
   const classes = useStyles();
   const [prices, setPrices] = useState();
   const [sizePrices, setSizePrices] = useState();
@@ -69,12 +69,12 @@ export const SizePrice = (props) => {
       amount: values.amount,
       priceId: values.priceForSizePrice
     };
-    sizePriceService.addSizePrice(data).then((res) => {
+    sizePriceService.addSizePrice(data).then(() => {
       console.log('add Size Price');
     });
   };
   const removeSizePrice = () => {
-    sizePriceService.removeSizePrice(values.removeSizePrice).then((res) => {
+    sizePriceService.removeSizePrice(values.removeSizePrice).then(() => {
       console.log('remove size price');
     });
   };

@@ -1,1 +1,1 @@
-export { GetOrdersByData } from './GetOrdersByData'
+export { GetOrdersByData } from './GetOrdersByData';

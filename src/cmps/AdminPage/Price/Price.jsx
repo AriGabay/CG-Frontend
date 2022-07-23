@@ -53,7 +53,6 @@ export const Price = () => {
           .join(' ');
       };
       if (data && data.length) {
-        console.log("🚀 ~ file: Price.jsx ~ line 57 ~ arr ~ data", data)
         const arr = data.map((price) => {
           const displayName = `${price.displayName} ${concatenateStrings(price.SizePrices)}`;
           return { ...price, displayName };

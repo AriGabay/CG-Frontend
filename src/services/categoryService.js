@@ -2,12 +2,27 @@ import { httpService } from './http.service';
 const endpoint = 'category/';
 async function getCategories(query = { include: false }) {
   try {
-    const res = await httpService.get(endpoint, query);
-    return res;
+    return await httpService.get(endpoint, query);
   } catch (error) {
     console.error('error', error);
   }
 }
+async function getCategoriesDropDown() {
+  try {
+    return await httpService.get(endpoint + 'dropdown', {});
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+
+async function getCategoriesMenu(query = { include: false }) {
+  try {
+    return await httpService.get(endpoint + 'menu', query);
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+
 async function addCategory(category) {
   await httpService.post(endpoint, category);
 }
@@ -37,5 +52,7 @@ export const categoryService = {
   addCategory,
   removeCategory,
   getCategoryById,
-  updateCategory
+  updateCategory,
+  getCategoriesMenu,
+  getCategoriesDropDown
 };

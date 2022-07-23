@@ -1,1 +1,1 @@
-export { PlusMinus } from './PlusMinus'
+export { PlusMinus } from './PlusMinus';

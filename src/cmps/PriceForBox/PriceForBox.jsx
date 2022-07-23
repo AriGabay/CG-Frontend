@@ -16,11 +16,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'space-between',
     textAlign: 'center',
-    width:'350px'
+    width: '350px'
   }
 });
 
-export const PriceForBox = ({ product, productOrder, setProductOrder }) => {
+export const PriceForBox = ({ product, setProductOrder }) => {
   const [priceToShow, setPriceToShow] = useState(0);
   const shekel = '₪';
   const classes = useStyles();

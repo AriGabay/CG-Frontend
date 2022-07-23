@@ -1,5 +1,5 @@
 import './ProductPreview.scss';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import BackButton from '../../cmps/Controls/BackButton';
 import { productService } from '../../services/productService';
@@ -20,6 +20,7 @@ import { eventBus } from '../../services/event-bus';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Helmet } from 'react-helmet';
+import { useSelector, useDispatch } from 'react-redux';
 
 const useStyles = makeStyles({
   addToCartBtn: {
@@ -53,20 +54,25 @@ const useStyles = makeStyles({
 
 export const ProductPreview = () => {
   const isMobile = useMediaQuery('(max-width:960px)');
-  const [product, setProduct] = useState();
+  const product = useSelector((state) => {
+    return state.product;
+  });
+  const dispatch = useDispatch();
   const [productOrder, setProductOrder] = useState({ sizeToOrder: null, product: null, priceToShow: null });
   const { productId } = useParams();
   const classes = useStyles();
-  let history = useHistory();
+  const history = useHistory();
 
   useEffect(() => {
-    productService
-      .getProducts({ id: productId, include: true })
-      .then((res) => {
-        setProduct(res[0]);
-      })
-      .catch((error) => console.log(error));
-  }, [productId]);
+    if (!Object.keys(product).length || productId !== product.id) {
+      productService
+        .getProductById(productId)
+        .then((res) => {
+          dispatch({ type: 'SET_PRODUCT', payload: res });
+        })
+        .catch((error) => console.log(error));
+    }
+  }, []);
   const addToCart = () => {
     if (
       productOrder === undefined ||
@@ -82,7 +88,7 @@ export const ProductPreview = () => {
     });
   };
 
-  return product ? (
+  return Object.keys(product).length ? (
     <Fragment>
       <Helmet>
         <title>Catering Gabay - Products Preview</title>
@@ -107,7 +113,7 @@ export const ProductPreview = () => {
               <PriceForUnit productProps={product} productOrderProps={productOrder} setProductOrder={setProductOrder} />
             ) : null}
             {product.Price.priceType === 'box' ? (
-              <PriceForBox product={product} productOrder={productOrder} setProductOrder={setProductOrder} />
+              <PriceForBox product={product} setProductOrder={setProductOrder} />
             ) : null}
             {product.Price.priceType === 'weight' ? (
               <PriceForWeight product={product} setProductOrder={setProductOrder} />
@@ -119,7 +125,7 @@ export const ProductPreview = () => {
             </Button>
           </Grid>
           <Grid mt={2} mb={2}>
-            <BackButton to={history.location.state ? history.location.state : `/`} text="חזור"></BackButton>
+            <BackButton to={history.location.state ? history.location.state : '/'} text="חזור"></BackButton>
           </Grid>
         </Grid>
         {isMobile === false && product.description.length > 0 && (

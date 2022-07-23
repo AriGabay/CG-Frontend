@@ -12,6 +12,7 @@ import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { useHistory } from 'react-router-dom';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useDispatch } from 'react-redux';
 const customTheme = getCustomTheme();
 
 const useStyles = makeStyles({
@@ -26,9 +27,12 @@ const useStyles = makeStyles({
   }
 });
 export const CategoryCard = ({ category, index, menuType }) => {
+  const dispatch = useDispatch();
   const matches = useMediaQuery('(min-width:700px)');
   let history = useHistory();
   const handleClick = () => {
+    dispatch({ type: 'SET_CATEGORY', payload: { ...category } });
+    dispatch({ type: 'SET_PAGE', payload: 1 });
     history.push(`/products/${category.id}/${menuType}`);
   };
   const classes = useStyles({ menuType });

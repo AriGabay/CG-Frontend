@@ -1,14 +1,20 @@
-const axios = require('axios');
-require('dotenv').config();
+import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 const BASE_URL = process.env.REACT_APP_API_HOST;
 export const httpService = {
-  get(endpoint, query) {
-    const queryStr = Object.keys(query)
-      .map((key) => key + '=' + query[key])
-      .join('&');
-    return axios.get(`${BASE_URL}${endpoint}?${queryStr}`).then((response) => {
+  async get(endpoint, query = {}) {
+    try {
+      const queryStr = Object.keys(query)
+        .map((key) => key + '=' + query[key])
+        .join('&');
+      const response = await axios.get(`${BASE_URL}${endpoint}?${queryStr}`).catch((error) => {
+        throw new Error(error);
+      });
       return response.data;
-    });
+    } catch (error) {
+      throw new Error(error);
+    }
   },
   post(endpoint, data) {
     return axios.post(BASE_URL + endpoint, data).then((res) => res.data);

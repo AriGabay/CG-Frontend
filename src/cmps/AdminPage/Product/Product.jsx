@@ -49,7 +49,7 @@ export const Product = ({ eventBus }) => {
   const { values, handleInputChange } = useForm(val, false);
   useEffect(() => {
     pricesService.getPrices(false).then((prices) => setPrices(prices));
-    categoryService.getCategories(false).then((category) => {
+    categoryService.getCategoriesDropDown().then((category) => {
       setCategories(category);
     });
     productService.getAllProducts({ include: false }).then((res) => {
@@ -78,7 +78,7 @@ export const Product = ({ eventBus }) => {
     });
   };
   const removeProduct = () => {
-    productService.removeProduct(values.productToRemove).then((res) => {
+    productService.removeProduct(values.productToRemove).then(() => {
       console.log('remove product');
     });
   };

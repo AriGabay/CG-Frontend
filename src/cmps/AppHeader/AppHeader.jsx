@@ -15,6 +15,7 @@ import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import './AppHeader.scss';
 import { ShakeRotate } from 'reshake';
+// import { ImageCloud } from '../ImageCloud/ImageCloud';
 
 const customTheme = getCustomTheme();
 
@@ -144,6 +145,7 @@ export const AppHeader = () => {
       className={classes.Header}
       classes={{ root: classes.paper }}
     >
+      {/* {matches && <ImageCloud imageId="old_logo_rssqwk" maxWidth="auto" ClassName="autoWith" maxHeight={50} />} */}
       <Grid className={classes.Width90}>
         {!matches ? (
           <Grid>
@@ -175,6 +177,7 @@ export const AppHeader = () => {
                 setIsOpenMenu={setIsOpenMenu}
               ></Cart>
             )}
+            {/* <ImageCloud imageId="old_logo_rssqwk" maxWidth="auto" ClassName="autoWith" maxHeight={50} /> */}
           </Grid>
         ) : null}
         {(matches || checked) && (
@@ -203,7 +206,7 @@ export const AppHeader = () => {
                 color="secondary"
                 classes={{ root: classes.ButtonCart }}
                 startIcon={
-                  <ShakeRotate style={{ 'fontSize': '0px' }} active={true}>
+                  <ShakeRotate style={{ fontSize: '0px' }} active={true}>
                     <ShoppingCartOutlinedIcon classes={{ root: classes.startIcon }} color="white" />
                   </ShakeRotate>
                 }

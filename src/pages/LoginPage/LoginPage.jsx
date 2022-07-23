@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './LoginPage.scss';
 import { TextField, Typography, Grid, Button } from '@material-ui/core';
 import { authService } from '../../services/authService';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(() => ({
@@ -35,7 +35,7 @@ export const LoginPage = () => {
     e.preventDefault();
     const res = await authService.login(userDetails);
     if (res.token) {
-      history.push(`/adminPage`);
+      history.push('/adminPage');
     }
   };
 

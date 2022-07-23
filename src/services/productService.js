@@ -5,6 +5,23 @@ async function getProducts(query) {
     const res = await httpService.get(endpoint, query);
     return res;
   } catch (error) {
+    throw new Error(error);
+    // console.error('error', error);
+  }
+}
+async function getProductById(id) {
+  try {
+    const res = await httpService.get(endpoint, { id: id });
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+async function getProductsByMenu(query) {
+  try {
+    const res = await httpService.get(endpoint + 'byMenu', query);
+    return res;
+  } catch (error) {
     console.error('error', error);
   }
 }
@@ -19,14 +36,6 @@ async function addProduct(data) {
 async function removeProduct(id) {
   try {
     const res = await httpService.delete(endpoint, id);
-    return res;
-  } catch (error) {
-    console.error('error', error);
-  }
-}
-async function getProductById(id, include) {
-  try {
-    const res = await httpService.get(endpoint, { id, include });
     return res;
   } catch (error) {
     console.error('error', error);
@@ -54,5 +63,6 @@ export const productService = {
   removeProduct,
   getProductById,
   updateProduct,
-  getAllProducts
+  getAllProducts,
+  getProductsByMenu
 };

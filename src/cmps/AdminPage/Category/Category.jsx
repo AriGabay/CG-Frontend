@@ -35,7 +35,7 @@ export const Category = () => {
   const { values, handleInputChange } = useForm(val, false);
 
   useEffect(() => {
-    categoryService.getCategories({ include: false }).then((res) => {
+    categoryService.getCategoriesDropDown().then((res) => {
       setCategories(res);
     });
   }, []);

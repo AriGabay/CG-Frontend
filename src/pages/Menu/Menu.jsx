@@ -1,16 +1,16 @@
 import './Menu.scss';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { categoryService } from '../../services/categoryService';
 import { CategoryCard } from '../../cmps/CategoryCard';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import BackButton from '../../cmps/Controls/BackButton';
-import { useHistory } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/styles';
 import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
+import { useSelector, useDispatch } from 'react-redux';
 
 const useStyles = makeStyles({
   gridMenu: {
@@ -40,46 +40,51 @@ const useStyles = makeStyles({
     '& > *': {
       marginBottom: '35px'
     }
-  },
+  }
 });
 export const Menu = ({ menuType }) => {
+  const dispatch = useDispatch();
   const classes = useStyles();
-  const history = useHistory();
-  const [categories, setCategories] = useState([]);
-  const pathName = history.location.pathname;
-  console.log('is',process.env.REACT_APP_IS_ENABLE_MENU);
-  const isEnableMenu = true
-  // (String(process.env.REACT_APP_IS_ENABLE_MENU).toLowerCase() === "true")
-  console.log('isEnableMenu',isEnableMenu);
+  const state = useSelector((state) => state);
+  const { categories } = state;
+  const [titlePage, setTitlePage] = useState(null);
+  const isEnableMenu = true;
+
   useEffect(() => {
-    categoryService.getCategories({ include: false }).then((categor) => {
-      if (categor && categor.length) {
-        setCategories(categor);
-      }
-    });
-  }, []);
-  const getMenuType=()=>{
-    if(history.location.pathname){
-      if(history.location.pathname.includes('weekend'))return 'סוף שבוע'
-      else if (history.location.pathname.includes('tishray')) return 'תשרי'
-      else if (history.location.pathname.includes('pesach')) return 'פסח'
-      else return ''
+    if (!categories.length) {
+      categoryService.getCategoriesMenu({ include: false }).then((categories) => {
+        if (categories && categories.length) {
+          dispatch({ type: 'SET_CATEGORIES', payload: categories });
+        }
+      });
     }
-  }
-  return isEnableMenu? (
+    if (menuType) {
+      if (menuType === 'weekend') {
+        setTitlePage('תפריט סוף שבוע');
+      } else if (menuType === 'tishray') {
+        setTitlePage('תפריט חגי תשרי');
+      } else if (menuType === 'pesach') {
+        setTitlePage('תפריט פסח');
+      } else {
+        setTitlePage('');
+      }
+      dispatch({ type: 'SET_MENU_TYPE', payload: menuType });
+    }
+  }, []);
+  return isEnableMenu ? (
     <Grid className="menu">
       <Helmet>
         <title>Catering Gabay - Menu</title>
         <meta name="menu-list" content="menu list" />
-        </Helmet>
+      </Helmet>
       <Grid display="flex" alignItems="center" justifyContent="center">
-        {history.location.pathname &&<Typography variant="h3" gutterBottom>
-          תפריט {getMenuType()}
-        </Typography>}
+        {titlePage && (
+          <Typography variant="h3" gutterBottom>
+            {titlePage}
+          </Typography>
+        )}
       </Grid>
-      {pathName&&pathName.includes('pesach')?
-       <BasicModal />:null
-      }
+      {menuType === 'pesach' ? <BasicModal /> : null}
       <Grid className={classes.gridMenu}>
         {categories && categories.length ? (
           categories.map((category, index) => {
@@ -93,7 +98,7 @@ export const Menu = ({ menuType }) => {
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
     </Grid>
-  ): (
+  ) : (
     <Grid className={classes.progressScreen}>
       <CircularProgress />
       <Typography>האתר סגור זמנית - נשוב בקרוב</Typography>

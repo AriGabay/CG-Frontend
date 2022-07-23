@@ -5,14 +5,14 @@ import {
   RadioGroup as MuiRadioGroup,
   FormControlLabel,
   Radio,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   error: {
-    color: 'red',
-  },
+    color: 'red'
+  }
 }));
 
 export default function RadioGroup(props) {

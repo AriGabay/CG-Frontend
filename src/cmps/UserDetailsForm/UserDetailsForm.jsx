@@ -91,7 +91,6 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
-  const shekel = '₪';
   const history = useHistory();
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
@@ -255,18 +254,9 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           </Dialog>
         </Grid>
         <Grid mt={2} mb={2}>
-          <Typography>
-            לפני מע"מ: {unTax}
-            {shekel}
-          </Typography>
-          <Typography>
-            מע"מ: {tax}
-            {shekel}
-          </Typography>
-          <Typography>
-            מחיר משוער : {totalPrice}
-            {shekel}
-          </Typography>
+          <Typography>לפני מע&apos;מ: {unTax} ₪</Typography>
+          <Typography>מע&apos;מ: {tax} ₪</Typography>
+          <Typography>מחיר משוער : {totalPrice} ₪</Typography>
         </Grid>
         <Grid mb={2}>
           <Controls.Button type="submit" text="להזמנה" onClick={(event) => handleSubmit(event)} />

@@ -1,1 +1,1 @@
-export { BasicModal } from './BasicModal'
+export { BasicModal } from './BasicModal';

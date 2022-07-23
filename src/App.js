@@ -16,7 +16,6 @@ import getCustomTheme from './hooks/getCustomTheme';
 import dotenv from 'dotenv';
 import Loadable from 'react-loadable';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 dotenv.config();
 const customTheme = getCustomTheme();
 
