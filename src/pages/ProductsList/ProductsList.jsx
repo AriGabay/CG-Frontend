@@ -73,7 +73,7 @@ export const ProductsList = () => {
   const [categoryName, setCategoryName] = useState();
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
-
+  console.log('category',category);
   const getProducts = async (lastPage) => {
     productService
       .getProducts({ categoryId, include: true, pathName, page: lastPage ? Number(lastPage) - 1 : Number(page) - 1 })
@@ -90,14 +90,14 @@ export const ProductsList = () => {
       });
   };
   useEffect(() => {
-    if(+categoryId !== +products[0]?.Category.id){
+    // if(+categoryId !== +products[0]?.Category.id){
       getProducts();
-    }else if (products&&!products.length || !Object.keys(category).length) {
-      getProducts();
-    }else{
-      setCategoryName(products[0].Category.displayName);
-      dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
-    }
+    // }else if (products&&!products.length || !Object.keys(category).length) {
+    //   getProducts();
+    // }else{
+    //   setCategoryName(products[0].Category.displayName);
+    //   dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
+    // }
   }, []);
 
   const backButton = () => {
