@@ -84,7 +84,7 @@ export const Product = ({ eventBus }) => {
   };
   const getProductById = ({ target }) => {
     productService.getProductById(target.value, false).then((res) => {
-      setProductToEdit(res[0]);
+      setProductToEdit(res);
     });
   };
   const editProduct = ({ target }) => {
@@ -199,11 +199,11 @@ export const Product = ({ eventBus }) => {
       </Grid>
       <Grid className={classes.gridTag}>
         <Typography variant="h5">עריכה</Typography>
-        {products && (
+        {products&&products.length && (
           <Controls.Select
             label="מוצר לעריכה"
             name="productToEdit"
-            value={values.productToEdit}
+            value={values.productToEdit.displayName}
             options={products}
             onChange={(event) => getProductById(event)}
           />

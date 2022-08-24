@@ -17,7 +17,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1) + '!important'
   },
   menuButton: {
-    width: '100px'
+    width: '100px',
+    '@media (max-width: 510px)': {
+      fontSize: '12px !important'
+    },
+    '@media (max-width: 350px)': {
+      fontSize: '10px !important',
+      height:'50px'
+    }
   },
   center: {
     display: 'flex !important',

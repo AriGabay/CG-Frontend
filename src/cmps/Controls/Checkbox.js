@@ -18,7 +18,8 @@ export default function Checkbox(props) {
           <MuiCheckbox
             name={name}
             color="primary"
-            checked={value}
+            defaultChecked={value}
+            // value={value}
             onChange={(e) => onChange(convertToDefEventPara(name, e.target.checked))}
           />
         }

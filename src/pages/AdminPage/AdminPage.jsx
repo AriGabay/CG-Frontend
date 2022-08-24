@@ -5,6 +5,7 @@ import { Category as AdminPageCategory } from '../../cmps/AdminPage/Category';
 import { Price as AdminPagePrice } from '../../cmps/AdminPage/Price';
 import { SizePrice as AdminPageSizePrice } from '../../cmps/AdminPage/SizePrice';
 import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
+import { Menu as AdminMenu } from '../../cmps/AdminPage/Menu';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
 import { GetOrdersByData as AdminPageGetOrdersByData } from '../../cmps/AdminPage/GetOrdersByData';
 import Grid from '@material-ui/core/Grid';
@@ -49,6 +50,7 @@ export const AdminPage = () => {
         <Button className={classes.marginLeft} text="מחיר למחירון" onClick={() => handleClick('SizePrice')} />
         <Button className={classes.marginLeft} text="מוצר" onClick={() => handleClick('Product')} />
         <Button className={classes.marginLeft} text="הזמנות" onClick={() => handleClick('Orders')} />
+        <Button className={classes.marginLeft} text="נעילת תפריט" onClick={() => handleClick('Menu')} />
         <Button
           className={classes.marginLeft}
           text="הזמנות על פי תאריך"
@@ -77,6 +79,11 @@ export const AdminPage = () => {
         {status && status === 'Orders' ? (
           <Grid mt={2}>
             <AdminPageOrders eventBus={eventBus}></AdminPageOrders>
+          </Grid>
+        ) : null}
+        {status && status === 'Menu' ? (
+          <Grid mt={2}>
+            <AdminMenu eventBus={eventBus}></AdminMenu>
           </Grid>
         ) : null}
         {status && status === 'GetOrdersByData' ? (
