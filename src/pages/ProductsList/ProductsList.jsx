@@ -75,11 +75,6 @@ export const ProductsList = () => {
   const pathName = history.location.pathname;
 
   const getProducts = async (lastPage) => {
-    // let currentPage = page;
-    // if (lastPage) {
-    //   currentPage = lastPage;
-    // }
-
     productService
       .getProducts({ categoryId, include: true, pathName, page: lastPage ? Number(lastPage) - 1 : Number(page) - 1 })
       .then((products) => {
@@ -95,10 +90,16 @@ export const ProductsList = () => {
       });
   };
   useEffect(() => {
-    if (!products.length || categoryId !== categoryId.id || (!products && !Object.keys(category).length)) {
+    if(+categoryId !== +products[0]?.Category.id){
       getProducts();
+    }else if (products&&!products.length || !Object.keys(category).length) {
+      getProducts();
+    }else{
+      setCategoryName(products[0].Category.displayName);
+      dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
     }
   }, []);
+
   const backButton = () => {
     if (pathName.includes('weekend')) {
       return '/menu/weekend';
