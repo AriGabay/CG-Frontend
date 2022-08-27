@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Box, Modal, Typography } from '@material-ui/core';
-
+import { ImageCloud } from '../ImageCloud/ImageCloud';
+import { makeStyles } from '@material-ui/styles';
 
 const style = {
   position: 'absolute',
@@ -12,13 +13,35 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  flexDirection: 'column',
 };
 
-export default function BasicModal() {
-  const [open, setOpen] = React.useState(true);
-  const handleClose = () => setOpen(false);
+const useStyles = makeStyles(() => ({
+  imageModal: {
+    maxHeight: '100px',
+    maxWidth: '100px',
+  },
+}));
 
-  return (
+export default function BasicModal({
+  contnentLineOne,
+  contnentLineTow,
+  lockScreen = false,
+  type,
+}) {
+  const classes = useStyles();
+  const [open, setOpen] = React.useState(true);
+  const handleClose = () => {
+    if (lockScreen) {
+      return;
+    }
+    setOpen(false);
+  };
+
+  return contnentLineOne.length && contnentLineTow.length ? (
     <div>
       <Modal
         open={open}
@@ -27,20 +50,46 @@ export default function BasicModal() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
-          לקוחות יקרים!
+          <Typography
+            textAlign="center"
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            לקוחות יקרים!
           </Typography>
-          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
-              הזמנות לחג הפסח מתבצעות בכפולות של חמש מנות.
+          <Typography
+            textAlign="center"
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            {contnentLineOne}
           </Typography>
-          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
-שיהיה חג שמח וכשר 
+          <Typography
+            textAlign="center"
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            {contnentLineTow}
           </Typography>
-          <Typography textAlign='center' id="modal-modal-title" variant="h6" component="h2">
-מקייטרינג גבאי.
+          <Typography
+            textAlign="center"
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            קייטרינג גבאי.
           </Typography>
+          {type === 'tishray' && (
+            <ImageCloud
+              imageId="appleInHoney_ytdzir"
+              ClassName={classes.imageModal}
+            />
+          )}
         </Box>
       </Modal>
     </div>
-  );
+  ) : null;
 }

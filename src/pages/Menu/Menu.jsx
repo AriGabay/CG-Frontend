@@ -20,14 +20,14 @@ const useStyles = makeStyles({
     gap: '40px 40px',
     gridTemplateAreas: '. . .',
     '& > *': {
-      margin: '0 auto'
+      margin: '0 auto',
     },
     '@media (max-width: 1000px)': {
-      gridTemplateColumns: '1fr 1fr'
+      gridTemplateColumns: '1fr 1fr',
     },
     '@media (max-width: 800px)': {
-      gridTemplateColumns: '1fr'
-    }
+      gridTemplateColumns: '1fr',
+    },
   },
   progressScreen: {
     minWidth: '100vw',
@@ -38,9 +38,9 @@ const useStyles = makeStyles({
     flex: 1,
     flexDirection: 'column !important',
     '& > *': {
-      marginBottom: '35px'
-    }
-  }
+      marginBottom: '35px',
+    },
+  },
 });
 export const Menu = ({ menuType }) => {
   const dispatch = useDispatch();
@@ -52,11 +52,13 @@ export const Menu = ({ menuType }) => {
 
   useEffect(() => {
     if (!categories.length) {
-      categoryService.getCategoriesMenu({ include: false }).then((categories) => {
-        if (categories && categories.length) {
-          dispatch({ type: 'SET_CATEGORIES', payload: categories });
-        }
-      });
+      categoryService
+        .getCategoriesMenu({ include: false })
+        .then((categories) => {
+          if (categories && categories.length) {
+            dispatch({ type: 'SET_CATEGORIES', payload: categories });
+          }
+        });
     }
     if (menuType) {
       if (menuType === 'weekend') {
@@ -84,17 +86,36 @@ export const Menu = ({ menuType }) => {
           </Typography>
         )}
       </Grid>
-      {menuType === 'pesach' ? <BasicModal /> : null}
+      {menuType === 'pesach' ? (
+        <BasicModal
+          contnentLineOne={'הזמנות לחג הפסח מתבצעות בכפולות של חמש מנות.'}
+          contnentLineTow={'שיהיה חג שמח וכשר'}
+          type="pesach"
+        />
+      ) : null}
       <Grid className={classes.gridMenu}>
         {categories && categories.length ? (
           categories.map((category, index) => {
-            return <CategoryCard key={index} category={category} menuType={menuType} />;
+            return (
+              <CategoryCard
+                key={index}
+                category={category}
+                menuType={menuType}
+              />
+            );
           })
         ) : (
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      <Grid mt={2} mb={2} container display="flex" justifyContent="center" alignContent="center">
+      <Grid
+        mt={2}
+        mb={2}
+        container
+        display="flex"
+        justifyContent="center"
+        alignContent="center"
+      >
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
     </Grid>

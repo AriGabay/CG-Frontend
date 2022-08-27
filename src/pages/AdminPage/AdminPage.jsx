@@ -15,13 +15,13 @@ import { authService } from '../../services/authService';
 
 const useStyles = makeStyles(() => ({
   marginLeft: {
-    marginLeft: '10px!important'
+    marginLeft: '10px!important',
   },
   marginTop: {
     '@media (max-width: 700px)': {
-      marginTop: '10px!important'
-    }
-  }
+      marginTop: '10px!important',
+    },
+  },
 }));
 
 export const AdminPage = () => {
@@ -45,12 +45,36 @@ export const AdminPage = () => {
   return (
     Object.keys(userAuth).length && (
       <Grid mt={2} mr={2}>
-        <Button className={classes.marginLeft} text="קטגוריה" onClick={() => handleClick('Category')} />
-        <Button className={classes.marginLeft} text="מחירון" onClick={() => handleClick('Price')} />
-        <Button className={classes.marginLeft} text="מחיר למחירון" onClick={() => handleClick('SizePrice')} />
-        <Button className={classes.marginLeft} text="מוצר" onClick={() => handleClick('Product')} />
-        <Button className={classes.marginLeft} text="הזמנות" onClick={() => handleClick('Orders')} />
-        <Button className={classes.marginLeft} text="נעילת תפריט" onClick={() => handleClick('Menu')} />
+        <Button
+          className={classes.marginLeft}
+          text="קטגוריה"
+          onClick={() => handleClick('Category')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="מחירון"
+          onClick={() => handleClick('Price')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="מחיר למחירון"
+          onClick={() => handleClick('SizePrice')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="מוצר"
+          onClick={() => handleClick('Product')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="הזמנות"
+          onClick={() => handleClick('Orders')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="נעילת תפריט"
+          onClick={() => handleClick('Menu')}
+        />
         <Button
           className={classes.marginLeft}
           text="הזמנות על פי תאריך"
@@ -88,7 +112,9 @@ export const AdminPage = () => {
         ) : null}
         {status && status === 'GetOrdersByData' ? (
           <Grid mt={2}>
-            <AdminPageGetOrdersByData eventBus={eventBus}></AdminPageGetOrdersByData>
+            <AdminPageGetOrdersByData
+              eventBus={eventBus}
+            ></AdminPageGetOrdersByData>
           </Grid>
         ) : null}
       </Grid>

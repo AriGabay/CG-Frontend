@@ -37,7 +37,7 @@ const Menu = Loadable({
   render(loader, props) {
     const { Menu } = loader;
     return <Menu {...props} />;
-  }
+  },
 });
 
 const ProductsList = Loadable({
@@ -46,7 +46,7 @@ const ProductsList = Loadable({
   render(loader, props) {
     const { ProductsList } = loader;
     return <ProductsList {...props} />;
-  }
+  },
 });
 
 function App() {
