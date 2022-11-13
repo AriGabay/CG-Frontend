@@ -24,14 +24,15 @@ import { useSelector, useDispatch } from 'react-redux';
 
 const useStyles = makeStyles({
   addToCartBtn: {
-    background: 'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
+    background:
+      'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
     borderRadius: 3,
     color: 'white!important',
     height: 48,
     padding: 30,
     paddingTop: 0,
     paddingBottom: 0,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)'
+    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
   },
   Grid: {
     display: 'flex',
@@ -40,16 +41,16 @@ const useStyles = makeStyles({
     justify: 'space-evenly',
     alignItems: 'center',
     paddingRight: 30,
-    paddingLeft: 30
+    paddingLeft: 30,
   },
   imgContainer: {
-    maxWidth: '300px'
+    maxWidth: '300px',
   },
   textOver: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  }
+    whiteSpace: 'nowrap',
+  },
 });
 
 export const ProductPreview = () => {
@@ -58,7 +59,11 @@ export const ProductPreview = () => {
     return state.product;
   });
   const dispatch = useDispatch();
-  const [productOrder, setProductOrder] = useState({ sizeToOrder: null, product: null, priceToShow: null });
+  const [productOrder, setProductOrder] = useState({
+    sizeToOrder: null,
+    product: null,
+    priceToShow: null,
+  });
   const { productId } = useParams();
   const classes = useStyles();
   const history = useHistory();
@@ -98,7 +103,10 @@ export const ProductPreview = () => {
         <Grid item mt={2} lg={6} md={6} sm={12}>
           <Typography variant="h3">{product.displayName}</Typography>
           <Grid ml={2} mt={2} className={classes.imgContainer}>
-            <ImageCloud imageId={product.imgUrl} />
+            <ImageCloud
+              imageId={product.imgUrl}
+              style={{ borderRadius: '20px' }}
+            />
           </Grid>
           {isMobile && product.description.length > 0 && (
             <Grid item mt={2} lg={3} md={3} sm={12}>
@@ -110,22 +118,41 @@ export const ProductPreview = () => {
           )}
           <Grid>
             {product.Price.priceType === 'unit' ? (
-              <PriceForUnit productProps={product} productOrderProps={productOrder} setProductOrder={setProductOrder} />
+              <PriceForUnit
+                productProps={product}
+                productOrderProps={productOrder}
+                setProductOrder={setProductOrder}
+              />
             ) : null}
             {product.Price.priceType === 'box' ? (
-              <PriceForBox product={product} setProductOrder={setProductOrder} />
+              <PriceForBox
+                product={product}
+                setProductOrder={setProductOrder}
+              />
             ) : null}
             {product.Price.priceType === 'weight' ? (
-              <PriceForWeight product={product} setProductOrder={setProductOrder} />
+              <PriceForWeight
+                product={product}
+                setProductOrder={setProductOrder}
+              />
             ) : null}
           </Grid>
           <Grid>
-            <Button variant="contained" disableElevation className={classes.addToCartBtn} onClick={() => addToCart()}>
-              הוסף לעגלה <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
+            <Button
+              variant="contained"
+              disableElevation
+              className={classes.addToCartBtn}
+              onClick={() => addToCart()}
+            >
+              הוסף לעגלה{' '}
+              <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
             </Button>
           </Grid>
           <Grid mt={2} mb={2}>
-            <BackButton to={history.location.state ? history.location.state : '/'} text="חזור"></BackButton>
+            <BackButton
+              to={history.location.state ? history.location.state : '/'}
+              text="חזור"
+            ></BackButton>
           </Grid>
         </Grid>
         {isMobile === false && product.description.length > 0 && (
@@ -139,7 +166,12 @@ export const ProductPreview = () => {
       </Grid>
     </Fragment>
   ) : (
-    <Box height={500} display="flex" justifyContent="center" alignItems="center">
+    <Box
+      height={500}
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+    >
       <CircularProgress />
     </Box>
   );

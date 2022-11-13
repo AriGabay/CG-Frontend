@@ -9,6 +9,7 @@ export function ImageCloud({
   maxWidth,
   imageId = 'old_logo_rssqwk',
   ClassName,
+  style,
 }) {
   const src = () => {
     if (imageId === '') imageId = 'old_logo_rssqwk';
@@ -20,6 +21,7 @@ export function ImageCloud({
       height ? 'h_' + height : ''
     }/v1614944384/${imageId}`;
   };
+  console.log(style);
   return (
     <Image
       className={ClassName}
@@ -29,6 +31,7 @@ export function ImageCloud({
       loading="lazy"
       height={maxHeight}
       width={maxWidth}
+      style={style ?? {}}
     >
       <Placeholder type="blur"></Placeholder>
     </Image>
@@ -40,6 +43,7 @@ ImageCloud.propsTypes = {
   alt: PropTypes.string,
   imageId: PropTypes.element.isRequired,
   ClassName: PropTypes.string,
+  style: PropTypes.any,
 };
 ImageCloud.defaultProps = {
   maxHeight: 250,

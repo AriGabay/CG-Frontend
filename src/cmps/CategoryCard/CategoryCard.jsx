@@ -17,14 +17,15 @@ const customTheme = getCustomTheme();
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345
+    maxWidth: 345,
+    borderRadius: '20px !important',
   },
   moreProductBtn: {
-    color: customTheme.palette.primary.contrastText
+    color: customTheme.palette.primary.contrastText,
   },
   maxWidth: {
-    maxWidth: '100%'
-  }
+    maxWidth: '100%',
+  },
 });
 export const CategoryCard = ({ category, index, menuType }) => {
   const dispatch = useDispatch();
@@ -37,7 +38,11 @@ export const CategoryCard = ({ category, index, menuType }) => {
   };
   const classes = useStyles({ menuType });
   return (
-    <Card key={index} className={`${classes.root} category-card`} onClick={() => handleClick()}>
+    <Card
+      key={index}
+      className={`${classes.root} category-card`}
+      onClick={() => handleClick()}
+    >
       <CardActionArea>
         <ImageCloud
           imageId={category.imgUrl}
@@ -45,13 +50,33 @@ export const CategoryCard = ({ category, index, menuType }) => {
           maxHeight={matches ? 250 : 150}
         ></ImageCloud>
         <CardContent>
-          <Box component="div" display="flex" alignItems="center" justifyContent="center">
-            <Typography classes={{ label: classes.moreProductBtn }} gutterBottom variant="h5" component="h2">
+          <Box
+            component="div"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography
+              classes={{ label: classes.moreProductBtn }}
+              gutterBottom
+              variant="h5"
+              component="h2"
+            >
               {category.displayName}
             </Typography>
           </Box>
-          <Box component="div" display="flex" alignItems="center" justifyContent="center">
-            <Typography classes={{ root: classes.maxWidth }} variant="body2" color="textSecondary" component="p">
+          <Box
+            component="div"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography
+              classes={{ root: classes.maxWidth }}
+              variant="body2"
+              color="textSecondary"
+              component="p"
+            >
               {category.description}
             </Typography>
           </Box>
@@ -60,7 +85,10 @@ export const CategoryCard = ({ category, index, menuType }) => {
       <Box display="flex" alignItems="center" justifyContent="center">
         <CardActions>
           <Button
-            classes={{ root: classes.moreProductBtn, label: classes.moreProductBtn }}
+            classes={{
+              root: classes.moreProductBtn,
+              label: classes.moreProductBtn,
+            }}
             size="small"
             color="primary"
           >
