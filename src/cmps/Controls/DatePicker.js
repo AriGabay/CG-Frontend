@@ -17,8 +17,8 @@ export default function DatePicker(props) {
     const e = {
       target: {
         name,
-        value
-      }
+        value,
+      },
     };
     return e;
   };
@@ -29,10 +29,15 @@ export default function DatePicker(props) {
   };
 
   const color = (day) => {
-    return validateDate(day) ? { opacity: 0.25 } : { backgroundColor: '#937446' };
+    return validateDate(day)
+      ? { opacity: 0.25 }
+      : { backgroundColor: '#937446' };
   };
   const validateDate = (day) => {
-    return (isBefore(day, startOfToday()) || !isFriday(day)) && !day.toString().includes('Thu Apr 14');
+    return (
+      (isBefore(day, startOfToday()) || !isFriday(day)) &&
+      !day.toString().includes('Thu Apr 14')
+    );
   };
 
   return (
@@ -46,7 +51,16 @@ export default function DatePicker(props) {
           name={name}
           value={value}
           required={required}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => (
+            <TextField
+              onKeyDown={(event) => {
+                console.log('key down');
+                event.preventDefault();
+              }}
+              inputProps={{ ...params.inputProps, readOnly: true }}
+              {...params}
+            />
+          )}
           onChange={(day) => {
             onChange(convertToDefEventPara(name, dateToStr(day)));
           }}
@@ -71,5 +85,5 @@ export default function DatePicker(props) {
   );
 }
 DatePicker.propTypes = {
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
