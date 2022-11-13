@@ -54,7 +54,6 @@ export default function DatePicker(props) {
           renderInput={(params) => (
             <TextField
               onKeyDown={(event) => {
-                console.log('key down');
                 event.preventDefault();
               }}
               inputProps={{ ...params.inputProps, readOnly: true }}
