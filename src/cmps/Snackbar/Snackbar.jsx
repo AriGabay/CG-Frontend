@@ -10,9 +10,12 @@ export default function SimpleSnackbar() {
 
   const handleOpen = () => {
     setOpen(true);
+    setTimeout(() => {
+      handleClose(null, 'clickaway');
+    }, 3000);
   };
 
-  const handleClose = (event, reason) => {
+  const handleClose = (__, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -68,7 +71,7 @@ export default function SimpleSnackbar() {
     <Snackbar
       anchorOrigin={{
         vertical: 'bottom',
-        horizontal: 'center'
+        horizontal: 'center',
       }}
       open={open}
       autoHideDuration={1500}

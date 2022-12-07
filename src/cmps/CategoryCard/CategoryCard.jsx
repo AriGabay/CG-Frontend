@@ -1,7 +1,6 @@
 import './CategoryCard.scss';
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -26,23 +25,24 @@ const useStyles = makeStyles({
   maxWidth: {
     maxWidth: '100%',
   },
+  flexCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 export const CategoryCard = ({ category, index, menuType }) => {
   const dispatch = useDispatch();
   const matches = useMediaQuery('(min-width:700px)');
+  const classes = useStyles();
   let history = useHistory();
   const handleClick = () => {
     dispatch({ type: 'SET_CATEGORY', payload: { ...category } });
     dispatch({ type: 'SET_PAGE', payload: 1 });
     history.push(`/products/${category.id}/${menuType}`);
   };
-  const classes = useStyles({ menuType });
   return (
-    <Card
-      key={index}
-      className={`${classes.root} category-card`}
-      onClick={() => handleClick()}
-    >
+    <Card key={index} className={classes.root} onClick={() => handleClick()}>
       <CardActionArea>
         <ImageCloud
           imageId={category.imgUrl}
@@ -50,12 +50,7 @@ export const CategoryCard = ({ category, index, menuType }) => {
           maxHeight={matches ? 250 : 150}
         ></ImageCloud>
         <CardContent>
-          <Box
-            component="div"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
+          <div className={classes.flexCenter}>
             <Typography
               classes={{ label: classes.moreProductBtn }}
               gutterBottom
@@ -64,13 +59,8 @@ export const CategoryCard = ({ category, index, menuType }) => {
             >
               {category.displayName}
             </Typography>
-          </Box>
-          <Box
-            component="div"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
+          </div>
+          <div className={classes.flexCenter}>
             <Typography
               classes={{ root: classes.maxWidth }}
               variant="body2"
@@ -79,10 +69,10 @@ export const CategoryCard = ({ category, index, menuType }) => {
             >
               {category.description}
             </Typography>
-          </Box>
+          </div>
         </CardContent>
       </CardActionArea>
-      <Box display="flex" alignItems="center" justifyContent="center">
+      <div className={classes.flexCenter}>
         <CardActions>
           <Button
             classes={{
@@ -95,7 +85,7 @@ export const CategoryCard = ({ category, index, menuType }) => {
             עוד מוצרים
           </Button>
         </CardActions>
-      </Box>
+      </div>
     </Card>
   );
 };

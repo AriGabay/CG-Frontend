@@ -13,11 +13,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important'
+    flexDirection: 'column!important',
   },
   marginTop: {
-    marginTop: '10px!important'
-  }
+    marginTop: '10px!important',
+  },
 }));
 
 const val = {
@@ -25,7 +25,7 @@ const val = {
   displayName: '',
   removePrice: '',
   editPrice: '',
-  priceTypeEdit: ''
+  priceTypeEdit: '',
 };
 export const Price = () => {
   const classes = useStyles();
@@ -36,12 +36,12 @@ export const Price = () => {
     { id: 1, title: 'קופסה' },
     {
       id: 2,
-      title: 'משקל'
+      title: 'משקל',
     },
     {
       id: 3,
-      title: 'יחידה'
-    }
+      title: 'יחידה',
+    },
   ];
   useEffect(() => {
     pricesService.getPrices({ include: true }).then((data) => {
@@ -54,7 +54,9 @@ export const Price = () => {
       };
       if (data && data.length) {
         const arr = data.map((price) => {
-          const displayName = `${price.displayName} ${concatenateStrings(price.SizePrices)}`;
+          const displayName = `${price.displayName} ${concatenateStrings(
+            price.SizePrices
+          )}`;
           return { ...price, displayName };
         });
         setPrices(arr);
@@ -62,11 +64,11 @@ export const Price = () => {
     });
   }, []);
   const addPrice = () => {
-    const data = {
+    const priceData = {
       priceType: values.selectPriceType,
-      displayName: values.displayName
+      displayName: values.displayName,
     };
-    pricesService.addPrice(data);
+    pricesService.addPrice(priceData);
   };
   const removePrice = () => {
     pricesService
@@ -85,7 +87,9 @@ export const Price = () => {
     setPriceToEdit(newPrice);
   };
   const updatePrice = () => {
-    pricesService.updatePrice(priceToEdit).then(() => console.log(`complete edit: ${priceToEdit.displayName}`));
+    pricesService
+      .updatePrice(priceToEdit)
+      .then(() => console.log(`complete edit: ${priceToEdit.displayName}`));
   };
   const idToPriceType = ({ target }) => {
     const { value } = target;
@@ -117,7 +121,11 @@ export const Price = () => {
           onChange={handleInputChange}
           name="displayName"
         ></Controls.Input>
-        <Controls.Button className={classes.marginTop} text="הוסף מחירון" onClick={() => addPrice()}></Controls.Button>
+        <Controls.Button
+          className={classes.marginTop}
+          text="הוסף מחירון"
+          onClick={() => addPrice()}
+        ></Controls.Button>
       </Grid>
       {prices && (
         <Grid className={classes.gridTag}>

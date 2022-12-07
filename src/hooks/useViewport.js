@@ -6,7 +6,6 @@ const useViewport = (bigScreen, littleScreen) => {
   const [choice, setChoice] = useState(matches ? bigScreen : littleScreen);
   useEffect(() => {
     setChoice(matches ? bigScreen : littleScreen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matches]);
   return choice;
 };

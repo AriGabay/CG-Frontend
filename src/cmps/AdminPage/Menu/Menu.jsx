@@ -29,9 +29,8 @@ export const Menu = () => {
   const [isMessageHomePage, setIsMessageHomePage] = useState(null);
 
   const getAllMenus = async () => {
-    const res = await isMenuEnableService.getAllMenus();
-    console.log('res', res);
-    setMenus(res);
+    const menusDb = await isMenuEnableService.getAllMenus();
+    setMenus(menusDb);
   };
 
   useEffect(() => {

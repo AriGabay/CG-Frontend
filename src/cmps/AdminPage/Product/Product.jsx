@@ -16,11 +16,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important'
+    flexDirection: 'column!important',
   },
   marginTop: {
-    marginTop: '10px!important'
-  }
+    marginTop: '10px!important',
+  },
 }));
 
 const val = {
@@ -34,7 +34,7 @@ const val = {
   productToEdit: '',
   kitniyot: false,
   typeMenu: [],
-  tishray: false
+  tishray: false,
 };
 export const Product = ({ eventBus }) => {
   const classes = useStyles();
@@ -57,8 +57,16 @@ export const Product = ({ eventBus }) => {
     });
   }, []);
   const addProduct = () => {
-    const { displayName, categoryId, inStock, imgUrl, priceId, description, kitniyot } = values;
-    const data = {
+    const {
+      displayName,
+      categoryId,
+      inStock,
+      imgUrl,
+      priceId,
+      description,
+      kitniyot,
+    } = values;
+    const productData = {
       displayName,
       categoryId,
       inStock,
@@ -68,13 +76,15 @@ export const Product = ({ eventBus }) => {
       kitniyot,
       isMenuPesach,
       isMenuWeekend,
-      isMenuTishray
+      isMenuTishray,
     };
-    if (isMenuPesach === true) data.isMenuPesach = true;
-    if (isMenuWeekend === true) data.isMenuWeekend = true;
-    if (isMenuTishray === true) data.isMenuTishray = true;
-    productService.addProduct(data).then((res) => {
-      eventBus.dispatch('addProduct', { message: `${res.displayName} נוסף בהצלחה` });
+    if (isMenuPesach === true) productData.isMenuPesach = true;
+    if (isMenuWeekend === true) productData.isMenuWeekend = true;
+    if (isMenuTishray === true) productData.isMenuTishray = true;
+    productService.addProduct(productData).then((res) => {
+      eventBus.dispatch('addProduct', {
+        message: `${res.displayName} נוסף בהצלחה`,
+      });
     });
   };
   const removeProduct = () => {
@@ -178,7 +188,11 @@ export const Product = ({ eventBus }) => {
           value={values.description}
           onChange={handleInputChange}
         />
-        <Controls.Button className={classes.marginTop} text="הוסף מוצר" onClick={() => addProduct()}></Controls.Button>
+        <Controls.Button
+          className={classes.marginTop}
+          text="הוסף מוצר"
+          onClick={() => addProduct()}
+        ></Controls.Button>
       </Grid>
       <Grid className={classes.gridTag}>
         <Typography variant="h5">מחיקה</Typography>
@@ -199,7 +213,7 @@ export const Product = ({ eventBus }) => {
       </Grid>
       <Grid className={classes.gridTag}>
         <Typography variant="h5">עריכה</Typography>
-        {products&&products.length && (
+        {products && products.length && (
           <Controls.Select
             label="מוצר לעריכה"
             name="productToEdit"

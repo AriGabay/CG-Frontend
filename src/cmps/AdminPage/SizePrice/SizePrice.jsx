@@ -14,11 +14,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important'
+    flexDirection: 'column!important',
   },
   marginTop: {
-    marginTop: '10px!important'
-  }
+    marginTop: '10px!important',
+  },
 }));
 
 const val = {
@@ -26,14 +26,8 @@ const val = {
   size: '',
   priceForSizePrice: '',
   removeSizePrice: '',
-  editSizePrice: ''
+  editSizePrice: '',
 };
-// idToEdit: '',
-// editSizePrice: {
-//   amount: '',
-//   size: '',
-//   priceForSizePrice: '',
-// }
 
 export const SizePrice = () => {
   const classes = useStyles();
@@ -45,15 +39,15 @@ export const SizePrice = () => {
     async function start() {
       const prices = await pricesService.getPrices({ include: false });
       setPrices(prices);
-      const data = await sizePriceService.getSizePrices();
+      const sizePricesDb = await sizePriceService.getSizePrices();
       const arr = [];
-      if (data && data.length) {
-        data.forEach((sizePrice) => {
+      if (sizePricesDb && sizePricesDb.length) {
+        sizePricesDb.forEach((sizePrice) => {
           prices.forEach((price) => {
             if (sizePrice.priceId === price.id) {
               arr.push({
                 ...sizePrice,
-                displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`
+                displayName: `${price.displayName} , מחיר : ${sizePrice.amount}, כמות : ${sizePrice.size}`,
               });
             }
           });
@@ -64,12 +58,12 @@ export const SizePrice = () => {
     start();
   }, []);
   const addSizePrice = () => {
-    const data = {
+    const sizePriceData = {
       size: values.size,
       amount: values.amount,
-      priceId: values.priceForSizePrice
+      priceId: values.priceForSizePrice,
     };
-    sizePriceService.addSizePrice(data).then(() => {
+    sizePriceService.addSizePrice(sizePriceData).then(() => {
       console.log('add Size Price');
     });
   };
@@ -123,7 +117,11 @@ export const SizePrice = () => {
           />
         )}
         <Typography>משקל - לפי 100 גרם</Typography>
-        <Typography> יחידה- דוגמה : אם מוסיפים מחיר לפי 2 יחידות המינימום הזמנה של המוצר הזה יהיה 2 יחידות </Typography>
+        <Typography>
+          {' '}
+          יחידה- דוגמה : אם מוסיפים מחיר לפי 2 יחידות המינימום הזמנה של המוצר
+          הזה יהיה 2 יחידות{' '}
+        </Typography>
         <Controls.Button
           className={classes.marginTop}
           text="הוסף מחיר"

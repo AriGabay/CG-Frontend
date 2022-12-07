@@ -6,7 +6,6 @@ async function getProducts(query) {
     return res;
   } catch (error) {
     throw new Error(error);
-    // console.error('error', error);
   }
 }
 async function getProductById(id) {
@@ -64,5 +63,5 @@ export const productService = {
   getProductById,
   updateProduct,
   getAllProducts,
-  getProductsByMenu
+  getProductsByMenu,
 };

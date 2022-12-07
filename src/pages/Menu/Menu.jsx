@@ -1,4 +1,3 @@
-import './Menu.scss';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { categoryService } from '../../services/categoryService';
@@ -41,22 +40,25 @@ const useStyles = makeStyles({
       marginBottom: '35px',
     },
   },
+  flexCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 export const Menu = ({ menuType }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
-  const state = useSelector((state) => state);
-  const { categories } = state;
+  const { categories } = useSelector((state) => state);
   const [titlePage, setTitlePage] = useState(null);
-  const isEnableMenu = true;
 
   useEffect(() => {
     if (!categories.length) {
       categoryService
         .getCategoriesMenu({ include: false })
-        .then((categories) => {
-          if (categories && categories.length) {
-            dispatch({ type: 'SET_CATEGORIES', payload: categories });
+        .then((categoriesMenu) => {
+          if (categoriesMenu && categoriesMenu.length) {
+            dispatch({ type: 'SET_CATEGORIES', payload: categoriesMenu });
           }
         });
     }
@@ -73,13 +75,13 @@ export const Menu = ({ menuType }) => {
       dispatch({ type: 'SET_MENU_TYPE', payload: menuType });
     }
   }, []);
-  return isEnableMenu ? (
+  return (
     <Grid className="menu">
       <Helmet>
         <title>Catering Gabay - Menu</title>
         <meta name="menu-list" content="menu list" />
       </Helmet>
-      <Grid display="flex" alignItems="center" justifyContent="center">
+      <Grid className={classes.flexCenter}>
         {titlePage && (
           <Typography variant="h3" gutterBottom>
             {titlePage}
@@ -108,22 +110,9 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      <Grid
-        mt={2}
-        mb={2}
-        container
-        display="flex"
-        justifyContent="center"
-        alignContent="center"
-      >
+      <Grid mt={2} mb={2} container className={classes.flexCenter}>
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
-    </Grid>
-  ) : (
-    <Grid className={classes.progressScreen}>
-      <CircularProgress />
-      <Typography>האתר סגור זמנית - נשוב בקרוב</Typography>
-      <BackButton to={() => '/'} text="חזור"></BackButton>
     </Grid>
   );
 };

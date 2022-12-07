@@ -1,4 +1,3 @@
-import './ProductsList.scss';
 import React, { Fragment } from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -24,20 +23,20 @@ const useStyles = makeStyles({
     gap: '40px 40px',
     gridTemplateAreas: '. . .',
     '@media (max-width: 1000px)': {
-      gridTemplateColumns: '1fr 1fr'
+      gridTemplateColumns: '1fr 1fr',
     },
     '@media (max-width: 700px)': {
-      gridTemplateColumns: '1fr'
-    }
+      gridTemplateColumns: '1fr',
+    },
   },
   marginRight0: {
     marginRight: '0!important',
-    marginBottom: '10px!important'
+    marginBottom: '10px!important',
   },
   marginCenter: {
     '@media (max-width: 700px)': {
-      margin: '0 auto !important'
-    }
+      margin: '0 auto !important',
+    },
   },
   progressScreen: {
     minWidth: '100vw',
@@ -48,59 +47,58 @@ const useStyles = makeStyles({
     flex: 1,
     flexDirection: 'column !important',
     '& > *': {
-      marginBottom: '35px'
-    }
+      marginBottom: '35px',
+    },
   },
   gridForPagination: {
     display: 'grid',
     gridTemplateColumns: '1fr',
     gridTemplateRows: '4fr 0.20fr 0.2fr',
     gap: '40px 40px',
-    gridTemplateAreas: '. .'
+    gridTemplateAreas: '. .',
   },
-  paginationCenter: {
+  flexCenter: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '30%'
-  }
+  },
 });
 export const ProductsList = () => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const history = useHistory();
-  const { products, category, page } = useSelector((state) => state);
+  const { products, page } = useSelector((state) => state);
   const [categoryName, setCategoryName] = useState();
   const { categoryId } = useParams();
   const pathName = history.location.pathname;
-  console.log('category',category);
+
   const getProducts = async (lastPage) => {
     productService
-      .getProducts({ categoryId, include: true, pathName, page: lastPage ? Number(lastPage) - 1 : Number(page) - 1 })
+      .getProducts({
+        categoryId,
+        include: true,
+        pathName,
+        page: lastPage ? Number(lastPage) - 1 : Number(page) - 1,
+      })
       .then((products) => {
         if (products && products.length) {
           dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
           setCategoryName(products[0].Category.displayName);
         } else {
-          setCategoryName(' ');
+          setCategoryName(categoryName ? categoryName : '');
         }
       })
       .catch(() => {
         dispatch({ type: 'SET_PRODUCTS', payload: [] });
       });
   };
+
   useEffect(() => {
-    // if(+categoryId !== +products[0]?.Category.id){
-      getProducts();
-    // }else if (products&&!products.length || !Object.keys(category).length) {
-    //   getProducts();
-    // }else{
-    //   setCategoryName(products[0].Category.displayName);
-    //   dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
-    // }
+    getProducts();
   }, []);
 
   const backButton = () => {
+    if (!pathName || !pathName?.length) return;
     if (pathName.includes('weekend')) {
       return '/menu/weekend';
     } else if (pathName.includes('pesach')) {
@@ -130,34 +128,39 @@ export const ProductsList = () => {
         <title>Catering Gabay - Products List</title>
         <mete name="products-list" content="products list" />
       </Helmet>
-      <Grid display="flex" alignItems="center" flexDirection="column" justify="center">
+      <Grid className={classes.flexCenter} flexDirection="column">
         {categoryName && (
-          <Grid p={1} display="flex" justifyContent="flex-start" m={2} width={100} alignItems="center">
-            <Typography variant="h3">{categoryName}</Typography>
-          </Grid>
+          <Typography
+            p={1}
+            className={classes.flexCenter}
+            justifyContent="flex-start"
+            m={2}
+            width={100}
+            variant="h3"
+          >
+            {categoryName}
+          </Typography>
         )}
-        {products && products.length ? (
+        {products && products?.length ? (
           <Grid className={classes.gridForPagination}>
             <Grid className={classes.gridThreeRows}>
               {products.map((product) => {
                 return (
                   <Grid
-                    display="flex"
-                    alignItems="center"
                     flexDirection="column"
-                    justify="center"
-                    className={classes.marginCenter}
+                    className={`${classes.marginCenter} ${classes.flexCenter}`}
                     key={product.id}
                   >
                     <Container>
-                      <ProductCard product={product} />
+                      <ProductCard product={{ ...product }} />
                     </Container>
                   </Grid>
                 );
               })}
             </Grid>
             <Pagination
-              className={classes.paginationCenter}
+              className={classes.flexCenter}
+              height={'30%'}
               onChange={onChangePage}
               defaultPage={1}
               count={10}
@@ -165,12 +168,19 @@ export const ProductsList = () => {
               color="primary"
               showLastButton={false}
             ></Pagination>
-            <BackButton to={() => backButton()} classProp={'center'} text="חזור"></BackButton>
+            <BackButton
+              to={() => backButton()}
+              classProp={'center'}
+              text="חזור"
+            ></BackButton>
           </Grid>
         ) : (
           <Grid mr={0} mt={2}>
             <Container>
-              <Typography variant="h5"> אין מוצרים קימיים תחת קטגוריה זו</Typography>
+              <Typography variant="h5">
+                {' '}
+                אין מוצרים קימיים תחת קטגוריה זו
+              </Typography>
               <BackButton to={() => backButton()} text="חזור"></BackButton>
               {page && (
                 <Button

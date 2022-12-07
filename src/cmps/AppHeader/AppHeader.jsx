@@ -15,39 +15,38 @@ import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import './AppHeader.scss';
 import { ShakeRotate } from 'reshake';
-// import { ImageCloud } from '../ImageCloud/ImageCloud';
 
 const customTheme = getCustomTheme();
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   ColorNavLink: {
     color: 'white',
-    textDecoration: 'none'
+    textDecoration: 'none',
   },
   Navlink: {
     textDecoration: 'none',
     marginLeft: 5,
-    marginRight: 5
+    marginRight: 5,
   },
   CenterToolBar: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    Width: '90%'
+    Width: '90%',
   },
   CenterToolBarr: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   toolBar: {
     '@media (max-width: 700px)': {
@@ -61,28 +60,28 @@ const useStyles = makeStyles((theme) => ({
       top: '0',
       bottom: '0',
       zIndex: 2,
-      marginLeft: '0'
-    }
+      marginLeft: '0',
+    },
   },
   colorWhite: {
     color: 'white',
-    paddingRight: theme.spacing(1)
+    paddingRight: theme.spacing(1),
   },
   Header: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'inherit'
+    flexDirection: 'inherit',
   },
 
   LogoContainer: {
-    width: '10%'
+    width: '10%',
   },
   Width90: {
-    width: '90%'
+    width: '90%',
   },
   paper: {
-    backgroundColor: `${customTheme.palette.primary.main}!important`
+    backgroundColor: `${customTheme.palette.primary.main}!important`,
   },
   exitButtom: {
     display: 'none',
@@ -96,36 +95,35 @@ const useStyles = makeStyles((theme) => ({
       with: '100%',
       height: '100%',
       cursor: 'pointer',
-      backgroundColor: 'white'
-    }
+      backgroundColor: 'white',
+    },
   },
   startIcon: {
-    marginRight: '0px'
+    marginRight: '0px',
   },
   ButtonCart: {
     paddingRight: '0px !important',
     '@media (max-width: 700px)': {
-      paddingTop: '0px !important'
-    }
-  }
+      paddingTop: '0px !important',
+    },
+  },
 }));
 
 const style = {
   flexDirection: 'row',
-  justifyContent: 'center'
+  justifyContent: 'center',
 };
 export const AppHeader = () => {
   const matches = useMediaQuery('(min-width:700px)');
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  // eslint-disable-next-line
-  const [isOpenMenu, setIsOpenMenu] = useState(false);
+  const [, setIsOpenMenu] = useState(false);
   const [checked, setChecked] = useState(false);
   const [cart, setCart] = useState();
 
   const getProductCart = useCallback(async () => {
-    const data = await cartService.getCart();
-    setCart(data);
+    const cartData = await cartService.getCart();
+    setCart(cartData);
   }, [setCart]);
 
   const handleChange = () => {
@@ -145,7 +143,6 @@ export const AppHeader = () => {
       className={classes.Header}
       classes={{ root: classes.paper }}
     >
-      {/* {matches && <ImageCloud imageId="old_logo_rssqwk" maxWidth="auto" ClassName="autoWith" maxHeight={50} />} */}
       <Grid className={classes.Width90}>
         {!matches ? (
           <Grid>
@@ -164,9 +161,16 @@ export const AppHeader = () => {
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
               color="secondary"
-              startIcon={<ShoppingCartOutlinedIcon color="black" className={classes.animation} />}
+              startIcon={
+                <ShoppingCartOutlinedIcon
+                  color="black"
+                  className={classes.animation}
+                />
+              }
             >
-              <Typography style={{ paddingRight: '10px' }}>עגלת קניות</Typography>
+              <Typography style={{ paddingRight: '10px' }}>
+                עגלת קניות
+              </Typography>
             </Button>
             {anchorEl && (
               <Cart
@@ -177,26 +181,42 @@ export const AppHeader = () => {
                 setIsOpenMenu={setIsOpenMenu}
               ></Cart>
             )}
-            {/* <ImageCloud imageId="old_logo_rssqwk" maxWidth="auto" ClassName="autoWith" maxHeight={50} /> */}
           </Grid>
         ) : null}
         {(matches || checked) && (
           <Grid className={classes.CenterToolBarr}>
-            <Typography className={classes.exitButtom} onClick={() => setChecked(false)}>
+            <Typography
+              className={classes.exitButtom}
+              onClick={() => setChecked(false)}
+            >
               X
             </Typography>
-            <Toolbar classes={{ root: classes.toolBar }} className={classes.CenterToolBar}>
-              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/">
+            <Toolbar
+              classes={{ root: classes.toolBar }}
+              className={classes.CenterToolBar}
+            >
+              <NavLink
+                onClick={() => setChecked(false)}
+                className={classes.Navlink}
+                to="/"
+              >
                 <Typography className={classes.ColorNavLink}>בית</Typography>
               </NavLink>
-              {/* <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/menu/weekend">
-                <Typography className={classes.ColorNavLink}>תפריט</Typography>
-              </NavLink> */}
-              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/about">
+              <NavLink
+                onClick={() => setChecked(false)}
+                className={classes.Navlink}
+                to="/about"
+              >
                 <Typography className={classes.ColorNavLink}>אודות</Typography>
               </NavLink>
-              <NavLink onClick={() => setChecked(false)} className={classes.Navlink} to="/contact">
-                <Typography className={classes.ColorNavLink}>צור קשר</Typography>
+              <NavLink
+                onClick={() => setChecked(false)}
+                className={classes.Navlink}
+                to="/contact"
+              >
+                <Typography className={classes.ColorNavLink}>
+                  צור קשר
+                </Typography>
               </NavLink>
               <Button
                 aria-controls="simple-menu"
@@ -207,11 +227,16 @@ export const AppHeader = () => {
                 classes={{ root: classes.ButtonCart }}
                 startIcon={
                   <ShakeRotate style={{ fontSize: '0px' }} active={true}>
-                    <ShoppingCartOutlinedIcon classes={{ root: classes.startIcon }} color="white" />
+                    <ShoppingCartOutlinedIcon
+                      classes={{ root: classes.startIcon }}
+                      color="white"
+                    />
                   </ShakeRotate>
                 }
               >
-                <Typography className={classes.colorWhite}>עגלת קניות</Typography>
+                <Typography className={classes.colorWhite}>
+                  עגלת קניות
+                </Typography>
               </Button>
               {anchorEl && (
                 <Cart

@@ -15,18 +15,18 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    flexDirection: 'column!important'
+    flexDirection: 'column!important',
   },
   marginTop: {
-    marginTop: '10px!important'
-  }
+    marginTop: '10px!important',
+  },
 }));
 
 const val = {
   displayName: '',
   imgUrl: '',
   description: '',
-  removeCategory: ''
+  removeCategory: '',
 };
 export const Category = () => {
   const classes = useStyles();
@@ -43,12 +43,12 @@ export const Category = () => {
     categoryService.removeCategory(values.removeCategory);
   };
   const addCategory = () => {
-    const data = {
+    const categoryData = {
       displayName: values.displayName,
       imgUrl: values.imgUrl,
-      description: values.description
+      description: values.description,
     };
-    categoryService.addCategory(data).then(() => {
+    categoryService.addCategory(categoryData).then(() => {
       console.log('add category!');
     });
   };

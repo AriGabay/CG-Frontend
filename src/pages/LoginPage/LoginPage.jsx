@@ -11,20 +11,23 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column !important',
-    minHeight: '80%'
+    minHeight: '80%',
   },
   marginBottom: {
-    marginBottom: '10px !important'
+    marginBottom: '10px !important',
   },
   grid: {
-    height: '100%'
-  }
+    height: '100%',
+  },
 }));
 
 export const LoginPage = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [userDetails, setUserDetails] = useState({ userName: null, password: null });
+  const [userDetails, setUserDetails] = useState({
+    userName: null,
+    password: null,
+  });
 
   const handelChange = ({ target }) => {
     const { value, name } = target;
@@ -33,8 +36,8 @@ export const LoginPage = () => {
 
   const login = async (e) => {
     e.preventDefault();
-    const res = await authService.login(userDetails);
-    if (res.token) {
+    const userLogin = await authService.login(userDetails);
+    if (userLogin.token) {
       history.push('/adminPage');
     }
   };
@@ -56,7 +59,11 @@ export const LoginPage = () => {
           name="password"
           onChange={(event) => handelChange(event)}
         ></TextField>
-        <Button type="submit" onSubmit={(event) => login(event)} onClick={(event) => login(event)}>
+        <Button
+          type="submit"
+          onSubmit={(event) => login(event)}
+          onClick={(event) => login(event)}
+        >
           התחבר
         </Button>
       </form>

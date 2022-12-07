@@ -22,10 +22,10 @@ const useStyles = makeStyles(() => ({
     right: '0',
     left: '0!important',
     width: '100vw',
-    height: '100vh'
+    height: '100vh',
   },
   zIndex: {
-    zIndex: 520
+    zIndex: 520,
   },
   paper: {
     top: '80px!important',
@@ -39,33 +39,38 @@ const useStyles = makeStyles(() => ({
       left: '0!important',
       minWidth: '100% !important',
       minHeight: '100% !important',
-      maxHeight: '16px'
-      // maxWidth: '16px !important'
-    }
+      maxHeight: '16px',
+    },
   },
   MenuItem: {
     height: 'auto',
-    width: 'auto'
+    width: 'auto',
   },
   rtl: {
-    textAlign: 'right'
+    textAlign: 'right',
   },
   containerText: {
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    textAlign: 'right'
+    textAlign: 'right',
   },
   textCartProduct: {
     display: 'block',
     textOverflow: 'ellipsis',
     wordWrap: 'break-word',
     lineHeight: '1.8em',
-    whiteSpace: 'pre-wrap'
-  }
+    whiteSpace: 'pre-wrap',
+  },
 }));
 
-export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) => {
+export const Cart = ({
+  cart,
+  anchorEl,
+  setAnchorEl,
+  setCart,
+  setIsOpenMenu,
+}) => {
   const matches = useMediaQuery('(min-width:700px)');
   const classes = useStyles(matches);
   const history = useHistory();
@@ -114,13 +119,20 @@ export const Cart = ({ cart, anchorEl, setAnchorEl, setCart, setIsOpenMenu }) =>
           return (
             <MenuItem className={classes.MenuItem} key={order._id}>
               <Container classes={{ root: classes.containerText }}>
-                <Typography className={classes.textCartProduct}>מוצר: {order.product.displayName}</Typography>
-                <Typography className={classes.textCartProduct}>כמות: {sizeText(order)}</Typography>
+                <Typography className={classes.textCartProduct}>
+                  מוצר: {order.product.displayName}
+                </Typography>
+                <Typography className={classes.textCartProduct}>
+                  כמות: {sizeText(order)}
+                </Typography>
                 <Typography className={classes.textCartProduct}>
                   מחיר: {order.priceToShow}
                   {shekel}
                 </Typography>
-                <Button text="x" onClick={() => removeFromCart(order._id)}></Button>
+                <Button
+                  text="x"
+                  onClick={() => removeFromCart(order._id)}
+                ></Button>
               </Container>
             </MenuItem>
           );

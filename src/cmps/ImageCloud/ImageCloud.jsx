@@ -21,7 +21,6 @@ export function ImageCloud({
       height ? 'h_' + height : ''
     }/v1614944384/${imageId}`;
   };
-  console.log(style);
   return (
     <Image
       className={ClassName}

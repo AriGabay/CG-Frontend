@@ -9,33 +9,30 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column !important',
-    marginRight: '10px'
-  }
+    marginRight: '10px',
+  },
 });
 
 export const PlusMinus = ({ type, size, input, updateOrder }) => {
   const classes = useStyles();
   const minus = () => {
-    if (input - size.SizePrices[0].size < 0 || input - size.SizePrices[0].size === 0) return;
+    if (
+      input - size.SizePrices[0].size < 0 ||
+      input - size.SizePrices[0].size === 0
+    )
+      return;
     if (type === 'weight') {
       const weight = Number(input) - Number(size.SizePrices[0].size);
       updateOrder(weight);
-      //   handleState(weight);
-      //   setPriceToShow(size.SizePrices[0].amount * (weight / 100).toFixed(2));
     } else if (type === 'unit') {
       const unit = Number(input) - Number(size.SizePrices[0].size);
       updateOrder(unit);
-      //   handleState(weight);
-      //   setPriceToShow(size.SizePrices[0].amount * (weight / 100).toFixed(2));
     }
   };
   const plus = () => {
     if (type === 'weight') {
       const weight = Number(input) + Number(size.SizePrices[0].size);
       updateOrder(weight);
-
-      //   handleState(weight);
-      //   setPriceToShow(size.SizePrices[0].amount * (weight / 100).toFixed(2));
     } else if (type === 'unit') {
       const unit = Number(input) + Number(size.SizePrices[0].size);
       updateOrder(unit);

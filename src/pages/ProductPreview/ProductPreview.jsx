@@ -81,11 +81,11 @@ export const ProductPreview = () => {
   const addToCart = () => {
     if (
       productOrder === undefined ||
-      productOrder.sizeToOrder === null ||
-      productOrder.sizeToOrder === undefined ||
-      productOrder.sizeToOrder === '' ||
-      productOrder.sizeToOrder === 0 ||
-      !productOrder.sizeToOrder
+      productOrder?.sizeToOrder === null ||
+      productOrder?.sizeToOrder === undefined ||
+      productOrder?.sizeToOrder === '' ||
+      productOrder?.sizeToOrder === 0 ||
+      !productOrder?.sizeToOrder
     )
       return;
     cartService.addToCart(productOrder).then(() => {

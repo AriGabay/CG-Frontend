@@ -2,7 +2,6 @@ import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import './HomePage.scss';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import useViewport from '../../hooks/useViewport';
@@ -73,11 +72,11 @@ export const HomePage = () => {
   const [menuEnables, setMenuEnables] = useState({});
 
   const checkMenuEnables = async () => {
-    const res = await isMenuEnableService.getAllMenuEnables();
-    res.forEach((menu) => {
-      const key = menu.menuType;
+    const menus = await isMenuEnableService.getAllMenuEnables();
+    menus.forEach((menu) => {
+      const menuType = menu.menuType;
       const buildData = { ...menuEnables };
-      buildData[key] = menu.enable;
+      buildData[menuType] = menu.enable;
       setMenuEnables((prev) => ({ ...prev, ...buildData }));
     });
   };
@@ -95,7 +94,6 @@ export const HomePage = () => {
         <Typography
           classes={{ root: classes.fixLineHeight }}
           className={classes.textImageHomePage}
-          // variant="h6"
           gutterBottom
         >
           יום שישי פתוחים החל מהשעה 7:00-14:30

@@ -1,8 +1,8 @@
 function store(key, value) {
-  const data = load(key);
+  const dataLocalStorage = load(key);
   const arr = [];
-  if (data) {
-    arr.push(value, { ...data });
+  if (dataLocalStorage) {
+    arr.push(value, { ...dataLocalStorage });
   } else {
     arr.push({ value });
   }
