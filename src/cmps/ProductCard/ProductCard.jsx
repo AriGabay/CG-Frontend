@@ -1,4 +1,3 @@
-import './ProductCard.scss';
 import React from 'react';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { makeStyles } from '@material-ui/styles';

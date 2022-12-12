@@ -1,4 +1,3 @@
-import './PriceForBox.scss';
 import React, { useState } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
@@ -9,15 +8,15 @@ import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
   optionsBtn: {
-    maxWidth: '270px'
+    maxWidth: '270px',
   },
   typography: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     textAlign: 'center',
-    width: '350px'
-  }
+    width: '350px',
+  },
 });
 
 export const PriceForBox = ({ product, setProductOrder }) => {
@@ -26,7 +25,11 @@ export const PriceForBox = ({ product, setProductOrder }) => {
   const classes = useStyles();
   const updateOrder = (price) => {
     setPriceToShow(price.amount);
-    setProductOrder({ sizeToOrder: Number(price.size), product, priceToShow: price.amount });
+    setProductOrder({
+      sizeToOrder: Number(price.size),
+      product,
+      priceToShow: price.amount,
+    });
   };
 
   return product ? (

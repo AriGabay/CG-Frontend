@@ -1,4 +1,3 @@
-import './Category.scss';
 import React from 'react';
 import Controls from '../../../cmps/Controls/Controls';
 import { useForm } from '../../../hooks/useForm';

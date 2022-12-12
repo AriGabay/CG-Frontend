@@ -1,4 +1,3 @@
-import './ImageCloud.scss';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Image } from 'cloudinary-react';

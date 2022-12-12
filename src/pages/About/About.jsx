@@ -1,4 +1,3 @@
-import './About.scss';
 import React, { Fragment } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -11,13 +10,13 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column !important',
-    padding: '10px'
+    padding: '10px',
   },
   gridMap: {
     marginTop: '10px',
     width: '100%',
-    height: '100%'
-  }
+    height: '100%',
+  },
 }));
 
 export const About = () => {
@@ -31,7 +30,10 @@ export const About = () => {
       <Grid classes={{ root: classes.root }}>
         <Grid classes={{ root: classes.root }}>
           <Typography variant="h2">אודות</Typography>
-          <Typography variant="h5">קייטרינג גבאי פועל כבר יותר מעשור. אוכל בתוצרת ביתית משובח ועשיר בטעמים.</Typography>
+          <Typography variant="h5">
+            קייטרינג גבאי פועל כבר יותר מעשור. אוכל בתוצרת ביתית משובח ועשיר
+            בטעמים.
+          </Typography>
         </Grid>
         <Grid className={`${classes.gridMap} ${classes.root}`}>
           <GoogleMaps></GoogleMaps>

@@ -85,6 +85,7 @@ export const ProductsList = () => {
           dispatch({ type: 'SET_PRODUCTS', payload: [...products] });
           setCategoryName(products[0].Category.displayName);
         } else {
+          dispatch({ type: 'SET_PRODUCTS', payload: [] });
           setCategoryName(categoryName ? categoryName : '');
         }
       })
@@ -111,9 +112,10 @@ export const ProductsList = () => {
     if (page) {
       dispatch({ type: 'SET_PAGE', payload: page });
       await getProducts(page);
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 200);
+      if (products.length)
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+        }, 200);
     } else {
       dispatch({ type: 'SET_PAGE', payload: 1 });
       await getProducts(1);
@@ -162,7 +164,7 @@ export const ProductsList = () => {
               className={classes.flexCenter}
               height={'30%'}
               onChange={onChangePage}
-              defaultPage={1}
+              defaultPage={Number(page)}
               count={10}
               page={Number(page)}
               color="primary"
@@ -181,18 +183,24 @@ export const ProductsList = () => {
                 {' '}
                 אין מוצרים קימיים תחת קטגוריה זו
               </Typography>
-              <BackButton to={() => backButton()} text="חזור"></BackButton>
-              {page && (
-                <Button
-                  variant="contained"
-                  size="large"
-                  color="primary"
-                  onClick={(event) => onChangePage(event, page - 1)}
-                  style={{ marginRight: 20 }}
-                >
-                  חזור עמוד
-                </Button>
-              )}
+              <div className={classes.flexCenter} style={{ marginTop: 5 }}>
+                <BackButton
+                  to={() => backButton()}
+                  text="חזור"
+                  style={{ marginBottom: 0 }}
+                ></BackButton>
+                {page && (
+                  <Button
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    onClick={(event) => onChangePage(event, page - 1)}
+                    style={{ marginRight: 20, marginBottom: 0 }}
+                  >
+                    עמוד אחורה
+                  </Button>
+                )}
+              </div>
             </Container>
           </Grid>
         )}

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './LoginPage.scss';
 import { TextField, Typography, Grid, Button } from '@material-ui/core';
 import { authService } from '../../services/authService';
 import { useHistory } from 'react-router-dom';

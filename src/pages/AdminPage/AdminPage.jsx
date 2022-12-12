@@ -1,4 +1,3 @@
-import './AdminPage.scss';
 import React, { useState, useEffect } from 'react';
 import Button from '../../cmps/Controls/Button';
 import { Category as AdminPageCategory } from '../../cmps/AdminPage/Category';

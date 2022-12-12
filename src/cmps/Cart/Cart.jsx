@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import './Cart.scss';
 import IconButton from '@material-ui/core/IconButton';
 import CloseOutlined from '@material-ui/icons/CloseOutlined';
 import Menu from '@material-ui/core/Menu';

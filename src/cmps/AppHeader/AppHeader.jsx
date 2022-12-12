@@ -13,7 +13,6 @@ import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
-import './AppHeader.scss';
 import { ShakeRotate } from 'reshake';
 
 const customTheme = getCustomTheme();

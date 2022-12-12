@@ -1,4 +1,3 @@
-import './CheckoutOrder.scss';
 import React, { useState, useEffect, Fragment } from 'react';
 import { cartService } from '../../services/cartService';
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
@@ -18,12 +17,12 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
     flexDirection: 'row',
     '@media (max-width: 700px)': {
-      flexDirection: 'column!important'
-    }
+      flexDirection: 'column!important',
+    },
   },
   Paper: {
     minWidth: '250px',
-    minHeight: '450px'
+    minHeight: '450px',
   },
   formSide: {
     position: 'sticky',
@@ -32,8 +31,8 @@ const useStyles = makeStyles(() => ({
       position: 'unset',
 
       marginRight: '20px!important',
-      marginLeft: '20px!important'
-    }
+      marginLeft: '20px!important',
+    },
   },
   productCard: {
     marginRight: '64px',
@@ -44,9 +43,9 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column',
     '@media (max-width: 700px)': {
       marginRight: '20px!important',
-      marginLeft: '20px!important'
-    }
-  }
+      marginLeft: '20px!important',
+    },
+  },
 }));
 
 export const CheckoutOrder = () => {
@@ -88,15 +87,25 @@ export const CheckoutOrder = () => {
                     {product.displayName}
                   </Typography>
                   <Typography>
-                    {product.Price.priceType === 'weight' && <span> {product.sizeToOrder} גרם</span>}
-                    {product.Price.priceType === 'unit' && <span>{product.sizeToOrder} יחידות </span>}
-                    {product.Price.priceType === 'box' && <span>קופסה בגודל {product.sizeToOrder} גרם</span>}
+                    {product.Price.priceType === 'weight' && (
+                      <span> {product.sizeToOrder} גרם</span>
+                    )}
+                    {product.Price.priceType === 'unit' && (
+                      <span>{product.sizeToOrder} יחידות </span>
+                    )}
+                    {product.Price.priceType === 'box' && (
+                      <span>קופסה בגודל {product.sizeToOrder} גרם</span>
+                    )}
                   </Typography>
                   <Typography>
                     מחיר : {product.pricePerSize.toFixed(2)}
                     {shekel}
                   </Typography>
-                  <ImageCloud imageId={product.imgUrl} maxWidth={350} maxHeight={300}></ImageCloud>
+                  <ImageCloud
+                    imageId={product.imgUrl}
+                    maxWidth={350}
+                    maxHeight={300}
+                  ></ImageCloud>
                 </Paper>
               </Grid>
             );

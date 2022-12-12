@@ -1,4 +1,3 @@
-import './Price.scss';
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../../Controls/Controls';

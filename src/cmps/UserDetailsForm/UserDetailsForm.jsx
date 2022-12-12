@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './UserDetailsForm.scss';
 import Grid from '@material-ui/core/Grid';
 import Controls from '../Controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
@@ -31,7 +30,7 @@ const initialFValues = {
   idPersonal: '',
   pickup: '',
   street: '',
-  pickUpDate: new Date()
+  pickUpDate: new Date(),
 };
 
 const pickupItems = [
@@ -47,20 +46,20 @@ const pickupItems = [
   { id: '13:00', title: '13:00' },
   { id: '13:30', title: '13:30' },
   { id: '14:00', title: '14:00' },
-  { id: '14:15', title: '14:15' }
+  { id: '14:15', title: '14:15' },
 ];
 
 const styles = (theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
   },
   closeButton: {
     position: 'absolute',
     right: theme.spacing(1),
     top: theme.spacing(1),
-    color: theme.palette.grey[500]
-  }
+    color: theme.palette.grey[500],
+  },
 });
 
 const DialogTitle = withStyles(styles)((props) => {
@@ -69,7 +68,11 @@ const DialogTitle = withStyles(styles)((props) => {
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
       {onClose ? (
-        <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={onClose}
+        >
           <CloseIcon />
         </IconButton>
       ) : null}
@@ -79,15 +82,15 @@ const DialogTitle = withStyles(styles)((props) => {
 
 const DialogContent = withStyles((theme) => ({
   root: {
-    padding: theme.spacing(2)
-  }
+    padding: theme.spacing(2),
+  },
 }))(MuiDialogContent);
 
 const DialogActions = withStyles((theme) => ({
   root: {
     margin: 0,
-    padding: theme.spacing(1)
-  }
+    padding: theme.spacing(1),
+  },
 }))(MuiDialogActions);
 
 export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
@@ -98,35 +101,56 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
-    if ('firstName' in fieldValues) temp.firstName = fieldValues.firstName ? '' : requiredInputStr;
-    if ('lastName' in fieldValues) temp.lastName = fieldValues.lastName ? '' : requiredInputStr;
+    if ('firstName' in fieldValues)
+      temp.firstName = fieldValues.firstName ? '' : requiredInputStr;
+    if ('lastName' in fieldValues)
+      temp.lastName = fieldValues.lastName ? '' : requiredInputStr;
     if ('email' in fieldValues)
-      temp.email = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(fieldValues.email)
-        ? ''
-        : 'כתובת מייל לא חוקית';
-    if ('mobile' in fieldValues) temp.mobile = fieldValues.mobile.length > 9 ? '' : 'מספר פלאפון לא תקין';
-    if ('mobileTow' in fieldValues) temp.mobileTow = fieldValues.mobileTow.length > 9 ? '' : 'מספר פלאפון לא תקין';
-    if ('pickup' in fieldValues) temp.pickup = fieldValues.pickup.length ? '' : 'נא לבחור שעת אסיפה';
+      temp.email =
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(
+          fieldValues.email
+        )
+          ? ''
+          : 'כתובת מייל לא חוקית';
+    if ('mobile' in fieldValues)
+      temp.mobile = fieldValues.mobile.length > 9 ? '' : 'מספר פלאפון לא תקין';
+    if ('mobileTow' in fieldValues)
+      temp.mobileTow =
+        fieldValues.mobileTow.length > 9 ? '' : 'מספר פלאפון לא תקין';
+    if ('pickup' in fieldValues)
+      temp.pickup = fieldValues.pickup.length ? '' : 'נא לבחור שעת אסיפה';
     if ('idPersonal' in fieldValues)
       temp.idPersonal =
-        fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9 ? '' : 'תעודת זהות לא חוקית';
-    if ('city' in fieldValues) temp.city = fieldValues.city.length ? '' : requiredInputStr;
-    if ('street' in fieldValues) temp.street = fieldValues.street.length ? '' : requiredInputStr;
+        fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9
+          ? ''
+          : 'תעודת זהות לא חוקית';
+    if ('city' in fieldValues)
+      temp.city = fieldValues.city.length ? '' : requiredInputStr;
+    if ('street' in fieldValues)
+      temp.street = fieldValues.street.length ? '' : requiredInputStr;
     if (terms === false) return;
-    if ('pickUpDate' in fieldValues) temp.pickUpDate = fieldValues.pickUpDate.length ? '' : requiredInputStr;
+    if ('pickUpDate' in fieldValues)
+      temp.pickUpDate = fieldValues.pickUpDate.length ? '' : requiredInputStr;
     setErrors({
-      ...temp
+      ...temp,
     });
-    if (fieldValues === values) return Object.values(temp).every((x) => x === '');
+    if (fieldValues === values)
+      return Object.values(temp).every((x) => x === '');
   };
 
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(initialFValues, true, validate);
+  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
+    initialFValues,
+    true,
+    validate
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
       values.pickUpDate = format(new Date(values.pickUpDate), 'dd/MM/yyyy');
-      checkOutTotal(values).then((msg) => eventBus.dispatch('checkOutOrder', { message: msg }));
+      checkOutTotal(values).then((msg) =>
+        eventBus.dispatch('checkOutOrder', { message: msg })
+      );
       resetForm();
       history.push('/');
     }
@@ -219,7 +243,12 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           />
         </Grid>
         <Grid>
-          <Typography mb={2} mt={2} borderBottom={'1px solid black'} borderTop={'1px solid black'}>
+          <Typography
+            mb={2}
+            mt={2}
+            borderBottom={'1px solid black'}
+            borderTop={'1px solid black'}
+          >
             אם לא נבחר תאריך ההזמנה תבוצע ליום שישי של אותו השבוע
           </Typography>
         </Grid>
@@ -234,18 +263,36 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           />
         </Grid>
         <Grid display="flex" justifyContent="flex-start" alignContent="center">
-          <Grid display="flex" justifyContent="flex-start" alignContent="center">
-            <Checkbox name="terms" required={true} label="" value={terms} onChange={() => setTerms(!terms)}></Checkbox>
+          <Grid
+            display="flex"
+            justifyContent="flex-start"
+            alignContent="center"
+          >
+            <Checkbox
+              name="terms"
+              required={true}
+              label=""
+              value={terms}
+              onChange={() => setTerms(!terms)}
+            ></Checkbox>
             <Button onClick={handleClickOpen}>
               <Typography textAlign="center">תקנון</Typography>
             </Button>
-            {terms === false && <FormHelperText>{requiredInputStr}</FormHelperText>}
+            {terms === false && (
+              <FormHelperText>{requiredInputStr}</FormHelperText>
+            )}
           </Grid>
-          <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
+          <Dialog
+            onClose={handleClose}
+            aria-labelledby="customized-dialog-title"
+            open={open}
+          >
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
               תקנון
             </DialogTitle>
-            <DialogContent dividers>{termsTxt && <Typography gutterBottom>{termsTxt}</Typography>}</DialogContent>
+            <DialogContent dividers>
+              {termsTxt && <Typography gutterBottom>{termsTxt}</Typography>}
+            </DialogContent>
             <DialogActions>
               <Button autoFocus onClick={handleClose} color="primary">
                 חזרה
@@ -259,7 +306,11 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           <Typography>מחיר משוער : {totalPrice} ₪</Typography>
         </Grid>
         <Grid mb={2}>
-          <Controls.Button type="submit" text="להזמנה" onClick={(event) => handleSubmit(event)} />
+          <Controls.Button
+            type="submit"
+            text="להזמנה"
+            onClick={(event) => handleSubmit(event)}
+          />
         </Grid>
         <Grid mb={2}>
           <BackButton text="חזור" to="/"></BackButton>

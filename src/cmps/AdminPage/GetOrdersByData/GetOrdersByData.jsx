@@ -1,4 +1,3 @@
-import './GetOrdersByData.scss';
 import React from 'react';
 import { useState } from 'react';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
@@ -15,19 +14,19 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%'
+    width: '100%',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular
+    fontWeight: theme.typography.fontWeightRegular,
   },
   paper: {
     minHeight: '100px',
     display: 'flex !important',
     justifyContent: 'space-between !important',
     alignItems: 'center !important',
-    width: '100% !important'
-  }
+    width: '100% !important',
+  },
 }));
 export const GetOrdersByData = () => {
   const [startDay, setStartDay] = useState(new Date());
@@ -51,7 +50,7 @@ export const GetOrdersByData = () => {
       if (!endDay && !startDay) return;
       const dates = {
         start: startDay,
-        end: endDay
+        end: endDay,
       };
       const totalOrders = await ordersService.getOrdersByDates(dates);
       setOrders(totalOrders.orders);
@@ -111,29 +110,47 @@ export const GetOrdersByData = () => {
                   id="panel1a-header"
                 >
                   <Typography>מספר הזמנה : {totalOrder.id}</Typography>
-                  <Typography>שם פרטי : {totalOrder.order.firstName}</Typography>
-                  <Typography>שם משפחה : {totalOrder.order.lastName}</Typography>
+                  <Typography>
+                    שם פרטי : {totalOrder.order.firstName}
+                  </Typography>
+                  <Typography>
+                    שם משפחה : {totalOrder.order.lastName}
+                  </Typography>
                   <Typography>מחיר : {totalOrder.order.totalPrice}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>מספר הזמנה : {totalOrder.id}</Typography>
-                  <Typography>שם פרטי : {totalOrder.order.firstName}</Typography>
-                  <Typography>שם משפחה : {totalOrder.order.lastName}</Typography>
+                  <Typography>
+                    שם פרטי : {totalOrder.order.firstName}
+                  </Typography>
+                  <Typography>
+                    שם משפחה : {totalOrder.order.lastName}
+                  </Typography>
                   <Typography>מחיר : {totalOrder.order.totalPrice}</Typography>
                   <Typography>עיר : {totalOrder.order.city}</Typography>
-                  <Typography>תעודת זהות : {totalOrder.order.idPersonal}</Typography>
+                  <Typography>
+                    תעודת זהות : {totalOrder.order.idPersonal}
+                  </Typography>
                   <Typography>נייד : {totalOrder.order.mobile}</Typography>
-                  <Typography>נייד נוסף : {totalOrder.order.mobileTow}</Typography>
+                  <Typography>
+                    נייד נוסף : {totalOrder.order.mobileTow}
+                  </Typography>
                   <Typography>שעת איסוף : {totalOrder.order.pickup}</Typography>
-                  <Typography>תאריך איסוף : {formatDate(totalOrder.order.pickUpDate)}</Typography>
-                  <Typography>תאריך ביצוע ההזמנה : {formatDate(totalOrder.order.time)}</Typography>
+                  <Typography>
+                    תאריך איסוף : {formatDate(totalOrder.order.pickUpDate)}
+                  </Typography>
+                  <Typography>
+                    תאריך ביצוע ההזמנה : {formatDate(totalOrder.order.time)}
+                  </Typography>
                   <hr />
                   {totalOrder.order.products &&
                     totalOrder.order.products.length &&
                     totalOrder.order.products.map((product, index) => {
                       return (
                         <Grid key={index}>
-                          <Typography>שם המוצר : {product.displayName}</Typography>
+                          <Typography>
+                            שם המוצר : {product.displayName}
+                          </Typography>
                           <Typography>כמות : {product.sizeToOrder}</Typography>
                           <Typography>מחיר : {product.pricePerSize}</Typography>
                           <br />
@@ -145,7 +162,11 @@ export const GetOrdersByData = () => {
             );
           })}
         <Grid>
-          <Typography mt={2} mb={2} variant="h5">{`סיכום מוצרים לתקופת זמן ${displayDate(startDay)} - ${displayDate(
+          <Typography
+            mt={2}
+            mb={2}
+            variant="h5"
+          >{`סיכום מוצרים לתקופת זמן ${displayDate(startDay)} - ${displayDate(
             endDay
           )}`}</Typography>
           {totalProducts &&

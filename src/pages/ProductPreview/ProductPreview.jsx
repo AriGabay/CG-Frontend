@@ -1,4 +1,3 @@
-import './ProductPreview.scss';
 import React, { Fragment, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import BackButton from '../../cmps/Controls/BackButton';
