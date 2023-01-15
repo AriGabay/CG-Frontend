@@ -11,6 +11,8 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
 import { eventBus } from '../../services/event-bus';
 import { authService } from '../../services/authService';
+import { GnCategory } from '../../cmps/AdminPage/GannayEyalon/GnCategory/GnCategory';
+import { GnProduct } from '../../cmps/AdminPage/GannayEyalon/GnProduct';
 
 const useStyles = makeStyles(() => ({
   marginLeft: {
@@ -79,6 +81,16 @@ export const AdminPage = () => {
           text="הזמנות על פי תאריך"
           onClick={() => handleClick('GetOrdersByData')}
         />
+        <Button
+          className={classes.marginLeft}
+          text="קטגוריות - גני איילון"
+          onClick={() => handleClick('GnCategory')}
+        />
+        <Button
+          className={classes.marginLeft}
+          text="מוצר - גני איילון"
+          onClick={() => handleClick('GnProduct')}
+        />
         {status && status === 'Category' ? (
           <Grid mt={2}>
             <AdminPageCategory eventBus={eventBus}></AdminPageCategory>
@@ -107,6 +119,16 @@ export const AdminPage = () => {
         {status && status === 'Menu' ? (
           <Grid mt={2}>
             <AdminMenu eventBus={eventBus}></AdminMenu>
+          </Grid>
+        ) : null}
+        {status && status === 'GnCategory' ? (
+          <Grid mt={2}>
+            <GnCategory eventBus={eventBus}></GnCategory>
+          </Grid>
+        ) : null}
+        {status && status === 'GnProduct' ? (
+          <Grid mt={2}>
+            <GnProduct eventBus={eventBus}></GnProduct>
           </Grid>
         ) : null}
         {status && status === 'GetOrdersByData' ? (

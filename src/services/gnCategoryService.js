@@ -1,21 +1,22 @@
 import { httpService } from './http.service';
-const endpoint = 'category/';
-async function getCategories(query = { include: false }) {
+const endpoint = 'gannay-eylon/category/';
+async function getGnCategories(query = { include: false }) {
   try {
     return await httpService.get(endpoint, query);
   } catch (error) {
     console.error('error', error);
   }
 }
-async function getCategoriesDropDown() {
+async function getGnCategoriesDropDown() {
   try {
-    return await httpService.get(endpoint + 'dropdown', {});
+    const resDropDown = await httpService.get(endpoint, {});
+    return resDropDown;
   } catch (error) {
     console.error('error', error);
   }
 }
 
-async function getCategoriesMenu(query = { include: false }) {
+async function getGnCategoriesMenu(query = { include: false }) {
   try {
     return await httpService.get(endpoint + 'menu', query);
   } catch (error) {
@@ -23,22 +24,22 @@ async function getCategoriesMenu(query = { include: false }) {
   }
 }
 
-async function addCategory(category) {
+async function addGnCategory(category) {
   await httpService.post(endpoint, category);
 }
 
-async function removeCategory(id) {
+async function removeGnCategory(id) {
   await httpService.delete(endpoint, id);
 }
-async function getCategoryById(id, include) {
+async function getGnCategoryById(id) {
   try {
-    const res = await httpService.get(endpoint, { id, include });
+    const res = await httpService.get(endpoint, { id });
     return res;
   } catch (error) {
     console.error('error', error);
   }
 }
-async function updateCategory(category) {
+async function updateGnCategory(category) {
   try {
     const res = await httpService.put(endpoint, category.id, category);
     return res;
@@ -47,12 +48,12 @@ async function updateCategory(category) {
   }
 }
 
-export const categoryService = {
-  getCategories,
-  addCategory,
-  removeCategory,
-  getCategoryById,
-  updateCategory,
-  getCategoriesMenu,
-  getCategoriesDropDown,
+export const gnCategoryService = {
+  getGnCategories,
+  addGnCategory,
+  removeGnCategory,
+  getGnCategoryById,
+  updateGnCategory,
+  getGnCategoriesMenu,
+  getGnCategoriesDropDown,
 };

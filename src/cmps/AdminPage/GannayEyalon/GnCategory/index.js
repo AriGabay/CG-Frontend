@@ -1,0 +1,1 @@
+export { GnCategory } from './GnCategory';

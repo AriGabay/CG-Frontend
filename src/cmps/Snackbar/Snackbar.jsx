@@ -28,6 +28,10 @@ export default function SimpleSnackbar() {
       setMsg(data.message);
       handleOpen();
     });
+    eventBus.on('success', (data) => {
+      setMsg(data.message);
+      handleOpen();
+    });
     eventBus.on('removeProductToCart', (data) => {
       setMsg(data.message);
       handleOpen();
