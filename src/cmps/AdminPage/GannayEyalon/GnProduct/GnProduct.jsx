@@ -24,15 +24,11 @@ const useStyles = makeStyles(() => ({
 const val = {
   productName: '',
   categoryId: '',
-  inStock: true,
   imgUrl: '',
-  priceId: '',
+  autoAdd: '',
   productToRemove: '',
   description: '',
   productToEdit: '',
-  kitniyot: false,
-  typeMenu: [],
-  tishray: false,
 };
 export const GnProduct = ({ eventBus }) => {
   const classes = useStyles();
@@ -50,12 +46,13 @@ export const GnProduct = ({ eventBus }) => {
     });
   }, []);
   const addProduct = () => {
-    const { productName, categoryId, imgUrl, description } = values;
+    const { productName, categoryId, imgUrl, description, autoAdd } = values;
     const productData = {
       productName,
       categoryId,
       imgUrl,
       description,
+      autoAdd,
     };
     gnProductService.addGnProduct(productData).then(() => {
       eventBus.dispatch('success', { message: 'מוצר נוסף בהצלחה' });
@@ -72,7 +69,7 @@ export const GnProduct = ({ eventBus }) => {
     });
   };
   const editProduct = ({ target }) => {
-    const { name, value } = target;
+    let { name, value } = target;
     const newProduct = { ...productToEdit, [name]: value };
     setProductToEdit(newProduct);
   };
@@ -81,7 +78,6 @@ export const GnProduct = ({ eventBus }) => {
       eventBus.dispatch('success', { message: 'מוצר  עודכן בהצלחה' });
     });
   };
-
   return (
     <Grid>
       <h1>אתר גני איילון !!!!!</h1>
@@ -100,6 +96,16 @@ export const GnProduct = ({ eventBus }) => {
           value={values.imgUrl}
           onChange={handleInputChange}
           name="imgUrl"
+        />
+        <h5>הוספה אוטומטית :</h5>
+        <h5>1 - מוסיף אוטומטי</h5>
+        <h5>0 - לא מוסיף אוטומטי</h5>
+        <Controls.Input
+          label="הוספה אוטומטית"
+          className={classes.marginTop}
+          value={values.autoAdd}
+          onChange={handleInputChange}
+          name="autoAdd"
         />
         {categories && (
           <Controls.Select
@@ -178,6 +184,16 @@ export const GnProduct = ({ eventBus }) => {
               value={productToEdit.imgUrl}
               onChange={(event) => editProduct(event)}
               name="imgUrl"
+            />
+            <h5>הוספה אוטומטית :</h5>
+            <h5>1 / true - מוסיף אוטומטי</h5>
+            <h5>0 / false - לא מוסיף אוטומטי</h5>
+            <Controls.Input
+              label="הוספה אוטומטית"
+              className={classes.marginTop}
+              value={productToEdit.autoAdd}
+              onChange={(event) => editProduct(event)}
+              name="autoAdd"
             />
             <TextareaAutosize
               className={classes.marginTop}
