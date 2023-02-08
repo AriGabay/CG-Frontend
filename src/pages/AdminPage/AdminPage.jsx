@@ -91,6 +91,11 @@ export const AdminPage = () => {
           text="מוצר - גני איילון"
           onClick={() => handleClick('GnProduct')}
         />
+        <Button
+          className={classes.marginLeft}
+          text="ענן תמונות"
+          onClick={() => handleClick('GetCloudinaryDetails')}
+        />
         {status && status === 'Category' ? (
           <Grid mt={2}>
             <AdminPageCategory eventBus={eventBus}></AdminPageCategory>
@@ -136,6 +141,20 @@ export const AdminPage = () => {
             <AdminPageGetOrdersByData
               eventBus={eventBus}
             ></AdminPageGetOrdersByData>
+          </Grid>
+        ) : null}
+        {status && status === 'GetCloudinaryDetails' ? (
+          <Grid mt={2}>
+            <h1>פרטי התחברות :</h1>
+            <a
+              title="link"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://cloudinary.com/users/login"
+            >
+              קישור
+            </a>
+            <h4>שם משתמש : arigabay199875@gmail.com </h4>
           </Grid>
         ) : null}
       </Grid>
