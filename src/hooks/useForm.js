@@ -9,7 +9,9 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
-    e.stopPropagation();
+    if (e?.stopPropagation) {
+      e.stopPropagation();
+    }
     let { name, value } = e.target;
     if (
       isNumber(value) &&
