@@ -29,6 +29,7 @@ const val = {
   productToRemove: '',
   description: '',
   productToEdit: '',
+  photos: {},
 };
 export const GnProduct = ({ eventBus }) => {
   const classes = useStyles();
@@ -36,7 +37,7 @@ export const GnProduct = ({ eventBus }) => {
   const [products, setProducts] = useState();
   const [productToEdit, setProductToEdit] = useState();
 
-  const { values, handleInputChange } = useForm(val, false);
+  const { values, handleInputChange, setValues } = useForm(val, false);
   useEffect(() => {
     gnCategoryService.getGnCategoriesDropDown().then((category) => {
       setCategories(category);
@@ -46,13 +47,15 @@ export const GnProduct = ({ eventBus }) => {
     });
   }, []);
   const addProduct = () => {
-    const { productName, categoryId, imgUrl, description, autoAdd } = values;
+    const { productName, categoryId, imgUrl, description, autoAdd, photos } =
+      values;
     const productData = {
       productName,
       categoryId,
       imgUrl,
       description,
       autoAdd,
+      photos,
     };
     gnProductService.addGnProduct(productData).then(() => {
       eventBus.dispatch('success', { message: 'מוצר נוסף בהצלחה' });
@@ -65,7 +68,7 @@ export const GnProduct = ({ eventBus }) => {
   };
   const getProductById = ({ target }) => {
     gnProductService.getGnProductById(target.value).then((res) => {
-      setProductToEdit(res[0]);
+      setProductToEdit({ ...res[0], photos: JSON.parse(res[0].photos) });
     });
   };
   const editProduct = ({ target }) => {
@@ -77,6 +80,27 @@ export const GnProduct = ({ eventBus }) => {
     gnProductService.updateGnProduct(productToEdit).then(() => {
       eventBus.dispatch('success', { message: 'מוצר  עודכן בהצלחה' });
     });
+  };
+  const handelCahngeImageGallery = ({ target }) => {
+    let { name, value } = target;
+    if (name === 'imgUrl') {
+      setValues((prev) => ({ ...prev, imgUrl: value }));
+      name = 0;
+    }
+    setValues((prev) => ({
+      ...prev,
+      photos: { ...prev.photos, [name]: value },
+    }));
+  };
+  const editPhotosGallery = ({ target }) => {
+    let { name, value } = target;
+    if (name === 'imgUrl') {
+      // setValues((prev) => ({ ...prev, imgUrl: value }));
+      name = 0;
+    }
+    const newPhotos = { ...productToEdit.photos, [name]: value };
+    console.log('newPhotos', newPhotos);
+    setProductToEdit({ ...productToEdit, photos: { ...newPhotos } });
   };
   return (
     <Grid>
@@ -94,7 +118,7 @@ export const GnProduct = ({ eventBus }) => {
           label="שם התמונה בענן"
           className={classes.marginTop}
           value={values.imgUrl}
-          onChange={handleInputChange}
+          onChange={(event) => handelCahngeImageGallery(event)}
           name="imgUrl"
         />
         <h5>הוספה אוטומטית :</h5>
@@ -106,6 +130,28 @@ export const GnProduct = ({ eventBus }) => {
           value={values.autoAdd}
           onChange={handleInputChange}
           name="autoAdd"
+        />
+        <h5>תמונות גלריה</h5>
+        <Controls.Input
+          label="הוספה תמונה"
+          className={classes.marginTop}
+          value={values.photos[1]}
+          onChange={(event) => handelCahngeImageGallery(event)}
+          name="1"
+        />
+        <Controls.Input
+          label="הוספה תמונה"
+          className={classes.marginTop}
+          value={values.photos[2]}
+          onChange={(event) => handelCahngeImageGallery(event)}
+          name="2"
+        />
+        <Controls.Input
+          label="הוספה תמונה"
+          className={classes.marginTop}
+          value={values.photos[3]}
+          onChange={(event) => handelCahngeImageGallery(event)}
+          name="3"
         />
         {categories && (
           <Controls.Select
@@ -194,6 +240,29 @@ export const GnProduct = ({ eventBus }) => {
               value={productToEdit.autoAdd}
               onChange={(event) => editProduct(event)}
               name="autoAdd"
+            />
+            <h5>תמונות גלריה</h5>
+            {console.log('productToEdit?.photos', productToEdit?.photos)}
+            <Controls.Input
+              label="עריכה תמונה"
+              className={classes.marginTop}
+              value={productToEdit?.photos[1]}
+              onChange={(event) => editPhotosGallery(event)}
+              name="1"
+            />
+            <Controls.Input
+              label="עריכה תמונה"
+              className={classes.marginTop}
+              value={productToEdit?.photos[2]}
+              onChange={(event) => editPhotosGallery(event)}
+              name="2"
+            />
+            <Controls.Input
+              label="עריכה תמונה"
+              className={classes.marginTop}
+              value={productToEdit?.photos[3]}
+              onChange={(event) => editPhotosGallery(event)}
+              name="3"
             />
             <TextareaAutosize
               className={classes.marginTop}
