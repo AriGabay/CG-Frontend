@@ -68,6 +68,10 @@ export const GnProduct = ({ eventBus }) => {
   };
   const getProductById = ({ target }) => {
     gnProductService.getGnProductById(target.value).then((res) => {
+      if (typeof res[0].photos === 'object') {
+        setProductToEdit({ ...res[0], photos: { ...res[0].photos } });
+        return;
+      }
       setProductToEdit({ ...res[0], photos: JSON.parse(res[0].photos) });
     });
   };
