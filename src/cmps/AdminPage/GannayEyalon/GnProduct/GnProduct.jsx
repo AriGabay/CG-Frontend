@@ -99,11 +99,19 @@ export const GnProduct = ({ eventBus }) => {
   const editPhotosGallery = ({ target }) => {
     let { name, value } = target;
     if (name === 'imgUrl') {
-      // setValues((prev) => ({ ...prev, imgUrl: value }));
       name = 0;
     }
-    const newPhotos = { ...productToEdit.photos, [name]: value };
-    console.log('newPhotos', newPhotos);
+    console.log('value', productToEdit.photos);
+    let newPhotos = {};
+    if (!value.length) {
+      Object.keys(productToEdit.photos).forEach((key) => {
+        if (key !== name) {
+          newPhotos[key] = productToEdit.photos[key];
+        }
+      });
+    } else {
+      newPhotos = { ...productToEdit.photos, [name]: value };
+    }
     setProductToEdit({ ...productToEdit, photos: { ...newPhotos } });
   };
   return (
