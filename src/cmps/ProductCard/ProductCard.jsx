@@ -10,6 +10,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import _ from 'lodash';
 
 const useStyles = makeStyles({
   root: {
@@ -33,11 +34,13 @@ export const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const classes = useStyles();
   const handleClick = () => {
-    dispatch({ type: 'SET_PRODUCT', payload: product });
-    history.push({
-      pathname: `/product/${product.id}`,
-      state: history.location.pathname,
-    });
+    if (product && Object.keys(product).length) {
+      dispatch({ type: 'SET_PRODUCT', payload: _.cloneDeep(product) });
+      history.push({
+        pathname: `/product/${product.id}`,
+        state: history.location.pathname,
+      });
+    }
   };
   return (
     <Card className={classes.root} onClick={() => handleClick()}>

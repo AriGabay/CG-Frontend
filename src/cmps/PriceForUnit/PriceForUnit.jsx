@@ -5,6 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { PlusMinus } from '../PlusMinus';
+import { useSelector } from 'react-redux';
+import _ from 'lodash';
 
 const useStyles = makeStyles({
   marginTop: {
@@ -40,20 +42,15 @@ const useStyles = makeStyles({
   },
 });
 
-export const PriceForUnit = ({
-  productProps,
-  productOrder,
-  setProductOrder,
-}) => {
-  const [product, setProduct] = useState();
+export const PriceForUnit = ({ productOrder, setProductOrder }) => {
+  const product = useSelector((state) => _.cloneDeep(state.product));
   const [unitInput, setUnitInput] = useState(0);
   const [priceToShow, setPriceToShow] = useState(0);
   const shekel = '₪';
   const classes = useStyles();
   const setProps = useCallback(() => {
-    setProduct(productProps);
     setProductOrder(productOrder);
-  }, [setProductOrder, setProduct, productOrder, productProps]);
+  }, [setProductOrder, productOrder]);
   useEffect(() => {
     setProps();
   }, [setProps]);

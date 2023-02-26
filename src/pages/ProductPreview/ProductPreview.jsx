@@ -20,6 +20,7 @@ import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'react-redux';
+import _ from 'lodash';
 
 const useStyles = makeStyles({
   addToCartBtn: {
@@ -54,9 +55,7 @@ const useStyles = makeStyles({
 
 export const ProductPreview = () => {
   const isMobile = useMediaQuery('(max-width:960px)');
-  const product = useSelector((state) => {
-    return state.product;
-  });
+  const product = useSelector((state) => _.cloneDeep(state.product));
   const dispatch = useDispatch();
   const [productOrder, setProductOrder] = useState({
     sizeToOrder: null,
@@ -79,7 +78,7 @@ export const ProductPreview = () => {
   }, []);
   const addToCart = () => {
     if (
-      productOrder === undefined ||
+      !productOrder ||
       productOrder?.sizeToOrder === null ||
       productOrder?.sizeToOrder === undefined ||
       productOrder?.sizeToOrder === '' ||
@@ -118,7 +117,6 @@ export const ProductPreview = () => {
           <Grid>
             {product.Price.priceType === 'unit' ? (
               <PriceForUnit
-                productProps={product}
                 productOrderProps={productOrder}
                 setProductOrder={setProductOrder}
               />

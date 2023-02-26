@@ -4,7 +4,7 @@ const initialState = {
   menuType: null,
   categories: [],
   category: {},
-  page: 1
+  page: 1,
 };
 const rootReducer = (state = initialState, action) => {
   switch (action.type) {

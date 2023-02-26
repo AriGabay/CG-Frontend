@@ -10,7 +10,7 @@ import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { useHistory } from 'react-router-dom';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 const customTheme = getCustomTheme();
 
 const useStyles = makeStyles({
@@ -30,7 +30,8 @@ const useStyles = makeStyles({
     alignItems: 'center',
   },
 });
-export const CategoryCard = ({ category, index, menuType }) => {
+export const CategoryCard = ({ category }) => {
+  const { menuType } = useSelector((state) => state);
   const dispatch = useDispatch();
   const matches = useMediaQuery('(min-width:700px)');
   const classes = useStyles();
@@ -41,7 +42,11 @@ export const CategoryCard = ({ category, index, menuType }) => {
     history.push(`/products/${category.id}/${menuType}`);
   };
   return (
-    <Card key={index} className={classes.root} onClick={() => handleClick()}>
+    <Card
+      key={category.id}
+      className={classes.root}
+      onClick={() => handleClick()}
+    >
       <CardActionArea>
         <ImageCloud
           imageId={category.imgUrl}

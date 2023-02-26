@@ -97,15 +97,9 @@ export const Menu = ({ menuType }) => {
       ) : null}
       <Grid className={classes.gridMenu}>
         {categories && categories.length ? (
-          categories.map((category, index) => {
-            return (
-              <CategoryCard
-                key={index}
-                category={category}
-                menuType={menuType}
-              />
-            );
-          })
+          categories.map((category) => (
+            <CategoryCard key={category.id} category={category} />
+          ))
         ) : (
           <CircularProgress></CircularProgress>
         )}

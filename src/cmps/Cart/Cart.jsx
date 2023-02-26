@@ -115,6 +115,13 @@ export const Cart = ({
       </IconButton>
       {cartComp && cartComp.length ? (
         cartComp.map((order) => {
+          console.log(
+            'order :',
+            order?.product?.displayName,
+            order?.product?.id
+          );
+          console.log('order :', order);
+          if (!order.product) return;
           return (
             <MenuItem className={classes.MenuItem} key={order._id}>
               <Container classes={{ root: classes.containerText }}>
