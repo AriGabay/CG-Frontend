@@ -101,7 +101,6 @@ export const GnProduct = ({ eventBus }) => {
     if (name === 'imgUrl') {
       name = 0;
     }
-    console.log('value', productToEdit.photos);
     let newPhotos = {};
     if (!value.length) {
       Object.keys(productToEdit.photos).forEach((key) => {
@@ -254,7 +253,6 @@ export const GnProduct = ({ eventBus }) => {
               name="autoAdd"
             />
             <h5>תמונות גלריה</h5>
-            {console.log('productToEdit?.photos', productToEdit?.photos)}
             <Controls.Input
               label="עריכה תמונה"
               className={classes.marginTop}

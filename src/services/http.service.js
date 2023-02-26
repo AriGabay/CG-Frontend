@@ -1,6 +1,5 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-dotenv.config();
+
 const BASE_URL = process.env.REACT_APP_API_HOST;
 export const httpService = {
   async get(endpoint, query = {}) {
@@ -8,9 +7,11 @@ export const httpService = {
       const queryStr = Object.keys(query)
         .map((key) => key + '=' + query[key])
         .join('&');
-      const response = await axios.get(`${BASE_URL}${endpoint}?${queryStr}`).catch((error) => {
-        throw new Error(error);
-      });
+      const response = await axios
+        .get(`${BASE_URL}${endpoint}?${queryStr}`)
+        .catch((error) => {
+          throw new Error(error);
+        });
       return response.data;
     } catch (error) {
       throw new Error(error);
@@ -29,5 +30,5 @@ export const httpService = {
   },
   delete(endpoint, id) {
     return axios.delete(BASE_URL + endpoint + id);
-  }
+  },
 };

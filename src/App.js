@@ -12,10 +12,8 @@ import { Route, HashRouter } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
-import dotenv from 'dotenv';
 import Loadable from 'react-loadable';
 import CircularProgress from '@material-ui/core/CircularProgress';
-dotenv.config();
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
