@@ -9,6 +9,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import isBefore from 'date-fns/isBefore';
 import startOfToday from 'date-fns/startOfToday';
 import isFriday from 'date-fns/isFriday';
+import nextFriday from 'date-fns/nextFriday';
 
 export default function DatePicker(props) {
   const { name, label, value, onChange, required = false, error } = props;
@@ -39,7 +40,6 @@ export default function DatePicker(props) {
       !day.toString().includes('Thu Apr 14')
     );
   };
-
   return (
     <div>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -49,7 +49,7 @@ export default function DatePicker(props) {
           label={label}
           inputFormat="dd/MM/yyyy"
           name={name}
-          value={value}
+          value={isFriday(value) ? value : nextFriday(value)}
           required={required}
           renderInput={(params) => (
             <TextField

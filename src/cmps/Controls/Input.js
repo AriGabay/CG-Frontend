@@ -11,7 +11,6 @@ export default function Input(props) {
     required = false,
     ...other
   } = props;
-
   return (
     <TextField
       style={{ width: '80%!important' }}

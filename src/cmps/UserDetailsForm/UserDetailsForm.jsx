@@ -18,7 +18,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import { termsTxt } from '../../text/terms.js';
 import { useHistory } from 'react-router-dom';
 import format from 'date-fns/format';
-
+import isFriday from 'date-fns/isFriday';
+import isToday from 'date-fns/isToday';
+import { nextFriday } from 'date-fns';
+const initialDate = new Date();
 const initialFValues = {
   id: 0,
   firstName: '',
@@ -30,7 +33,7 @@ const initialFValues = {
   idPersonal: '',
   pickup: '',
   street: '',
-  pickUpDate: new Date(),
+  pickUpDate: isFriday(initialDate) ? initialDate : nextFriday(initialDate),
 };
 
 const pickupItems = [
@@ -101,6 +104,16 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
+    const date = new Date();
+    if (date.getHours() >= 10 && isFriday(date) && isToday(date)) {
+      eventBus.dispatch('orderUntilTen', {
+        message: ' לא נתן לבצע הזמנה,הזמנות יתקבלו עד השעה 10 בבוקר יום שישי',
+      });
+      return false;
+    }
+    if (!fieldValues['firstName']?.length) {
+      temp.firstName = requiredInputStr;
+    }
     if ('firstName' in fieldValues)
       temp.firstName = fieldValues.firstName ? '' : requiredInputStr;
     if ('lastName' in fieldValues)
@@ -128,12 +141,10 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
       temp.city = fieldValues.city.length ? '' : requiredInputStr;
     if ('street' in fieldValues)
       temp.street = fieldValues.street.length ? '' : requiredInputStr;
-    if (terms === false) return;
-    if ('pickUpDate' in fieldValues)
-      temp.pickUpDate = fieldValues.pickUpDate.length ? '' : requiredInputStr;
     setErrors({
       ...temp,
     });
+    if (terms === false) return;
     if (fieldValues === values)
       return Object.values(temp).every((x) => x === '');
   };
