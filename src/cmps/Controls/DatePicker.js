@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
@@ -13,7 +13,7 @@ import nextFriday from 'date-fns/nextFriday';
 
 export default function DatePicker(props) {
   const { name, label, value, onChange, required = false, error } = props;
-
+  const [isOpen, setIsOpen] = useState(false);
   const convertToDefEventPara = (name, value) => {
     const e = {
       target: {
@@ -44,6 +44,7 @@ export default function DatePicker(props) {
     <div>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <DatePickerComp
+          open={isOpen}
           variant="inline"
           inputVariant="outlined"
           label={label}
@@ -56,12 +57,14 @@ export default function DatePicker(props) {
               onKeyDown={(event) => {
                 event.preventDefault();
               }}
+              onClick={() => setIsOpen(!isOpen)}
               inputProps={{ ...params.inputProps, readOnly: true }}
               {...params}
             />
           )}
           onChange={(day) => {
             onChange(convertToDefEventPara(name, dateToStr(day)));
+            setIsOpen(false);
           }}
           renderDay={(day, _, moreDetailsForDay) => {
             return (
@@ -73,6 +76,7 @@ export default function DatePicker(props) {
                 style={color(day)}
                 onDaySelect={() => {
                   onChange(convertToDefEventPara(name, dateToStr(day)));
+                  setIsOpen(false);
                 }}
               />
             );
