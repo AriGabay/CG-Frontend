@@ -35,9 +35,12 @@ export default function DatePicker(props) {
       : { backgroundColor: '#937446' };
   };
   const validateDate = (day) => {
+    if (!day) return;
     return (
-      (isBefore(day, startOfToday()) || !isFriday(day)) &&
-      !day.toString().includes('Thu Apr 14')
+      ((isBefore(day, startOfToday()) || !isFriday(day)) &&
+        !day.toString().includes('Apr 04') &&
+        !day.toString().includes('Apr 05')) ||
+      day.toString().includes('Apr 07')
     );
   };
   return (
