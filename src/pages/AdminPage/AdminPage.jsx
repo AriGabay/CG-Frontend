@@ -6,6 +6,7 @@ import { SizePrice as AdminPageSizePrice } from '../../cmps/AdminPage/SizePrice'
 import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
 import { Menu as AdminMenu } from '../../cmps/AdminPage/Menu';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
+import { OrderByDate as AdminPageOrderByDate } from '../../cmps/AdminPage/OrderByDate';
 import { GetOrdersByData as AdminPageGetOrdersByData } from '../../cmps/AdminPage/GetOrdersByData';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/styles';
@@ -83,6 +84,11 @@ export const AdminPage = () => {
         />
         <Button
           className={classes.marginLeft}
+          text="הזמנות לתאריך ספציפי"
+          onClick={() => handleClick('OrderByDate')}
+        />
+        <Button
+          className={classes.marginLeft}
           text="קטגוריות - גני איילון"
           onClick={() => handleClick('GnCategory')}
         />
@@ -124,6 +130,11 @@ export const AdminPage = () => {
         {status && status === 'Menu' ? (
           <Grid mt={2}>
             <AdminMenu eventBus={eventBus}></AdminMenu>
+          </Grid>
+        ) : null}
+        {status && status === 'OrderByDate' ? (
+          <Grid mt={2}>
+            <AdminPageOrderByDate eventBus={eventBus}></AdminPageOrderByDate>
           </Grid>
         ) : null}
         {status && status === 'GnCategory' ? (
