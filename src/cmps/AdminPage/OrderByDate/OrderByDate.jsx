@@ -45,7 +45,19 @@ export const OrderByDate = () => {
     return dig.toString().padStart(2, '0');
   };
   const getOrders = async () => {
+    setTotalProducts({});
+    setOrders([]);
     const { totalProducts, orders } = await ordersService.getOrdersByDate(date);
+    if (
+      !totalProducts ||
+      !orders ||
+      !Object.keys(totalProducts).length ||
+      !orders.length
+    ) {
+      setTotalProducts({});
+      setOrders([]);
+      return;
+    }
     setTotalProducts({ ...totalProducts });
     setOrders([...orders]);
   };
