@@ -46,8 +46,8 @@ export const OrderByDate = () => {
   };
   const getOrders = async () => {
     const { totalProducts, orders } = await ordersService.getOrdersByDate(date);
-    setTotalProducts(totalProducts);
-    setOrders(orders);
+    setTotalProducts({ ...totalProducts });
+    setOrders([...orders]);
   };
   const formatDate = (date) => {
     var d = new Date(date),
@@ -59,6 +59,11 @@ export const OrderByDate = () => {
     if (day.length < 2) day = '0' + day;
 
     return [year, month, day].join('-');
+  };
+  const trans = (word) => {
+    if (word.includes('box')) return word.replace('box', 'קופסה');
+    if (word.includes('unit')) return word.replace('unit', 'יחידות');
+    if (word.includes('weight')) return word.replace('weight', 'ק״ג');
   };
   return (
     <Grid>
@@ -178,8 +183,19 @@ export const OrderByDate = () => {
           return (
             <Grid key={product.id}>
               <Typography>{product.displayName}</Typography>
-              <Typography>{product.sizeToOrder}</Typography>
-              <Typography>{product.Price.priceType}</Typography>
+              <Typography>
+                {product.total.split('\n').map((i, index) => {
+                  return (
+                    i &&
+                    i.length && (
+                      <p key={index}>
+                        {index + 1} :{' '}
+                        <span style={{ fontWeight: 700 }}>{trans(i)}</span>
+                      </p>
+                    )
+                  );
+                })}
+              </Typography>
               <hr />
             </Grid>
           );
