@@ -75,7 +75,7 @@ export const OrderByDate = () => {
   const trans = (word) => {
     if (word.includes('box')) return word.replace('box', 'קופסה');
     if (word.includes('unit')) return word.replace('unit', 'יחידות');
-    if (word.includes('weight')) return word.replace('weight', 'ק״ג');
+    if (word.includes('weight')) return word.replace('weight', 'גרם');
   };
   return (
     <Grid>
@@ -176,10 +176,11 @@ export const OrderByDate = () => {
                           שם המוצר : {product.displayName}
                         </Typography>
                         <Typography classes={{ root: classes.typography }}>
-                          כמות : {product.sizeToOrder}
+                          כמות : {product.sizeToOrder}{' '}
+                          {trans(product.Price.priceType)}
                         </Typography>
                         <Typography classes={{ root: classes.typography }}>
-                          מחיר : {product.pricePerSize}
+                          מחיר : {product.pricePerSize} ש״ח
                         </Typography>
                         <br />
                       </Grid>
