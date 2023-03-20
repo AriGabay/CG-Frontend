@@ -38,7 +38,6 @@ export default function DatePicker(props) {
     if (!day) return;
     return (
       ((isBefore(day, startOfToday()) || !isFriday(day)) &&
-        !day.toString().includes('Apr 04') &&
         !day.toString().includes('Apr 05')) ||
       day.toString().includes('Apr 07')
     );
@@ -53,7 +52,11 @@ export default function DatePicker(props) {
           label={label}
           inputFormat="dd/MM/yyyy"
           name={name}
-          value={isFriday(value) ? value : nextFriday(value)}
+          value={
+            isFriday(value) || value.toString().includes('Apr 05')
+              ? value
+              : nextFriday(value)
+          }
           required={required}
           renderInput={(params) => (
             <TextField
