@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
@@ -70,6 +70,12 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
       priceToShow: Number(calc.toFixed(2)),
     });
   };
+  useEffect(() => {
+    return () => {
+      setPriceToShow(0);
+      setWeightInput(0);
+    };
+  }, [product?.id]);
   return product ? (
     <Grid>
       <Grid className={classes.buttonPlusMinus}>

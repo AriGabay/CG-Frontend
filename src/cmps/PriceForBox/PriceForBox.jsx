@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 import Stack from '@material-ui/core/Stack';
@@ -31,6 +31,11 @@ export const PriceForBox = ({ product, setProductOrder }) => {
       priceToShow: price.amount,
     });
   };
+  useEffect(() => {
+    return () => {
+      setPriceToShow(0);
+    };
+  }, [product?.id]);
 
   return product ? (
     <Grid>

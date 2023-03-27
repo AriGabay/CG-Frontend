@@ -35,7 +35,10 @@ async function checkOutOrder(cart) {
 async function checkOutTotal(userDetails) {
   try {
     const cart = await getCart();
-    const res = await httpService.post(`${endPoint}sendOrder`, { userDetails, cart });
+    const res = await httpService.post(`${endPoint}sendOrder`, {
+      userDetails,
+      cart,
+    });
     await storageService.clearAll();
     return res;
   } catch (error) {
@@ -49,10 +52,21 @@ async function removeProductFromCart(id) {
     console.log('error:', error);
   }
 }
+async function updateOrder(order, products) {
+  try {
+    return await httpService.put(endPoint, order.id, {
+      order: order,
+      products: products,
+    });
+  } catch (error) {
+    console.log('error:', error);
+  }
+}
 export const cartService = {
   addToCart,
   getCart,
   checkOutOrder,
   checkOutTotal,
-  removeProductFromCart
+  removeProductFromCart,
+  updateOrder,
 };

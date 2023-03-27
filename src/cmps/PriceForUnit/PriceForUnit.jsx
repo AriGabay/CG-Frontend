@@ -43,7 +43,8 @@ const useStyles = makeStyles({
 });
 
 export const PriceForUnit = ({ productOrder, setProductOrder }) => {
-  const product = useSelector((state) => _.cloneDeep(state.product));
+  let product = useSelector((state) => _.cloneDeep(state.product));
+  if (!Object.keys(product).length) product = { ...productOrder };
   const [unitInput, setUnitInput] = useState(0);
   const [priceToShow, setPriceToShow] = useState(0);
   const shekel = '₪';
@@ -54,6 +55,12 @@ export const PriceForUnit = ({ productOrder, setProductOrder }) => {
   useEffect(() => {
     setProps();
   }, [setProps]);
+  useEffect(() => {
+    return () => {
+      setPriceToShow(0);
+      setUnitInput(0);
+    };
+  }, [productOrder?.id]);
   const updateOrder = (size) => {
     if (size === 0 || size === '0' || !size) return;
     setUnitInput(size);
@@ -63,8 +70,7 @@ export const PriceForUnit = ({ productOrder, setProductOrder }) => {
     setPriceToShow(calc);
     setProductOrder({ sizeToOrder: Number(size), product, priceToShow: calc });
   };
-
-  return product ? (
+  return product && !!Object.keys(product).length ? (
     <Grid>
       <Grid className={classes.buttonPlusMinus}>
         <TextField
