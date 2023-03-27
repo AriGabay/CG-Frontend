@@ -91,13 +91,6 @@ export const OrderByDate = () => {
             required={true}
             renderInput={(params) => <TextField {...params} />}
             onChange={(date) => {
-              console.log(
-                'date',
-                `${padDig(date.getDate())}/${padDig(
-                  date.getMonth() < 12 ? date.getMonth() + 1 : date.getMonth()
-                )}/${date.getFullYear()}`
-              );
-
               setDate(
                 `${padDig(date.getDate())}/${padDig(
                   date.getMonth() < 12 ? date.getMonth() + 1 : date.getMonth()

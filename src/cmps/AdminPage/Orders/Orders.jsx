@@ -56,10 +56,7 @@ export const Orders = () => {
   };
 
   const updateOrder = async () => {
-    console.log('order', order);
-    console.log('products', products);
-    const res = await cartService.updateOrder({ ...order }, [...products]);
-    console.log('res!!!!', res);
+    await cartService.updateOrder({ ...order }, [...products]);
   };
   return (
     <Grid>
