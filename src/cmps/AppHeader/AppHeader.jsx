@@ -144,7 +144,10 @@ export const AppHeader = () => {
     >
       <Grid className={classes.Width90}>
         {!matches ? (
-          <Grid>
+          <Grid
+            className={classes.Header}
+            style={{ justifyContent: 'flex-start' }}
+          >
             <IconButton
               edge="start"
               className={classes.menuButton}
@@ -167,7 +170,7 @@ export const AppHeader = () => {
                 />
               }
             >
-              <Typography style={{ paddingRight: '10px' }}>
+              <Typography style={{ paddingRight: '10px', fontWeight: 600 }}>
                 עגלת קניות
               </Typography>
             </Button>

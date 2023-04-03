@@ -40,6 +40,7 @@ export const OrderByDate = () => {
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [orders, setOrders] = useState([]);
   const [totalProducts, setTotalProducts] = useState({});
+  const [sum, setSum] = useState(0);
   const padDig = (dig) => {
     if (dig.toString().length >= 2) return dig;
     return dig.toString().padStart(2, '0');
@@ -47,6 +48,7 @@ export const OrderByDate = () => {
   const getOrders = async () => {
     setTotalProducts({});
     setOrders([]);
+    setSum(0);
     const { totalProducts, orders } = await ordersService.getOrdersByDate(date);
     if (
       !totalProducts ||
@@ -56,10 +58,12 @@ export const OrderByDate = () => {
     ) {
       setTotalProducts({});
       setOrders([]);
+      setSum(0);
       return;
     }
     setTotalProducts({ ...totalProducts });
     setOrders([...orders]);
+    orders.forEach((order) => setSum((prev) => prev + order.totalPrice));
   };
   const formatDate = (date) => {
     var d = new Date(date),
@@ -183,6 +187,7 @@ export const OrderByDate = () => {
             </Accordion>
           );
         })}
+      <h1>סכום כללי : {sum} ש״ח</h1>
       {totalProducts &&
         !!Object.values(totalProducts).length &&
         Object.values(totalProducts).map((product) => {

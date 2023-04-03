@@ -1,6 +1,6 @@
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -64,22 +64,21 @@ const useStyles = makeStyles(() => ({
 }));
 
 export const HomePage = () => {
+  const [menuEnables, setMenuEnables] = useState({});
   const imageSize = useViewport(
     { width: 1024, height: 800 },
     { width: 400, height: 300 }
   );
   const classes = useStyles();
-  const [menuEnables, setMenuEnables] = useState({});
 
-  const checkMenuEnables = async () => {
+  const checkMenuEnables = useCallback(async () => {
     const menus = await isMenuEnableService.getAllMenuEnables();
     menus.forEach((menu) => {
       const menuType = menu.menuType;
-      const buildData = { ...menuEnables };
-      buildData[menuType] = menu.enable;
-      setMenuEnables((prev) => ({ ...prev, ...buildData }));
+      setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
     });
-  };
+  }, []);
+
   useEffect(() => {
     checkMenuEnables();
   }, []);
@@ -130,13 +129,11 @@ export const HomePage = () => {
           />
           {menuEnables['message_home_page'] && (
             <BasicModal
-              contnentLineOne={`מאחר וערב ראש השנה יחול ביום ראשון 
-            לא תהיה אפשרות לערוך הזמנות מראש 
-            המכירה תתבצע אך ורק במקום .`}
-              contnentLineTow={`החל מהשעה 6:00 בבוקר 
-            בברכת חג שמח`}
+              contnentLineOne={`האתר סגור להזמנות חדשות, ניתן להגיע ביום שלישי 4.4 למכירה מוקדמת,
+              שעות פתיחה : 14:00-19:00 .`}
+              contnentLineTow={'יום רביעי 5.4 המכירה תחל בשעה 7:00-13:00.'}
               lockScreen={true}
-              type="tishray"
+              type="pesach"
             />
           )}
         </Grid>

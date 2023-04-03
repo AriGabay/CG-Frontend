@@ -80,7 +80,7 @@ export default function BasicModal({
             variant="h6"
             component="h2"
           >
-            קייטרינג גבאי.
+            חג שמח, קייטרינג גבאי.
           </Typography>
           {type === 'tishray' && (
             <ImageCloud

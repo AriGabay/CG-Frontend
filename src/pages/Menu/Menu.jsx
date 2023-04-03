@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { categoryService } from '../../services/categoryService';
 import { CategoryCard } from '../../cmps/CategoryCard';
 import Typography from '@material-ui/core/Typography';
@@ -28,18 +27,6 @@ const useStyles = makeStyles({
       gridTemplateColumns: '1fr',
     },
   },
-  progressScreen: {
-    minWidth: '100vw',
-    minHeight: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'column !important',
-    '& > *': {
-      marginBottom: '35px',
-    },
-  },
   flexCenter: {
     display: 'flex',
     justifyContent: 'center',
@@ -48,40 +35,49 @@ const useStyles = makeStyles({
 });
 export const Menu = ({ menuType }) => {
   const dispatch = useDispatch();
-  const classes = useStyles();
+  const { flexCenter, gridMenu } = useStyles();
   const { categories } = useSelector((state) => state);
   const [titlePage, setTitlePage] = useState(null);
-
-  useEffect(() => {
+  const getCategoriesMenuCallBack = useCallback(async () => {
     if (!categories.length) {
-      categoryService
-        .getCategoriesMenu({ include: false })
-        .then((categoriesMenu) => {
-          if (categoriesMenu && categoriesMenu.length) {
-            dispatch({ type: 'SET_CATEGORIES', payload: categoriesMenu });
-          }
+      try {
+        const categoriesMenu = await categoryService.getCategoriesMenu({
+          include: false,
         });
-    }
-    if (menuType) {
-      if (menuType === 'weekend') {
-        setTitlePage('תפריט סוף שבוע');
-      } else if (menuType === 'tishray') {
-        setTitlePage('תפריט חגי תשרי');
-      } else if (menuType === 'pesach') {
-        setTitlePage('תפריט פסח');
-      } else {
-        setTitlePage('');
+        if (categoriesMenu && categoriesMenu.length) {
+          dispatch({ type: 'SET_CATEGORIES', payload: categoriesMenu });
+        }
+      } catch (error) {
+        console.error('Error fetching categories:', error);
       }
-      dispatch({ type: 'SET_MENU_TYPE', payload: menuType });
     }
+    switch (menuType) {
+      case 'weekend':
+        setTitlePage('תפריט סוף שבוע');
+        break;
+      case 'tishray':
+        setTitlePage('תפריט חגי תשרי');
+        break;
+      case 'pesach':
+        setTitlePage('תפריט פסח');
+        break;
+      default:
+        setTitlePage('');
+        break;
+    }
+    dispatch({
+      type: 'SET_MENU_TYPE',
+      payload: menuType.length ? menuType : '',
+    });
   }, []);
+  useEffect(() => getCategoriesMenuCallBack(), [categories, menuType]);
   return (
     <Grid className="menu">
       <Helmet>
         <title>Catering Gabay - Menu</title>
         <meta name="menu-list" content="menu list" />
       </Helmet>
-      <Grid className={classes.flexCenter}>
+      <Grid className={flexCenter}>
         {titlePage && (
           <Typography variant="h3" gutterBottom>
             {titlePage}
@@ -95,7 +91,7 @@ export const Menu = ({ menuType }) => {
           type="pesach"
         />
       ) : null}
-      <Grid className={classes.gridMenu}>
+      <Grid className={gridMenu}>
         {categories && categories.length ? (
           categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
@@ -104,7 +100,7 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      <Grid mt={2} mb={2} container className={classes.flexCenter}>
+      <Grid mt={2} mb={2} container className={flexCenter}>
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
     </Grid>
