@@ -63,7 +63,11 @@ export const OrderByDate = () => {
     }
     setTotalProducts({ ...totalProducts });
     setOrders([...orders]);
-    orders.forEach((order) => setSum((prev) => prev + order.totalPrice));
+    orders.forEach((order) => {
+      console.log('sum', sum);
+      console.log('order.totalPrice', order.totalPrice);
+      setSum((prev) => prev + order.totalPrice);
+    });
   };
   const formatDate = (date) => {
     var d = new Date(date),
