@@ -64,9 +64,9 @@ export const OrderByDate = () => {
     setTotalProducts({ ...totalProducts });
     setOrders([...orders]);
     orders.forEach((order) => {
-      console.log('sum', sum);
-      console.log('order.totalPrice', order.totalPrice);
-      setSum((prev) => prev + order.totalPrice);
+      setSum((prev) => {
+        return prev + order.totalPrice;
+      });
     });
   };
   const formatDate = (date) => {
@@ -191,7 +191,7 @@ export const OrderByDate = () => {
             </Accordion>
           );
         })}
-      <h1>סכום כללי : {sum} ש״ח</h1>
+      {<h1 style={{ display: 'none' }}>סכום כללי : {sum} ש״ח</h1>}
       {totalProducts &&
         !!Object.values(totalProducts).length &&
         Object.values(totalProducts).map((product) => {
