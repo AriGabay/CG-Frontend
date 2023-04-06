@@ -129,9 +129,9 @@ export const HomePage = () => {
           />
           {menuEnables['message_home_page'] && (
             <BasicModal
-              contnentLineOne={`האתר סגור להזמנות חדשות, ניתן להגיע ביום שלישי 4.4 למכירה מוקדמת,
-              שעות פתיחה : 14:00-19:00 .`}
-              contnentLineTow={'יום רביעי 5.4 המכירה תחל בשעה 7:00-13:00.'}
+              contnentLineOne={`האתר סגור להזמנות חדשות, ניתן להגיע ביום שישי 7.4 למכירה,
+              `}
+              contnentLineTow={'שעות פתיחה : 7:00-14:30'}
               lockScreen={true}
               type="pesach"
             />
