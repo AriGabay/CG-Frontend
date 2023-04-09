@@ -8,7 +8,7 @@ import { AdminPage } from './pages/AdminPage/AdminPage';
 import { About } from './pages/About/About';
 import { Contact } from './pages/Contact/Contact';
 import { CheckoutOrder } from './pages/CheckoutOrder/CheckoutOrder';
-import { Route, HashRouter } from 'react-router-dom';
+import { Route, BrowserRouter } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
@@ -50,7 +50,7 @@ function App() {
   return (
     <CssBaseline>
       <ThemeProvider theme={customTheme}>
-        <HashRouter>
+        <BrowserRouter>
           <AppHeader />
           <div className="App">
             <Route path="/menu/weekend">
@@ -80,7 +80,7 @@ function App() {
             <Route exact component={HomePage} path="/" />
             <SimpleSnackbar></SimpleSnackbar>
           </div>
-        </HashRouter>
+        </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>
   );
