@@ -127,7 +127,7 @@ export const ProductsList = () => {
   return categoryName ? (
     <Fragment>
       <Helmet>
-        <title>Catering Gabay - Products List</title>
+        <title>קייטרינג גבאי - מוצרים</title>
         <mete name="products-list" content="products list" />
       </Helmet>
       <Grid className={classes.flexCenter} flexDirection="column">

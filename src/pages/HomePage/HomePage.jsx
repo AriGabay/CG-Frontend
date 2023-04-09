@@ -86,7 +86,7 @@ export const HomePage = () => {
   return (
     <Grid mt={2} className={classes.root}>
       <Helmet>
-        <title>Catering Gabay - Home Page</title>
+        <title>קייטרינג גבאי - דף בית</title>
         <meta name="home-page" content="menu and logo" />
       </Helmet>
       <Grid className={classes.imageContainer}>

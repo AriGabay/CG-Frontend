@@ -74,7 +74,7 @@ export const Menu = ({ menuType }) => {
   return (
     <Grid className="menu">
       <Helmet>
-        <title>Catering Gabay - Menu</title>
+        <title>קייטרינג גבאי - תפריט</title>
         <meta name="menu-list" content="menu list" />
       </Helmet>
       <Grid className={flexCenter}>
