@@ -127,15 +127,16 @@ export const HomePage = () => {
             maxWidth={imageSize.width}
             maxHeight={imageSize.height}
           />
-          {menuEnables['message_home_page'] && (
+          {/* {menuEnables['message_home_page'] || */}
+          {
             <BasicModal
-              contnentLineOne={`האתר סגור להזמנות חדשות, ניתן להגיע ביום שישי 7.4 למכירה,
+              contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
               `}
-              contnentLineTow={'שעות פתיחה : 7:00-14:30'}
+              contnentLineTow={' '}
               lockScreen={true}
               type="pesach"
             />
-          )}
+          }
         </Grid>
       </Grid>
     </Grid>
