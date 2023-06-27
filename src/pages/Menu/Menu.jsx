@@ -100,6 +100,15 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
+      {
+        <BasicModal
+          contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
+              `}
+          contnentLineTow={' '}
+          lockScreen={true}
+          type="pesach"
+        />
+      }
       <Grid mt={2} mb={2} container className={flexCenter}>
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>
