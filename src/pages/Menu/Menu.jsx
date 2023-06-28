@@ -100,7 +100,7 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      {false && (
+      {true && (
         <BasicModal
           contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
               `}

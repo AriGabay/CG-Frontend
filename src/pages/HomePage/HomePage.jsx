@@ -129,7 +129,7 @@ export const HomePage = () => {
             alt={'לוגו קיטריינג גבאי'}
           />
           {/* {menuEnables['message_home_page'] || */}
-          {false && (
+          {true && (
             <BasicModal
               contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
               `}
