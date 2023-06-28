@@ -52,6 +52,9 @@ export const CategoryCard = ({ category }) => {
           imageId={category.imgUrl}
           maxWidth={matches ? 350 : 250}
           maxHeight={matches ? 250 : 150}
+          alt={`תמונה של קטגוריה ${
+            category.displayName ? category.displayName : category.id
+          }`}
         ></ImageCloud>
         <CardContent>
           <div className={classes.flexCenter}>

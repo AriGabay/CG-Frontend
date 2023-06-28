@@ -105,6 +105,9 @@ export const CheckoutOrder = () => {
                     imageId={product.imgUrl}
                     maxWidth={350}
                     maxHeight={300}
+                    alt={`תמונה של מוצר ${
+                      product.displayName ? product.displayName : product.id
+                    }`}
                   ></ImageCloud>
                 </Paper>
               </Grid>

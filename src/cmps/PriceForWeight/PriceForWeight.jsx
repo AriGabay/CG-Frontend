@@ -81,7 +81,6 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
       <Grid className={classes.buttonPlusMinus}>
         <TextField
           required
-          autoFocus
           type="number"
           InputProps={{
             inputProps: {

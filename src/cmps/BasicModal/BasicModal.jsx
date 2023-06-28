@@ -86,6 +86,7 @@ export default function BasicModal({
             <ImageCloud
               imageId="appleInHoney_ytdzir"
               ClassName={classes.imageModal}
+              alt="תמונה של תפוח בדבש"
             />
           )}
         </Box>

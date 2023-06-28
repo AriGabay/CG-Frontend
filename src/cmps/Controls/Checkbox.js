@@ -17,9 +17,23 @@ export default function Checkbox(props) {
 
   return (
     <FormControl {...other}>
+      {!label && (
+        <label
+          style={{
+            fontWeight: 600,
+            margin: 0,
+            padding: 0,
+            color: 'black',
+          }}
+          htmlFor="id-label-checkbox"
+        >
+          {'תקנון'}
+        </label>
+      )}
       <FormControlLabel
         control={
           <MuiCheckbox
+            id="id-label-checkbox"
             name={name}
             color="primary"
             defaultChecked={value}
@@ -28,7 +42,7 @@ export default function Checkbox(props) {
             }
           />
         }
-        label={label}
+        label={label ? label : false}
       />
     </FormControl>
   );

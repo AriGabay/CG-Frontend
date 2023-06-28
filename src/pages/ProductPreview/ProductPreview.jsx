@@ -104,6 +104,9 @@ export const ProductPreview = () => {
             <ImageCloud
               imageId={product.imgUrl}
               style={{ borderRadius: '20px' }}
+              alt={`תמונה של מוצר ${
+                product.displayName ? product.displayName : product.id
+              }`}
             />
           </Grid>
           {isMobile && product.description.length > 0 && (

@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center !important',
     margin: '0 auto !important',
   },
+  blackFont: {
+    color: 'black !important',
+  },
 }));
 
 export default function Button(props) {

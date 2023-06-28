@@ -70,7 +70,7 @@ export const Menu = ({ menuType }) => {
       payload: menuType.length ? menuType : '',
     });
   }, []);
-  useEffect(() => getCategoriesMenuCallBack(), [categories, menuType]);
+  useEffect(() => getCategoriesMenuCallBack(), [menuType]);
   return (
     <Grid className="menu">
       <Helmet>
@@ -100,7 +100,7 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      {
+      {false && (
         <BasicModal
           contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
               `}
@@ -108,7 +108,7 @@ export const Menu = ({ menuType }) => {
           lockScreen={true}
           type="pesach"
         />
-      }
+      )}
       <Grid mt={2} mb={2} container className={flexCenter}>
         <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
       </Grid>

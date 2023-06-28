@@ -49,6 +49,9 @@ export const ProductCard = ({ product }) => {
           imageId={product.imgUrl}
           maxWidth={350}
           maxHeight={250}
+          alt={`תמונה של מוצר ${
+            product.displayName ? product.displayName : product.id
+          }`}
         ></ImageCloud>
         <CardContent>
           <Box

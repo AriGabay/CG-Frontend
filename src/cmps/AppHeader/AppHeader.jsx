@@ -28,8 +28,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   ColorNavLink: {
-    color: 'white',
+    color: 'black',
     textDecoration: 'none',
+    fontWeight: '600 !important',
   },
   Navlink: {
     textDecoration: 'none',
@@ -158,7 +159,6 @@ export const AppHeader = () => {
               <MenuIcon />
             </IconButton>
             <Button
-              aria-controls="simple-menu"
               aria-haspopup="true"
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
@@ -221,22 +221,24 @@ export const AppHeader = () => {
                 </Typography>
               </NavLink>
               <Button
-                aria-controls="simple-menu"
                 aria-haspopup="true"
                 onClick={(event) => handleClick(event)}
-                sx={{ color: 'white' }}
+                sx={{ color: 'black' }}
                 color="secondary"
-                classes={{ root: classes.ButtonCart }}
+                classes={{
+                  root: { ...classes.ColorNavLink, ...classes.ButtonCart },
+                }}
                 startIcon={
                   <ShakeRotate style={{ fontSize: '0px' }} active={true}>
                     <ShoppingCartOutlinedIcon
-                      classes={{ root: classes.startIcon }}
-                      color="white"
+                      classes={{
+                        root: { ...classes.ColorNavLink, ...classes.startIcon },
+                      }}
                     />
                   </ShakeRotate>
                 }
               >
-                <Typography className={classes.colorWhite}>
+                <Typography className={classes.ColorNavLink}>
                   עגלת קניות
                 </Typography>
               </Button>

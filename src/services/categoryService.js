@@ -17,7 +17,9 @@ async function getCategoriesDropDown() {
 
 async function getCategoriesMenu(query = { include: false }) {
   try {
-    return await httpService.get(endpoint + 'menu', query);
+    return await httpService.get(endpoint + 'menu', query).catch((e) => {
+      throw e;
+    });
   } catch (error) {
     console.error('error', error);
   }

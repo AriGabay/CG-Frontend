@@ -280,15 +280,21 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             alignContent="center"
           >
             <Checkbox
+              style={{
+                margin: 0,
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexDirection: 'row-reverse',
+              }}
+              id="id-label-terms"
               name="terms"
               required={true}
-              label=""
               value={terms}
               onChange={() => setTerms(!terms)}
             ></Checkbox>
-            <Button onClick={handleClickOpen}>
-              <Typography textAlign="center">תקנון</Typography>
-            </Button>
+
             {terms === false && (
               <FormHelperText>{requiredInputStr}</FormHelperText>
             )}
@@ -305,11 +311,23 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
               {termsTxt && <Typography gutterBottom>{termsTxt}</Typography>}
             </DialogContent>
             <DialogActions>
-              <Button autoFocus onClick={handleClose} color="primary">
+              <Button onClick={handleClose} color="primary">
                 חזרה
               </Button>
             </DialogActions>
           </Dialog>
+          <Button
+            style={{
+              margin: 0,
+              padding: 0,
+              width: 'auto',
+              flexDirection: 'row-reverse',
+              color: 'black',
+            }}
+            onClick={handleClickOpen}
+          >
+            קריאת התקנון
+          </Button>
         </Grid>
         <Grid mt={2} mb={2}>
           <Typography>לפני מע&apos;מ: {unTax} ₪</Typography>
@@ -320,11 +338,12 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           <Controls.Button
             type="submit"
             text="להזמנה"
+            style={{ color: 'black' }}
             onClick={(event) => handleSubmit(event)}
           />
         </Grid>
         <Grid mb={2}>
-          <BackButton text="חזור" to="/"></BackButton>
+          <BackButton classProp="blackFont" text="חזור" to="/"></BackButton>
         </Grid>
       </Grid>
     </Form>

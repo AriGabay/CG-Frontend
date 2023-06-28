@@ -38,7 +38,7 @@ export function ImageCloud({
 ImageCloud.propsTypes = {
   maxHeight: PropTypes.number,
   maxWidth: PropTypes.number,
-  alt: PropTypes.string,
+  alt: PropTypes.string.isRequired,
   imageId: PropTypes.element.isRequired,
   ClassName: PropTypes.string,
   style: PropTypes.any,
