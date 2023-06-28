@@ -131,7 +131,7 @@ export const HomePage = () => {
           {/* {menuEnables['message_home_page'] || */}
           {true && (
             <BasicModal
-              contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
+              contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
               `}
               contnentLineTow={' '}
               lockScreen={true}

@@ -102,7 +102,7 @@ export const Menu = ({ menuType }) => {
       </Grid>
       {true && (
         <BasicModal
-          contnentLineOne={`האתר סגור להזמנות חדשות, עקב הוספת נגישות לאתר,
+          contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
               `}
           contnentLineTow={' '}
           lockScreen={true}
