@@ -41,13 +41,13 @@ export const PlusMinus = ({ type, size, input, updateOrder }) => {
     <Grid className={classes.buttons}>
       <button
         aria-label="plus button quantity"
-        style={{ background: 'white', border: 0 }}
+        style={{ background: 'white', color: 'black', border: 0 }}
       >
         <AddIcon onClick={() => plus()}></AddIcon>
       </button>
       <button
         aria-label="minus button quantity"
-        style={{ background: 'white', border: 0 }}
+        style={{ background: 'white', color: 'black', border: 0 }}
       >
         <RemoveIcon onClick={() => minus()}></RemoveIcon>
       </button>
