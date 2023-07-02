@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/styles';
 import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { useSelector, useDispatch } from 'react-redux';
+import { isMenuEnableService } from '../../services/isMenuEnableService';
 
 const useStyles = makeStyles({
   gridMenu: {
@@ -38,6 +39,20 @@ export const Menu = ({ menuType }) => {
   const { flexCenter, gridMenu } = useStyles();
   const { categories } = useSelector((state) => state);
   const [titlePage, setTitlePage] = useState(null);
+  const [menuEnables, setMenuEnables] = useState({});
+
+  const checkMenuEnables = useCallback(async () => {
+    const menus = await isMenuEnableService.getAllMenuEnables();
+    menus.forEach((menu) => {
+      const menuType = menu.menuType;
+      setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
+    });
+  }, []);
+
+  useEffect(() => {
+    checkMenuEnables();
+  }, []);
+
   const getCategoriesMenuCallBack = useCallback(async () => {
     if (!categories.length) {
       try {
@@ -100,7 +115,7 @@ export const Menu = ({ menuType }) => {
           <CircularProgress></CircularProgress>
         )}
       </Grid>
-      {true && (
+      {menuEnables['message_home_page'] && (
         <BasicModal
           contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
               `}
