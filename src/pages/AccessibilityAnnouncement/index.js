@@ -1,0 +1,1 @@
+export { AccessibilityAnnouncement } from './AccessibilityAnnouncement';

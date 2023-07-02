@@ -211,6 +211,7 @@ export const AppHeader = () => {
               >
                 <Typography className={classes.ColorNavLink}>אודות</Typography>
               </NavLink>
+
               <NavLink
                 onClick={() => setChecked(false)}
                 className={classes.Navlink}
@@ -218,6 +219,15 @@ export const AppHeader = () => {
               >
                 <Typography className={classes.ColorNavLink}>
                   צור קשר
+                </Typography>
+              </NavLink>
+              <NavLink
+                onClick={() => setChecked(false)}
+                className={classes.Navlink}
+                to="/AccessibilityAnnouncement"
+              >
+                <Typography className={classes.ColorNavLink}>
+                  הצהרת נגישות
                 </Typography>
               </NavLink>
               <Button

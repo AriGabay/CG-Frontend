@@ -14,6 +14,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import getCustomTheme from './hooks/getCustomTheme';
 import Loadable from 'react-loadable';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { AccessibilityAnnouncement } from './pages/AccessibilityAnnouncement';
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
@@ -77,6 +78,11 @@ function App() {
             <Route exact component={CheckoutOrder} path="/checkout" />
             <Route exact component={About} path="/about" />
             <Route exact component={Contact} path="/contact" />
+            <Route
+              exact
+              component={AccessibilityAnnouncement}
+              path="/AccessibilityAnnouncement"
+            />
             <Route exact component={HomePage} path="/" />
             <SimpleSnackbar></SimpleSnackbar>
           </div>
