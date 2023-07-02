@@ -80,6 +80,7 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
     <Grid>
       <Grid className={classes.buttonPlusMinus}>
         <TextField
+          aria-label="גרם"
           required
           type="number"
           InputProps={{

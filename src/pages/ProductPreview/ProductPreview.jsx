@@ -105,13 +105,15 @@ export const ProductPreview = () => {
               imageId={product.imgUrl}
               style={{ borderRadius: '20px' }}
               alt={`תמונה של מוצר ${
-                product.displayName ? product.displayName : product.id
+                product.displayName?.length ? product.displayName : product.id
               }`}
             />
           </Grid>
           {isMobile && product.description.length > 0 && (
             <Grid item mt={2} lg={3} md={3} sm={12}>
-              <Typography variant="h5">תיאור:</Typography>
+              <Typography aria-label="תיאור" variant="h4">
+                תיאור:
+              </Typography>
               <Typography className={classes.textOver} mt={2} mb={2}>
                 {product.description}
               </Typography>

@@ -39,8 +39,18 @@ export const PlusMinus = ({ type, size, input, updateOrder }) => {
   };
   return (
     <Grid className={classes.buttons}>
-      <AddIcon onClick={() => plus()}></AddIcon>
-      <RemoveIcon onClick={() => minus()}></RemoveIcon>
+      <button
+        aria-label="plus button quantity"
+        style={{ background: 'white', border: 0 }}
+      >
+        <AddIcon onClick={() => plus()}></AddIcon>
+      </button>
+      <button
+        aria-label="minus button quantity"
+        style={{ background: 'white', border: 0 }}
+      >
+        <RemoveIcon onClick={() => minus()}></RemoveIcon>
+      </button>
     </Grid>
   );
 };

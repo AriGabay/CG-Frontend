@@ -60,6 +60,7 @@ export default function DatePicker(props) {
           required={required}
           renderInput={(params) => (
             <TextField
+              aria-label="בחר תאריך"
               onKeyDown={(event) => {
                 event.preventDefault();
               }}

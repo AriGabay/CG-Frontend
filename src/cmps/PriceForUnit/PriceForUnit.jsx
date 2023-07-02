@@ -77,6 +77,7 @@ export const PriceForUnit = ({ productOrder, setProductOrder }) => {
           required
           type="number"
           style={{ width: '150px' }}
+          aria-label="יחידות"
           InputProps={{
             inputProps: {
               max: 100,
