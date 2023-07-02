@@ -76,8 +76,8 @@ jobs:
           submodules: true
       - name: Install dependencies
         run: |
-          npm install --no-save
-          npm install --force --no-save react-aria-live
+          npm install
+          npm install react-aria-live --legacy-peer-deps
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
