@@ -8,7 +8,6 @@ import useViewport from '../../hooks/useViewport';
 import BackButton from '../../cmps/Controls/BackButton';
 import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
-import { LiveAnnouncer, LiveMessage } from 'react-aria-live';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -90,59 +89,56 @@ export const HomePage = () => {
         <title>קייטרינג גבאי - דף בית</title>
         <meta name="home-page" content="menu and logo" />
       </Helmet>
-      <LiveAnnouncer>
-        <LiveMessage message={'האתר נטען'} aria-live="polite" />
-        <Grid className={classes.imageContainer}>
-          <Typography
-            classes={{ root: classes.fixLineHeight }}
-            className={classes.textImageHomePage}
-            gutterBottom
-          >
-            יום שישי פתוחים החל מהשעה 7:00-14:30
-          </Typography>
-          <Grid className={classes.GridMenuButton}>
-            {menuEnables['weekend'] && (
-              <BackButton
-                classProp="menuButton"
-                to="/menu/weekend"
-                text="לתפריט סוף שבוע"
-              />
-            )}
-            {menuEnables['pesach'] && (
-              <BackButton
-                classProp="menuButton"
-                to="/menu/pesach"
-                text="לתפריט פסח"
-              />
-            )}
-            {menuEnables['tishray'] && (
-              <BackButton
-                classProp="menuButton"
-                to="/menu/tishray"
-                text="לתפריט חגי תשרי"
-              />
-            )}
-          </Grid>
-          <Grid mb={6}>
-            <ImageCloud
-              ClassName={classes.imgHomePage}
-              imageId="old_logo_rssqwk"
-              maxWidth={imageSize.width}
-              maxHeight={imageSize.height}
-              alt={'לוגו קיטריינג גבאי'}
+      <Grid className={classes.imageContainer}>
+        <Typography
+          classes={{ root: classes.fixLineHeight }}
+          className={classes.textImageHomePage}
+          gutterBottom
+        >
+          יום שישי פתוחים החל מהשעה 7:00-14:30
+        </Typography>
+        <Grid className={classes.GridMenuButton}>
+          {menuEnables['weekend'] && (
+            <BackButton
+              classProp="menuButton"
+              to="/menu/weekend"
+              text="לתפריט סוף שבוע"
             />
-            {menuEnables['message_home_page'] && (
-              <BasicModal
-                contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
-              `}
-                contnentLineTow={' '}
-                lockScreen={true}
-                type="pesach"
-              />
-            )}
-          </Grid>
+          )}
+          {menuEnables['pesach'] && (
+            <BackButton
+              classProp="menuButton"
+              to="/menu/pesach"
+              text="לתפריט פסח"
+            />
+          )}
+          {menuEnables['tishray'] && (
+            <BackButton
+              classProp="menuButton"
+              to="/menu/tishray"
+              text="לתפריט חגי תשרי"
+            />
+          )}
         </Grid>
-      </LiveAnnouncer>
+        <Grid mb={6}>
+          <ImageCloud
+            ClassName={classes.imgHomePage}
+            imageId="old_logo_rssqwk"
+            maxWidth={imageSize.width}
+            maxHeight={imageSize.height}
+            alt={'לוגו קיטריינג גבאי'}
+          />
+          {menuEnables['message_home_page'] && (
+            <BasicModal
+              contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
+              `}
+              contnentLineTow={' '}
+              lockScreen={true}
+              type="pesach"
+            />
+          )}
+        </Grid>
+      </Grid>
     </Grid>
   );
 };

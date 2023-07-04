@@ -1,5 +1,4 @@
 import React from 'react';
-import { LiveAnnouncer, LiveMessage } from 'react-aria-live';
 import { makeStyles } from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -46,12 +45,9 @@ export const AccessibilityAnnouncement = () => {
 
   return (
     <Grid className={classes.root}>
-      <LiveAnnouncer>
-        <LiveMessage message={announceText} aria-live="polite" />
-        <Grid className={classes.textContainer}>
-          <Typography>{announceText}</Typography>
-        </Grid>
-      </LiveAnnouncer>
+      <Grid className={classes.textContainer}>
+        <Typography>{announceText}</Typography>
+      </Grid>
     </Grid>
   );
 };
