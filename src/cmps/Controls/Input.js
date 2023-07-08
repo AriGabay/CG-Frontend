@@ -1,6 +1,12 @@
 import React from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
+import { makeStyles } from '@mui/styles';
 
+const useStyles = makeStyles(() => ({
+  size: {
+    width: '50%!important',
+  },
+}));
 export default function Input(props) {
   const {
     name,
@@ -9,13 +15,16 @@ export default function Input(props) {
     error = null,
     onChange,
     required = false,
+    withStyle = false,
     ...other
   } = props;
+  const classes = useStyles();
+
   return (
     <TextField
       aria-label={label}
       id={`id-label-${label}`}
-      style={{ width: '80%!important' }}
+      className={withStyle ? classes.size : ''}
       variant="outlined"
       label={label}
       name={name}

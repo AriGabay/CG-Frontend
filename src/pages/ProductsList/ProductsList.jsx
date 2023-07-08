@@ -3,17 +3,17 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { ProductCard } from '../../cmps/ProductCard';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import BackButton from '../../cmps/Controls/BackButton';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import { useHistory } from 'react-router-dom';
-import Pagination from '@material-ui/core/Pagination';
+import Pagination from '@mui/material/Pagination';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 
 const useStyles = makeStyles({
   gridThreeRows: {

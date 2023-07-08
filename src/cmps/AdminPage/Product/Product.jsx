@@ -1,13 +1,13 @@
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import TextareaAutosize from '@mui/material/TextareaAutosize';
 import Controls from '../../Controls/Controls';
 import React, { useEffect, useState } from 'react';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
 import { productService } from '../../../services/productService';
 import { categoryService } from '../../../services/categoryService';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles(() => ({
   gridTag: {
     marginTop: '15px!important',

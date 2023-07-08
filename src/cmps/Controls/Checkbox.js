@@ -3,7 +3,7 @@ import {
   FormControl,
   FormControlLabel,
   Checkbox as MuiCheckbox,
-} from '@material-ui/core';
+} from '@mui/material';
 
 export default function Checkbox(props) {
   const { name, label, value, onChange, ...other } = props;

@@ -1,17 +1,17 @@
 import React from 'react';
 import { useState } from 'react';
-import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
-import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
-import DatePickerComp from '@material-ui/lab/DatePicker';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import { Button, Typography } from '@material-ui/core';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePickerComp from '@mui/lab/DatePicker';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import { Button, Typography } from '@mui/material';
 import { ordersService } from '../../../services/ordersService';
-import { makeStyles } from '@material-ui/styles';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { makeStyles } from '@mui/styles';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',

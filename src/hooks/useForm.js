@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 
 const isNumber = (n) => {
   return !isNaN(parseFloat(n)) && !isNaN(n - 0);

@@ -2,19 +2,19 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { cartService } from '../../services/cartService';
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
 import { UserDetailsForm } from '../../cmps/UserDetailsForm/UserDetailsForm';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
+import { makeStyles } from '@mui/styles';
 import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     justifyContent: 'space-evenly',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
     '@media (max-width: 700px)': {
       flexDirection: 'column!important',
@@ -35,7 +35,9 @@ const useStyles = makeStyles(() => ({
     },
   },
   productCard: {
-    marginRight: '64px',
+    marginRight: '64px!important',
+    marginLeft: '20px!important',
+
     marginBottom: '24px!important',
     display: 'flex',
     justifyContent: 'flex-start',
@@ -73,7 +75,7 @@ export const CheckoutOrder = () => {
         <mete name="checkout" content="checkout" />
       </Helmet>
       <Grid mt={6} className={classes.root}>
-        <Grid item sm={6}>
+        <Grid item sm={6} style={{ width: '100%' }}>
           <Container>
             <Typography textAlign="center" variant="h4" component="h2">
               סיכום הזמנה:

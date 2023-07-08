@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Box, Modal, Typography } from '@material-ui/core';
+import { Box, Modal, Typography } from '@mui/material';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 
 const style = {
   position: 'absolute',

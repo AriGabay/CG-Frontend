@@ -1,16 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import { makeStyles } from '@mui/styles';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/MenuOutlined';
 import { NavLink } from 'react-router-dom';
-import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import { cartService } from '../../services/cartService';
-import Typography from '@material-ui/core/Typography';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import { ShakeRotate } from 'reshake';
@@ -239,7 +239,10 @@ export const AppHeader = () => {
                   root: { ...classes.ColorNavLink, ...classes.ButtonCart },
                 }}
                 startIcon={
-                  <ShakeRotate style={{ fontSize: '0px' }} active={true}>
+                  <ShakeRotate
+                    style={{ fontSize: '0px', marginLeft: '8px' }}
+                    active={true}
+                  >
                     <ShoppingCartOutlinedIcon
                       classes={{
                         root: { ...classes.ColorNavLink, ...classes.startIcon },

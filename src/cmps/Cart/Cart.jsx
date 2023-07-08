@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import IconButton from '@material-ui/core/IconButton';
-import CloseOutlined from '@material-ui/icons/CloseOutlined';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import IconButton from '@mui/material/IconButton';
+import CloseOutlined from '@mui/icons-material/CloseOutlined';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container/Container';
+import Grid from '@mui/material/Grid';
 import Button from '../Controls/Button';
 import { cartService } from '../../services/cartService';
 import { eventBus } from '../../services/event-bus';
-import { makeStyles } from '@material-ui/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { makeStyles } from '@mui/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const useStyles = makeStyles(() => ({
   cartRoot: {

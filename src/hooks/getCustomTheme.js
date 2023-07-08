@@ -1,16 +1,16 @@
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme } from '@mui/material/styles';
 
 const customTheme = createTheme({
   typography: {
-    fontFamily: ['Assistant', 'assistant'].join(',')
+    fontFamily: ['Assistant', 'assistant'].join(','),
   },
   palette: {
     primary: {
       light: '#543912',
       main: '#937446',
       dark: '#8C6F44',
-      contrastText: '#FFFFFF'
-    }
+      contrastText: '#FFFFFF',
+    },
   },
   components: {
     MuiButton: {
@@ -18,12 +18,12 @@ const customTheme = createTheme({
         root: {},
         containedPrimary: {
           backgroundColor: '#937446',
-          color: '#FFFFFF'
-        }
-      }
-    }
+          color: '#FFFFFF',
+        },
+      },
+    },
   },
-  direction: 'rtl'
+  direction: 'rtl',
 });
 
 const getCustomTheme = () => {

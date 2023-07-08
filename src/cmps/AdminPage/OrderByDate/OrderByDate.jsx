@@ -1,6 +1,5 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import DatePickerComp from '@material-ui/lab/DatePicker';
 import {
   Accordion,
   AccordionDetails,
@@ -8,12 +7,14 @@ import {
   Button,
   TextField,
   Typography,
-} from '@material-ui/core';
-import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
-import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
+} from '@mui/material';
 import { ordersService } from '../../../services/ordersService';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMoreOutlined';
+import { makeStyles } from '@mui/styles';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker as DatePickerMui } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import he from 'date-fns/locale/he';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,8 +89,8 @@ export const OrderByDate = () => {
   return (
     <Grid>
       <Grid>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePickerComp
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he}>
+          <DatePickerMui
             views={['year', 'month', 'day']}
             variant="inline"
             inputVariant="outlined"

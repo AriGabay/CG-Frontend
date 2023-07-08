@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { categoryService } from '../../services/categoryService';
 import { CategoryCard } from '../../cmps/CategoryCard';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import BackButton from '../../cmps/Controls/BackButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import { makeStyles } from '@mui/styles';
 import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { useSelector, useDispatch } from 'react-redux';

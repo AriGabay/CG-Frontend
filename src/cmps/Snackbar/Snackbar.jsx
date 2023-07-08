@@ -1,6 +1,6 @@
 import React from 'react';
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/core/Alert';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { eventBus } from '../../services/event-bus';
 import { useEffect, useState } from 'react';
 

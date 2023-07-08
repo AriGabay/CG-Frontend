@@ -9,11 +9,11 @@ import { About } from './pages/About/About';
 import { Contact } from './pages/Contact/Contact';
 import { CheckoutOrder } from './pages/CheckoutOrder/CheckoutOrder';
 import { Route, BrowserRouter } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import getCustomTheme from './hooks/getCustomTheme';
 import Loadable from 'react-loadable';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import { AccessibilityAnnouncement } from './pages/AccessibilityAnnouncement';
 const customTheme = getCustomTheme();
 

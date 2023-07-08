@@ -1,11 +1,11 @@
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import Controls from '../../Controls/Controls';
 import { useForm } from '../../../hooks/useForm';
 import { pricesService } from '../../../services/pricesService';
 import { sizePriceService } from '../../../services/sizePriceService';
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles(() => ({
   gridTag: {
     marginTop: '15px!important',

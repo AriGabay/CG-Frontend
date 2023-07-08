@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Controls from '../Controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
-import { Typography } from '@material-ui/core';
+import { Typography } from '@mui/material';
 import { eventBus } from '../../services/event-bus';
 import BackButton from '../Controls/BackButton';
 import Checkbox from '../../cmps/Controls/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import withStyles from '@material-ui/styles/withStyles';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import withStyles from '@mui/styles/withStyles';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import MuiDialogContent from '@mui/material/DialogContent';
+import MuiDialogActions from '@mui/material/DialogActions';
+import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/CloseOutlined';
 import { termsTxt } from '../../text/terms.js';
 import { useHistory } from 'react-router-dom';
 import format from 'date-fns/format';
-import isFriday from 'date-fns/isFriday';
+import { isFriday } from 'date-fns';
 import isToday from 'date-fns/isToday';
 import { nextFriday } from 'date-fns';
 const initialDate = new Date();
@@ -184,6 +184,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.firstName}
           onChange={handleInputChange}
           error={errors.firstName}
+          withStyle={true}
           required={true}
         />
         <Controls.Input
@@ -192,6 +193,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.lastName}
           onChange={handleInputChange}
           error={errors.lastName}
+          withStyle={true}
           required={true}
         />
         <Controls.Input
@@ -200,6 +202,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.email}
           onChange={handleInputChange}
           error={errors.email}
+          withStyle={true}
           required={true}
         />
         <Controls.Input
@@ -208,6 +211,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.mobile}
           onChange={handleInputChange}
           error={errors.mobile}
+          withStyle={true}
           required={true}
         />
         <Controls.Input
@@ -216,6 +220,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           value={values.mobileTow}
           onChange={handleInputChange}
           error={errors.mobileTow}
+          withStyle={true}
           required={true}
         />
         <Controls.Input
@@ -224,12 +229,14 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           name="city"
           value={values.city}
           error={errors.city}
+          withStyle={true}
           onChange={handleInputChange}
         />
         <Controls.Input
           label="רחוב"
           required={true}
           error={errors.street}
+          withStyle={true}
           name="street"
           value={values.street}
           onChange={handleInputChange}
@@ -238,6 +245,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           label="מספר ת.ז"
           required={true}
           error={errors.idPersonal}
+          withStyle={true}
           name="idPersonal"
           value={values.idPersonal}
           onChange={handleInputChange}
@@ -251,6 +259,7 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             items={pickupItems}
             required={true}
             error={errors.pickup}
+            withStyle={true}
           />
         </Grid>
         <Grid>

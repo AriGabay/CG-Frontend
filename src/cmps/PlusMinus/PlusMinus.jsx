@@ -1,8 +1,8 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
-import { makeStyles } from '@material-ui/styles';
+import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/AddOutlined';
+import RemoveIcon from '@mui/icons-material/RemoveOutlined';
+import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles({
   buttons: {
     display: 'flex',

@@ -1,4 +1,4 @@
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useState, useEffect } from 'react';
 
 const useViewport = (bigScreen, littleScreen) => {

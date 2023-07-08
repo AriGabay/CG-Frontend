@@ -4,11 +4,11 @@ import Select from '../../../Controls/Select';
 import Button from '../../../Controls/Button';
 import { useForm } from '../../../../hooks/useForm';
 import { gnCategoryService } from '../../../../services/gnCategoryService';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles(() => ({
   flexTag: {
     marginTop: '15px!important',

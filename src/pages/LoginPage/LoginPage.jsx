@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Typography, Grid, Button } from '@material-ui/core';
+import { TextField, Typography, Grid, Button } from '@mui/material';
 import { authService } from '../../services/authService';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 
 const useStyles = makeStyles(() => ({
   root: {
