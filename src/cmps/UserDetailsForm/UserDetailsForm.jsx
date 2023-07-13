@@ -344,12 +344,12 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           <Typography>מחיר משוער : {totalPrice} ₪</Typography>
         </Grid>
         <Grid mb={2}>
-          {/* <Controls.Button
+          <Controls.Button
             type="submit"
             text="להזמנה"
-            style={{ color: 'black' }}
+            style={{ color: 'black', display: 'none' }}
             onClick={(event) => handleSubmit(event)}
-          /> */}
+          />
           <Typography variant="h5">האתר סגור כרגע להזמנות.</Typography>
           <Typography variant="h5">להזמנות נא להתקשר : 04-6734949</Typography>
         </Grid>
