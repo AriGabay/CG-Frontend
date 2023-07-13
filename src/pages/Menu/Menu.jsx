@@ -117,11 +117,14 @@ export const Menu = ({ menuType }) => {
       </Grid>
       {menuEnables['message_home_page'] && (
         <BasicModal
-          contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר,
+          contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.
               `}
           contnentLineTow={' '}
           lockScreen={true}
           type="pesach"
+          withCloseBtn={
+            menuEnables['withCloseBtn'] ? menuEnables['withCloseBtn'] : false
+          }
         />
       )}
       <Grid mt={2} mb={2} container className={flexCenter}>

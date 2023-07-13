@@ -26,6 +26,7 @@ export const Menu = () => {
   const [isPesach, setIsPesach] = useState(null);
   const [isTishray, setIsTishray] = useState(null);
   const [isMessageHomePage, setIsMessageHomePage] = useState(null);
+  const [isWithCloseBtn, setIsWithCloseBtn] = useState(null);
 
   const getAllMenus = async () => {
     const menusDb = await isMenuEnableService.getAllMenus();
@@ -45,6 +46,8 @@ export const Menu = () => {
       setIsTishray(menu.value);
     } else if (menu.name === 'message_home_page') {
       setIsMessageHomePage(menu.value);
+    } else if (menu.name === 'withCloseBtn') {
+      setIsWithCloseBtn(menu.value);
     }
   };
   const updateMenu = async () => {
@@ -70,6 +73,12 @@ export const Menu = () => {
       await isMenuEnableService.setMenuEnable({
         menuType: 'message_home_page',
         enable: isMessageHomePage,
+      });
+    }
+    if (typeof isWithCloseBtn === 'boolean') {
+      await isMenuEnableService.setMenuEnable({
+        menuType: 'withCloseBtn',
+        enable: isWithCloseBtn,
       });
     }
   };
