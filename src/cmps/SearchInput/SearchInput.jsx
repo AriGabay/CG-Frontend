@@ -100,7 +100,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     [theme.breakpoints.between(0, 700)]: { padding: 0 },
   },
   [theme.breakpoints.between(0, 700)]: { width: '100px' },
-  zIndex: 1000,
 }));
 
 export default function SearchInput() {
@@ -186,7 +185,6 @@ export default function SearchInput() {
           style={{
             fontWeight: 700,
             color: 'black',
-            zIndex: 1000,
             width: '50%',
           }}
           placeholder="חיפוש..."
