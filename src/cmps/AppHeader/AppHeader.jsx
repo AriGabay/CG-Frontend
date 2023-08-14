@@ -234,7 +234,7 @@ export const AppHeader = () => {
                   צור קשר
                 </Typography>
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 onClick={() => setChecked(false)}
                 className={classes.Navlink}
                 to="/AccessibilityAnnouncement"
@@ -245,7 +245,7 @@ export const AppHeader = () => {
                 >
                   הצהרת נגישות
                 </Typography>
-              </NavLink>
+              </NavLink> */}
               <Button
                 aria-label="עגלת קניות"
                 aria-haspopup="true"
