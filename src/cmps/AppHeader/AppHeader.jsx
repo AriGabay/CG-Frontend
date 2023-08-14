@@ -63,8 +63,8 @@ const useStyles = makeStyles((theme) => ({
       left: '0',
       top: '0',
       bottom: '0',
-      zIndex: 2,
       marginLeft: '0',
+      zIndex: 10000,
     },
   },
   colorWhite: {
@@ -92,7 +92,6 @@ const useStyles = makeStyles((theme) => ({
     '@media (max-width: 700px)': {
       position: 'relative',
       display: 'unset',
-      zIndex: 200,
       margin: '0 auto',
       padding: '10px',
       borderRadius: '8rem',
@@ -100,6 +99,7 @@ const useStyles = makeStyles((theme) => ({
       height: '100%',
       cursor: 'pointer',
       backgroundColor: 'white',
+      zIndex: 100000,
     },
   },
   startIcon: {
