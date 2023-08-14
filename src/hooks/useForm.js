@@ -12,6 +12,9 @@ export function useForm(initialFValues, validateOnChange = false, validate) {
     if (e?.stopPropagation) {
       e.stopPropagation();
     }
+    if (e?.preventDefault) {
+      e.preventDefault();
+    }
     let { name, value } = e.target;
     if (
       isNumber(value) &&

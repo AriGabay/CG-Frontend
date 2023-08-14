@@ -5,7 +5,6 @@ import CloseOutlined from '@mui/icons-material/CloseOutlined';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container/Container';
 import Grid from '@mui/material/Grid';
 import Button from '../Controls/Button';
 import { cartService } from '../../services/cartService';
@@ -14,22 +13,10 @@ import { makeStyles } from '@mui/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const useStyles = makeStyles(() => ({
-  cartRoot: {
-    position: 'fixed',
-    top: '0!important',
-    bottom: '0',
-    right: '0',
-    left: '0!important',
-    width: '100vw',
-    height: '100vh',
-  },
-  zIndex: {
-    zIndex: 520,
-  },
   paper: {
     top: '80px!important',
     height: '80%',
-    width: '20%',
+    width: '25%',
     '@media (max-width: 700px)': {
       position: 'fixed',
       top: '0!important',
@@ -41,18 +28,12 @@ const useStyles = makeStyles(() => ({
       maxHeight: '16px',
     },
   },
-  MenuItem: {
-    height: 'auto',
-    width: 'auto',
-  },
-  rtl: {
-    textAlign: 'right',
-  },
   containerText: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    textAlign: 'right',
+    display: 'flex !important',
+    justifyContent: 'flex-start !important',
+    alignItems: 'center !important',
+    textAlign: 'right !important',
+    flexDirection: 'column',
   },
   textCartProduct: {
     display: 'block',
@@ -78,20 +59,24 @@ export const Cart = ({
     setCartComp(cart);
   }, [cart]);
   const shekel = '₪';
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const checkOutOrder = () => {
     setAnchorEl(null);
     setIsOpenMenu(false);
     history.push('/checkout');
   };
+
   const removeFromCart = async (id) => {
     cartService.removeProductFromCart(id).then((newCart) => {
       setCart(newCart);
       eventBus.dispatch('removeProductToCart', { message: 'הוסר מהעגלה' });
     });
   };
+
   const sizeText = (order) => {
     if (order.product.Price.priceType === 'unit') {
       return `${order.sizeToOrder} יחידות`;
@@ -101,39 +86,49 @@ export const Cart = ({
       return `${order.sizeToOrder} גרם`;
     }
   };
+
   return (
     <Menu
       classes={{ paper: classes.paper }}
       anchorEl={anchorEl}
       keepMounted
       open={Boolean(anchorEl)}
-      onClose={() => handleClose()}
+      onClose={handleClose}
     >
-      <IconButton edge="start"></IconButton>
-      <IconButton onClick={() => handleClose()}>
+      <IconButton edge="start" onClick={handleClose}>
         <CloseOutlined />
       </IconButton>
       {cartComp && cartComp.length ? (
         cartComp.map((order) => {
-          if (!order.product) return;
+          if (!order.product) return null;
+
           return (
-            <MenuItem className={classes.MenuItem} key={order._id}>
-              <Container classes={{ root: classes.containerText }}>
-                <Typography className={classes.textCartProduct}>
-                  מוצר: {order.product.displayName}
-                </Typography>
-                <Typography className={classes.textCartProduct}>
-                  כמות: {sizeText(order)}
-                </Typography>
-                <Typography className={classes.textCartProduct}>
-                  מחיר: {order.priceToShow}
-                  {shekel}
-                </Typography>
-                <Button
-                  text="x"
-                  onClick={() => removeFromCart(order._id)}
-                ></Button>
-              </Container>
+            <MenuItem
+              role="presentation"
+              key={order._id}
+              classes={{ root: classes.containerText }}
+            >
+              <Typography className={classes.textCartProduct}>
+                מוצר: {order.product.displayName}
+              </Typography>
+              <Typography className={classes.textCartProduct}>
+                כמות: {sizeText(order)}
+              </Typography>
+              <Typography className={classes.textCartProduct}>
+                מחיר: {order.priceToShow}
+                {shekel}
+              </Typography>
+              <Button
+                text="הסר"
+                tabIndex={0}
+                aria-label="הסר מהעגלה"
+                onClick={() => removeFromCart(order._id)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    removeFromCart(order._id).then(() => handleClose());
+                  }
+                }}
+              />
             </MenuItem>
           );
         })
@@ -144,11 +139,12 @@ export const Cart = ({
       )}
 
       {cartComp && cartComp.length ? (
-        <Grid mr={2} mb={1}>
-          <Container>
-            <Button text="להזמנה" onClick={() => checkOutOrder()} />
-          </Container>
-        </Grid>
+        <Button
+          style={{ marginRight: '1rem' }}
+          text="להזמנה"
+          aria-label="להזמנה"
+          onClick={checkOutOrder}
+        />
       ) : null}
     </Menu>
   );

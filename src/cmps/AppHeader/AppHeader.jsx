@@ -14,6 +14,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { Cart } from '../Cart';
 import getCustomTheme from '../../hooks/getCustomTheme';
 import { ShakeRotate } from 'reshake';
+import SearchInput from '../SearchInput/SearchInput';
 
 const customTheme = getCustomTheme();
 
@@ -31,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
     color: 'black',
     textDecoration: 'none',
     fontWeight: '600 !important',
+    '&:hover': {
+      transform: 'scale(1.1)',
+    },
   },
   Navlink: {
     textDecoration: 'none',
@@ -160,6 +164,7 @@ export const AppHeader = () => {
             </IconButton>
             <Button
               aria-haspopup="true"
+              aria-label="This is aria label"
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
               color="secondary"
@@ -183,6 +188,7 @@ export const AppHeader = () => {
                 setIsOpenMenu={setIsOpenMenu}
               ></Cart>
             )}
+            {!matches && <SearchInput />}
           </Grid>
         ) : null}
         {(matches || checked) && (
@@ -202,14 +208,18 @@ export const AppHeader = () => {
                 className={classes.Navlink}
                 to="/"
               >
-                <Typography className={classes.ColorNavLink}>בית</Typography>
+                <Typography aria-label="בית" className={classes.ColorNavLink}>
+                  בית
+                </Typography>
               </NavLink>
               <NavLink
                 onClick={() => setChecked(false)}
                 className={classes.Navlink}
                 to="/about"
               >
-                <Typography className={classes.ColorNavLink}>אודות</Typography>
+                <Typography aria-label="אודות" className={classes.ColorNavLink}>
+                  אודות
+                </Typography>
               </NavLink>
 
               <NavLink
@@ -217,7 +227,10 @@ export const AppHeader = () => {
                 className={classes.Navlink}
                 to="/contact"
               >
-                <Typography className={classes.ColorNavLink}>
+                <Typography
+                  aria-label="צור קשר"
+                  className={classes.ColorNavLink}
+                >
                   צור קשר
                 </Typography>
               </NavLink>
@@ -226,11 +239,15 @@ export const AppHeader = () => {
                 className={classes.Navlink}
                 to="/AccessibilityAnnouncement"
               >
-                <Typography className={classes.ColorNavLink}>
+                <Typography
+                  aria-label="הצהרת נגישות"
+                  className={classes.ColorNavLink}
+                >
                   הצהרת נגישות
                 </Typography>
               </NavLink>
               <Button
+                aria-label="עגלת קניות"
                 aria-haspopup="true"
                 onClick={(event) => handleClick(event)}
                 sx={{ color: 'black' }}
@@ -243,18 +260,30 @@ export const AppHeader = () => {
                     style={{ fontSize: '0px', marginLeft: '8px' }}
                     active={true}
                   >
-                    <ShoppingCartOutlinedIcon
-                      classes={{
-                        root: { ...classes.ColorNavLink, ...classes.startIcon },
+                    <span
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
-                    />
+                    >
+                      <ShoppingCartOutlinedIcon
+                        classes={{
+                          root: {
+                            ...classes.ColorNavLink,
+                            ...classes.startIcon,
+                          },
+                        }}
+                        style={{ marginLeft: '5px' }}
+                      />
+                      <Typography className={classes.ColorNavLink}>
+                        עגלת קניות
+                      </Typography>
+                    </span>
                   </ShakeRotate>
                 }
-              >
-                <Typography className={classes.ColorNavLink}>
-                  עגלת קניות
-                </Typography>
-              </Button>
+              ></Button>
+              {matches && <SearchInput />}
               {anchorEl && (
                 <Cart
                   cart={cart}

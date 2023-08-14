@@ -7,6 +7,9 @@ const customTheme = getCustomTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(0.5),
+    '&:hover': {
+      transform: 'scale(1.1)',
+    },
   },
   label: {
     textTransform: 'none',
@@ -20,6 +23,7 @@ export default function Button(props) {
 
   return (
     <MuiButton
+      aria-label={text}
       variant={variant || 'contained'}
       size={size || 'large'}
       color={color || 'primary'}

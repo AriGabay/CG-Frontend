@@ -36,7 +36,7 @@
     "no-console": "off",
     "react/prop-types": "off",
     "semi": ["error", "always"],
-    "quotes": ["error", "single"],
+    "quotes": "off",
     "react/react-in-jsx-scope": "off"
   }
 }

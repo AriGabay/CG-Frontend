@@ -2,67 +2,106 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as DatePickerMui } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
 import isFriday from 'date-fns/isFriday';
-import nextFriday from 'date-fns/nextFriday';
 import he from 'date-fns/locale/he';
+import { makeStyles } from '@mui/styles';
+
+const useStyles = makeStyles({
+  '.Mui-selected': {
+    backgroundColor: 'red !important',
+  },
+
+  focusedCell: {
+    backgroundColor: 'red !important',
+  },
+});
 
 export default function DatePicker(props) {
-  const { name, label, value, onChange, required = false, error } = props;
-
+  let { name, label, value, onChange, required = false, error } = props;
+  const [selectedDate] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
-  const convertToDefEventPara = (name, value) => {
-    const e = {
-      target: {
-        name,
-        value,
-      },
-    };
-    return e;
-  };
+  const classes = useStyles();
+  const convertToDefEventPara = (name, value) => ({
+    target: { name, value },
+  });
 
-  const dateToStr = (date) => {
-    date = date + '';
-    return date.slice(0, 16);
+  const dateToStr = (date) => String(date).slice(0, 16);
+
+  const daysPreview = ({ day, outsideCurrentMonth, ...other }) => {
+    const isSelected = isFriday(day);
+    return (
+      <PickersDay
+        {...other}
+        tabIndex={isSelected ? 1 : 0}
+        selected={isSelected}
+        focusRipple={true}
+        outsideCurrentMonth={outsideCurrentMonth}
+        day={day}
+      />
+    );
   };
 
   return (
-    <div>
+    <div
+      style={{ width: 'auto', maxWidth: '250px' }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        event.stopPropagation();
+        if (event.key === 'Enter') {
+          setIsOpen(true);
+        }
+      }}
+      onClick={() => setIsOpen(!isOpen)}
+    >
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he}>
         <DatePickerMui
+          className={classes.root}
           variant="inline"
-          disablePast
+          role="dialog"
+          aria-labelledby={label}
+          aria-describedby={label}
+          disablePast={true}
           inputVariant="outlined"
           label={label}
           style={{ width: '200px' }}
           DialogProps={{ className: 'mui-datepicker' }}
           inputFormat="dd/MM/yyyy"
           name={name}
-          value={
-            isFriday(value) || value.toString().includes('Apr 05')
-              ? value
-              : nextFriday(value)
-          }
+          value={selectedDate}
           required={required}
-          slotProps={{ textField: { readOnly: true } }}
+          slotProps={{
+            textField: {
+              readOnly: true,
+              InputLabelProps: { style: { fontWeight: 700, color: 'black' } },
+            },
+          }}
+          slots={{
+            day: daysPreview,
+          }}
           renderInput={(params) => (
             <TextField
+              {...params}
               aria-label="בחר תאריך"
               onKeyDown={(e) => e.preventDefault()}
               onClick={() => setIsOpen(!isOpen)}
-              {...params}
               inputProps={{ ...params.inputProps }}
+              style={{ cursor: 'pointer' }}
             />
           )}
           onChange={(day) => {
-            onChange(convertToDefEventPara(name, dateToStr(day)));
             setIsOpen(false);
+            onChange(convertToDefEventPara(name, dateToStr(day)));
           }}
           shouldDisableDate={(date) => date.getDay() !== 5}
+          open={isOpen}
         />
-        {error && <FormHelperText>{error}</FormHelperText>}
+        {error?.pickUpDate && (
+          <FormHelperText>{error.pickUpDate}</FormHelperText>
+        )}
       </LocalizationProvider>
     </div>
   );

@@ -22,19 +22,24 @@ export default function Input(props) {
 
   return (
     <TextField
+      dir="rtl"
       aria-label={label}
       id={`id-label-${label}`}
       className={withStyle ? classes.size : ''}
       variant="outlined"
-      label={label}
+      label={label + ' (חובה)'}
       name={name}
       value={value}
       onChange={(event) => onChange(event)}
       required={required}
-      {...(error && { error: true, helperText: error })}
+      error={!!error}
+      helperText={error}
       {...other}
       margin="dense"
-      InputLabelProps={{ shrink: true }}
+      InputLabelProps={{
+        shrink: true,
+        style: { fontWeight: 700, color: 'black' },
+      }}
     />
   );
 }

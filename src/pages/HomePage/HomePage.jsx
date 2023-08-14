@@ -1,4 +1,5 @@
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
+import { VisuallyHidden } from '@reach/visually-hidden';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
@@ -31,27 +32,22 @@ const useStyles = makeStyles(() => ({
     lineHeight: '0 !important',
   },
   textImageHomePage: {
-    textAlign: 'center',
-    minWidth: 'auto',
-    minHeight: 'auto',
     color: 'black',
+    border: '4px solid #937446',
     display: 'block',
+    padding: ' 1em',
+    overflow: ' hidden',
+    fontSize: '1.3rem',
+    minWidth: 'auto',
+    textAlign: 'center',
+    borderRadius: '2em',
     overflowWrap: 'break-word',
     textOverflow: 'ellipsis',
-    wordWrap: 'break-word',
-    overflow: 'hidden',
-    border: '4px solid #937446',
-    borderRadius: '2em',
-    padding: '1em',
-    fontSize: '20px',
     backgroundColor: 'whitesmoke',
-    '@media (max-width: 400px)': {
-      fontSize: '15px !important',
-    },
-    '@media (max-width: 290px)': {
-      fontSize: '10px !important',
-    },
+    minHeight: '5rem',
+    margin: '0 5px 0.35rem 5px !important',
   },
+
   GridMenuButton: {
     width: '100%',
     display: 'flex',
@@ -65,6 +61,7 @@ const useStyles = makeStyles(() => ({
 
 export const HomePage = () => {
   const [menuEnables, setMenuEnables] = useState({});
+  const [isMenuEnablesLoaded, setIsMenuEnablesLoaded] = useState(false);
   const imageSize = useViewport(
     { width: 1024, height: 800 },
     { width: 400, height: 300 }
@@ -77,6 +74,7 @@ export const HomePage = () => {
       const menuType = menu.menuType;
       setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
     });
+    setIsMenuEnablesLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -89,30 +87,26 @@ export const HomePage = () => {
         <title>קייטרינג גבאי - דף בית</title>
         <meta name="home-page" content="menu and logo" />
       </Helmet>
-      <Grid className={classes.imageContainer}>
-        <Typography
-          classes={{ root: classes.fixLineHeight }}
-          className={classes.textImageHomePage}
-          gutterBottom
-        >
+      <Grid className={classes.imageContainer} tabIndex={0}>
+        <Typography classes={{ root: classes.textImageHomePage }} variant="h7">
           יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
         <Grid className={classes.GridMenuButton}>
-          {menuEnables['weekend'] && (
+          {isMenuEnablesLoaded && menuEnables['weekend'] && (
             <BackButton
               classProp="menuButton"
               to="/menu/weekend"
               text="לתפריט סוף שבוע"
             />
           )}
-          {menuEnables['pesach'] && (
+          {isMenuEnablesLoaded && menuEnables['pesach'] && (
             <BackButton
               classProp="menuButton"
               to="/menu/pesach"
               text="לתפריט פסח"
             />
           )}
-          {menuEnables['tishray'] && (
+          {isMenuEnablesLoaded && menuEnables['tishray'] && (
             <BackButton
               classProp="menuButton"
               to="/menu/tishray"
@@ -121,17 +115,24 @@ export const HomePage = () => {
           )}
         </Grid>
         <Grid mb={6}>
-          <ImageCloud
-            ClassName={classes.imgHomePage}
-            imageId="old_logo_rssqwk"
-            maxWidth={imageSize.width}
-            maxHeight={imageSize.height}
-            alt={'לוגו קיטריינג גבאי'}
-          />
-          {menuEnables['message_home_page'] && (
+          <>
+            <VisuallyHidden>
+              {
+                'התיאור הבא מתאר את התמונה: קייטרינג גבאי בע"מ,\n”אוכל של אמא” - להתפנק ליהנות.\nבהשגחת הרבנות, כשר למהדרין טבריה.\n"גני איילון" כביש פוריה - טבריה טל. 04-6734949'
+              }
+            </VisuallyHidden>
+            <ImageCloud
+              ClassName={classes.imgHomePage}
+              imageId="old_logo_rssqwk"
+              maxWidth={imageSize.width}
+              maxHeight={imageSize.height}
+              alt={'לוגו קיטריינג גבאי'}
+            />
+          </>
+
+          {isMenuEnablesLoaded && menuEnables['message_home_page'] && (
             <BasicModal
-              contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.
-              `}
+              contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.`}
               contnentLineTow={' '}
               lockScreen={true}
               type="pesach"

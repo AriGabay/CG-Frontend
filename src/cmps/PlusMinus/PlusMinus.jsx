@@ -40,14 +40,24 @@ export const PlusMinus = ({ type, size, input, updateOrder }) => {
   return (
     <Grid className={classes.buttons}>
       <button
-        aria-label="plus button quantity"
+        aria-label="הוסף כמות"
         style={{ background: 'white', color: 'black', border: 0 }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            plus();
+          }
+        }}
       >
         <AddIcon onClick={() => plus()}></AddIcon>
       </button>
       <button
-        aria-label="minus button quantity"
+        aria-label="הורד כמות"
         style={{ background: 'white', color: 'black', border: 0 }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            minus();
+          }
+        }}
       >
         <RemoveIcon onClick={() => minus()}></RemoveIcon>
       </button>

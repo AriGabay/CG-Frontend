@@ -94,7 +94,12 @@ export const Menu = ({ menuType }) => {
       </Helmet>
       <Grid className={flexCenter}>
         {titlePage && (
-          <Typography variant="h3" gutterBottom>
+          <Typography
+            aria-label={titlePage}
+            fontSize={'4rem'}
+            variant="h1"
+            gutterBottom
+          >
             {titlePage}
           </Typography>
         )}

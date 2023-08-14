@@ -77,7 +77,13 @@ export const CheckoutOrder = () => {
       <Grid mt={6} className={classes.root}>
         <Grid item sm={6} style={{ width: '100%' }}>
           <Container>
-            <Typography textAlign="center" variant="h4" component="h2">
+            <Typography
+              mr={'20px'}
+              textAlign="start"
+              aria-label={'סיכום הזמנה'}
+              fontSize={'4rem'}
+              variant="h1"
+            >
               סיכום הזמנה:
             </Typography>
           </Container>
@@ -85,7 +91,11 @@ export const CheckoutOrder = () => {
             return (
               <Grid mt={2} item key={index} className={classes.productCard}>
                 <Paper variant="outlined" className={classes.Paper}>
-                  <Typography variant="h6" component="h2">
+                  <Typography
+                    variant="h2"
+                    component="h2"
+                    style={{ fontSize: '1.25rem', fontWeight: 400 }}
+                  >
                     {product.displayName}
                   </Typography>
                   <Typography>
@@ -118,6 +128,13 @@ export const CheckoutOrder = () => {
         </Grid>
         {totalPrice && cart && tax && unTax && (
           <Grid item sm={3} className={classes.formSide}>
+            <Typography
+              aria-label={'פרטי ההזמנה'}
+              fontSize={'2rem'}
+              variant="h2"
+            >
+              פרטי הזמנה:
+            </Typography>
             <UserDetailsForm
               totalPrice={totalPrice}
               tax={tax}

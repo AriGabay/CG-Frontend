@@ -28,6 +28,11 @@ const useStyles = makeStyles({
     textAlign: 'center',
     height: 'auto',
   },
+  overEffect: {
+    '&:hover': {
+      transform: 'scale(1.1)',
+    },
+  },
 });
 export const ProductCard = ({ product }) => {
   let history = useHistory();
@@ -60,7 +65,12 @@ export const ProductCard = ({ product }) => {
             alignItems="center"
             justifyContent="center"
           >
-            <Typography gutterBottom variant="h5" component="h2">
+            <Typography
+              aria-label={product.displayName}
+              gutterBottom
+              variant="h5"
+              component="h2"
+            >
               {product.displayName}
             </Typography>
           </Box>
@@ -71,6 +81,7 @@ export const ProductCard = ({ product }) => {
             justifyContent="center"
           >
             <Typography
+              aria-label={product.description}
               className={classes.productDescription}
               variant="body2"
               color="textSecondary"
@@ -79,7 +90,7 @@ export const ProductCard = ({ product }) => {
               {product.description}
             </Typography>
           </Box>
-          {history.location.pathname.includes('pesach') ? (
+          {history.location.pathname.includes('pesach') ?? (
             <Box
               component="div"
               display="flex"
@@ -93,6 +104,7 @@ export const ProductCard = ({ product }) => {
                   variant="body2"
                   color="textSecondary"
                   component="p"
+                  aria-label={'מכיל קיטניות'}
                 >
                   מכיל קיטניות
                 </Typography>
@@ -103,19 +115,28 @@ export const ProductCard = ({ product }) => {
                   variant="body2"
                   color="textSecondary"
                   component="p"
+                  aria-label={'ללא חשש קיטניות'}
                 >
                   ללא חשש קיטניות
                 </Typography>
               )}
             </Box>
-          ) : (
-            <Typography></Typography>
           )}
         </CardContent>
       </CardActionArea>
-      <Box display="flex" alignItems="center" justifyContent="center">
+      <Box
+        className={classes.overEffect}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
         <CardActions>
-          <Button size="small" color="primary">
+          <Button
+            style={{ color: 'black' }}
+            aria-label="הוסף לסל"
+            size="small"
+            color="primary"
+          >
             הוסף לסל
           </Button>
         </CardActions>

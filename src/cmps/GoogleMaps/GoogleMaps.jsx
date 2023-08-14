@@ -12,7 +12,8 @@ const GoogleMaps = ({
     let marker = new maps.Marker({
       position: { lat: latitude, lng: longitude },
       map,
-      title: 'קייטרינג גבאי',
+      title: 'קייטרינג גבאי רחוב המברג 10 טבריה',
+      label: 'קייטרינג גבאי',
     });
     return marker;
   };

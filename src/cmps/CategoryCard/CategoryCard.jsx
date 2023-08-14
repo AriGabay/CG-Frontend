@@ -20,6 +20,9 @@ const useStyles = makeStyles({
   },
   moreProductBtn: {
     color: customTheme.palette.primary.contrastText,
+    '&:hover': {
+      transform: 'scale(1.1)',
+    },
   },
   maxWidth: {
     maxWidth: '100%',
@@ -63,6 +66,7 @@ export const CategoryCard = ({ category }) => {
               gutterBottom
               variant="h5"
               component="h2"
+              aria-label={category.displayName}
             >
               {category.displayName}
             </Typography>
@@ -73,6 +77,7 @@ export const CategoryCard = ({ category }) => {
               variant="body2"
               color="textSecondary"
               component="p"
+              aria-label={category.description}
             >
               {category.description}
             </Typography>
@@ -82,12 +87,15 @@ export const CategoryCard = ({ category }) => {
       <div className={classes.flexCenter}>
         <CardActions>
           <Button
+            role="button"
+            tabIndex={0}
             classes={{
               root: classes.moreProductBtn,
               label: classes.moreProductBtn,
             }}
             size="small"
-            color="primary"
+            style={{ color: 'black' }}
+            aria-label={'עוד מוצרים'}
           >
             עוד מוצרים
           </Button>

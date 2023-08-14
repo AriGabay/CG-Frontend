@@ -16,6 +16,9 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     textAlign: 'center',
     width: '350px',
+    '&:hover': {
+      transform: 'scale(1.05)',
+    },
   },
 });
 

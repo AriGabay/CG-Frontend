@@ -29,14 +29,16 @@ export const About = () => {
       </Helmet>
       <Grid classes={{ root: classes.root }}>
         <Grid classes={{ root: classes.root }}>
-          <Typography variant="h2">אודות</Typography>
-          <Typography variant="h5">
+          <Typography aria-label="אודות" fontSize={'4rem'} variant="h1">
+            אודות
+          </Typography>
+          <Typography variant="p" fontSize={'1.2rem'}>
             קייטרינג גבאי פועל כבר יותר מעשור. אוכל בתוצרת ביתית משובח ועשיר
             בטעמים.
           </Typography>
         </Grid>
         <Grid className={`${classes.gridMap} ${classes.root}`}>
-          <GoogleMaps></GoogleMaps>
+          <GoogleMaps />
         </Grid>
       </Grid>
     </Fragment>

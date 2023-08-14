@@ -7,14 +7,22 @@ const customTheme = getCustomTheme();
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: customTheme.palette.primary.light + '!important',
+    '&:hover': {
+      transform: 'scale(1.1) !important',
+    },
   },
   label: {
-    color: customTheme.palette.primary.contrastText + '!important',
     textTransform: 'none',
+    '&:hover': {
+      transform: 'scale(1.1) !important',
+    },
   },
   NavLink: {
     textDecoration: 'none',
     marginBottom: theme.spacing(1),
+    '&:hover': {
+      transform: 'scale(1.1) !important',
+    },
   },
   menuButton: {
     width: '100px',
@@ -25,6 +33,10 @@ const useStyles = makeStyles((theme) => ({
       fontSize: '10px !important',
       height: '50px',
     },
+
+    color: 'black' + '!important',
+    fontWeight: 600 + '!important',
+    backgroundColor: '#93764ce3' + '!important',
   },
   center: {
     display: 'flex !important',
@@ -38,7 +50,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Button(props) {
-  const { text, size, color, variant, to, classProp, style = {} } = props;
+  const {
+    text,
+    size,
+    color,
+    variant,
+    to,
+    classProp,
+    style = {},
+    ...other
+  } = props;
   const classes = useStyles();
   return (
     <NavLink className={classes.NavLink} to={to} style={style}>
@@ -48,6 +69,8 @@ export default function Button(props) {
         size={size || 'large'}
         color={color || 'primary'}
         classes={{ label: classes.label }}
+        aria-label={text}
+        {...other}
       >
         {text}
       </MuiButton>

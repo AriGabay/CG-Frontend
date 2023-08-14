@@ -1,8 +1,11 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 import React from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { eventBus } from '../../services/event-bus';
 import { useEffect, useState } from 'react';
+import { IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function SimpleSnackbar() {
   const [msg, setMsg] = useState(null);
@@ -11,6 +14,7 @@ export default function SimpleSnackbar() {
 
   const handleOpen = () => {
     setOpen(true);
+
     setTimeout(() => {
       handleClose(null, 'clickaway');
     }, 3000);
@@ -60,6 +64,11 @@ export default function SimpleSnackbar() {
       setSeverity('error');
       handleOpen();
     });
+    eventBus.on('error', (data) => {
+      setMsg(data.message);
+      setSeverity('error');
+      handleOpen();
+    });
     return () => {
       eventBus.remove('addProductToCart', () => {
         setMsg(null);
@@ -94,18 +103,33 @@ export default function SimpleSnackbar() {
     };
   }, []);
 
+  const action1 = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+
   return (
     <Snackbar
+      role="presentation"
+      aria-live="assertive"
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'center',
       }}
       open={open}
-      autoHideDuration={1500}
+      autoHideDuration={2000}
       onClose={handleClose}
     >
-      <Alert onClose={handleClose} severity={severity}>
-        {msg}
+      <Alert tabIndex={0} action={action1} role="none" severity={severity}>
+        <span role="alert">{msg}</span>
       </Alert>
     </Snackbar>
   );

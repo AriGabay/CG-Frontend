@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, Button, Modal, Typography } from '@mui/material';
 import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { makeStyles } from '@mui/styles';
+import { VisuallyHidden } from '@reach/visually-hidden';
 
 const useStyles = makeStyles((theme) => ({
   imageModal: {
@@ -24,6 +25,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     [theme.breakpoints.down('sm')]: {
       width: '85%',
+    },
+  },
+  closeBtn: {
+    '&:hover': {
+      transform: 'scale(1.1)',
     },
   },
 }));
@@ -55,7 +61,7 @@ export default function BasicModal({
         <Box className={classes.modalBox}>
           <Typography
             textAlign="center"
-            id="modal-modal-title"
+            className="modal-modal-title"
             variant="h6"
             component="h2"
           >
@@ -63,7 +69,7 @@ export default function BasicModal({
           </Typography>
           <Typography
             textAlign="center"
-            id="modal-modal-title"
+            className="modal-modal-title"
             variant="h6"
             component="h2"
           >
@@ -71,7 +77,7 @@ export default function BasicModal({
           </Typography>
           <Typography
             textAlign="center"
-            id="modal-modal-title"
+            className="modal-modal-title"
             variant="h6"
             component="h2"
           >
@@ -79,7 +85,7 @@ export default function BasicModal({
           </Typography>
           <Typography
             textAlign="center"
-            id="modal-modal-title"
+            className="modal-modal-title"
             variant="h6"
             component="h2"
           >
@@ -93,14 +99,23 @@ export default function BasicModal({
             />
           )}
           {withCloseBtn && (
-            <Button
-              aria-label="close modal message"
-              onClick={() => setOpen(false)}
-              style={{ fontWeight: 700, fontSize: '20px' }}
-            >
-              סגור
-            </Button>
+            <>
+              <Button
+                className={classes.closeBtn}
+                aria-label="סגור מודל"
+                onClick={() => setOpen(false)}
+                style={{ fontWeight: 700, fontSize: '20px' }}
+              >
+                <VisuallyHidden>{'סגור מודל'}</VisuallyHidden>
+                סגור
+              </Button>
+            </>
           )}
+          <VisuallyHidden>
+            {
+              'לקוחות יקרים!\nהאתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.\nקייטרינג גבאי.'
+            }
+          </VisuallyHidden>
         </Box>
       </Modal>
     </div>

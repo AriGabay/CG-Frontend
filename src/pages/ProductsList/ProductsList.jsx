@@ -138,7 +138,9 @@ export const ProductsList = () => {
             justifyContent="flex-start"
             m={2}
             width={100}
-            variant="h3"
+            aria-label={categoryName}
+            fontSize={'4rem'}
+            variant="h1"
           >
             {categoryName}
           </Typography>

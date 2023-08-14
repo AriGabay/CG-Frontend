@@ -28,21 +28,25 @@ export default function RadioGroup(props) {
   const classes = useStyles();
   return (
     <FormControl required={required}>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel style={{ fontWeight: 700 }} component={'h2'}>
+        {label}
+      </FormLabel>
       <MuiRadioGroup
         row
         name={name}
         value={value}
         required={required}
         onChange={onChange}
+        onKeyDown={(e) => e.key === 'Enter' ?? onChange(e)}
       >
         {items.map((item) => (
           <FormControlLabel
             required={required}
             key={item.id}
             value={item.id}
-            control={<Radio />}
+            control={<Radio aria-label={item.title} />}
             label={item.title}
+            aria-label={item.title}
           />
         ))}
         {error && (

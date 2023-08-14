@@ -56,6 +56,15 @@ async function getAllProducts(query) {
     console.error('error', error);
   }
 }
+async function serachProductBy(query) {
+  try {
+    const res = await httpService.get(endpoint + 'serach', query);
+    return res;
+  } catch (error) {
+    console.error('error', error);
+  }
+}
+
 export const productService = {
   getProducts,
   addProduct,
@@ -64,4 +73,5 @@ export const productService = {
   updateProduct,
   getAllProducts,
   getProductsByMenu,
+  serachProductBy,
 };

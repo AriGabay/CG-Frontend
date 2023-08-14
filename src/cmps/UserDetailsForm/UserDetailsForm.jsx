@@ -111,9 +111,6 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
       });
       return false;
     }
-    if (!fieldValues['firstName']?.length) {
-      temp.firstName = requiredInputStr;
-    }
     if ('firstName' in fieldValues)
       temp.firstName = fieldValues.firstName ? '' : requiredInputStr;
     if ('lastName' in fieldValues)
@@ -279,7 +276,8 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             label="תאריך איסוף"
             value={new Date(values.pickUpDate)}
             onChange={handleInputChange}
-            error={errors.pickUpDate}
+            error={errors}
+            setError={setErrors}
           />
         </Grid>
         <Grid display="flex" justifyContent="flex-start" alignContent="center">
@@ -339,8 +337,8 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           </Button>
         </Grid>
         <Grid mt={2} mb={2}>
-          <Typography>לפני מע&apos;מ: {unTax} ₪</Typography>
-          <Typography>מע&apos;מ: {tax} ₪</Typography>
+          <Typography>לפני מע&apos;&apos;מ: {unTax} ₪</Typography>
+          <Typography>מע&apos;&apos;מ: {tax} ₪</Typography>
           <Typography>מחיר משוער : {totalPrice} ₪</Typography>
         </Grid>
         <Grid mb={2}>
@@ -350,12 +348,17 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
             style={{ color: 'black', display: 'none' }}
             onClick={(event) => handleSubmit(event)}
           />
-          <Typography variant="h5">האתר סגור כרגע להזמנות.</Typography>
-          <Typography variant="h5">להזמנות נא להתקשר : 04-6734949</Typography>
+          <Typography style={{ fontSize: '1.5rem' }} variant="p">
+            האתר סגור כרגע להזמנות.
+          </Typography>
+          <br />
+          <Typography style={{ fontSize: '1.5rem' }} variant="p">
+            להזמנות נא להתקשר : 04-6734949
+          </Typography>
         </Grid>
-        <Grid mb={2}>
-          <BackButton classProp="blackFont" text="חזור" to="/"></BackButton>
-        </Grid>
+        <div style={{ marginBottom: 20 }}>
+          <BackButton text="חזור" to="/"></BackButton>
+        </div>
       </Grid>
     </Form>
   );

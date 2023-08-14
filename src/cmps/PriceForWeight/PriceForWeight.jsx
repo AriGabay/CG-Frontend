@@ -110,7 +110,7 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
           ></PlusMinus>
         )}
       </Grid>
-      <Typography>לשינוי כמות המוצר יש להשתמש בחצים</Typography>
+      <Typography>לשינוי כמות המוצר יש להשתמש בכפתורים פלוס ומינוס</Typography>
       {priceToShow !== 0
         ? priceToShow && (
             <Typography>

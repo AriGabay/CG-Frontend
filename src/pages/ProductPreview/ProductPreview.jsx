@@ -33,6 +33,9 @@ const useStyles = makeStyles({
     paddingTop: 0,
     paddingBottom: 0,
     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+    '&:hover': {
+      transform: 'scale(1.05)',
+    },
   },
   Grid: {
     display: 'flex',
@@ -50,6 +53,13 @@ const useStyles = makeStyles({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+  },
+  hoverEffect: {
+    '&:hover': {
+      transform: 'scale(1.05)',
+      width: 'min-content',
+      height: 'min-content',
+    },
   },
 });
 
@@ -75,7 +85,7 @@ export const ProductPreview = () => {
         })
         .catch((error) => console.log(error));
     }
-  }, []);
+  }, [productId]);
   const addToCart = () => {
     if (
       !productOrder ||
@@ -84,8 +94,10 @@ export const ProductPreview = () => {
       productOrder?.sizeToOrder === '' ||
       productOrder?.sizeToOrder === 0 ||
       !productOrder?.sizeToOrder
-    )
+    ) {
+      eventBus.dispatch('error', { message: 'לא נבחרה כמות' });
       return;
+    }
     cartService.addToCart(productOrder).then(() => {
       eventBus.dispatch('addProductToCart', { message: 'נוסף לעגלה' });
     });
@@ -99,7 +111,13 @@ export const ProductPreview = () => {
       </Helmet>
       <Grid className={classes.Grid} container>
         <Grid item mt={2} lg={6} md={6} sm={12}>
-          <Typography variant="h3">{product.displayName}</Typography>
+          <Typography
+            aria-label={product.displayName}
+            fontSize={'4rem'}
+            variant="h1"
+          >
+            {product.displayName}
+          </Typography>
           <Grid ml={2} mt={2} className={classes.imgContainer}>
             <ImageCloud
               imageId={product.imgUrl}
@@ -109,6 +127,36 @@ export const ProductPreview = () => {
               }`}
             />
           </Grid>
+          {product.isMenuPesach === true && (
+            <Box
+              component="div"
+              display="flex"
+              alignItems="center"
+              justifyContent="start"
+            >
+              {!!product.kitniyot === true ? (
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  מכיל קיטניות
+                </Typography>
+              ) : (
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  ללא חשש קיטניות
+                </Typography>
+              )}
+            </Box>
+          )}
           {isMobile && product.description.length > 0 && (
             <Grid item mt={2} lg={3} md={3} sm={12}>
               <Typography aria-label="תיאור" variant="h4">
@@ -139,6 +187,36 @@ export const ProductPreview = () => {
               />
             ) : null}
           </Grid>
+          {!!product.isMenuPesach ?? (
+            <Box
+              component="div"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              {!!product.kitniyot === true ? (
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  מכיל קיטניות
+                </Typography>
+              ) : (
+                <Typography
+                  className={classes.productDescription}
+                  style={{ fontWeight: 'bold' }}
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                >
+                  ללא חשש קיטניות
+                </Typography>
+              )}
+            </Box>
+          )}
           <Grid>
             <Button
               variant="contained"
@@ -146,11 +224,11 @@ export const ProductPreview = () => {
               className={classes.addToCartBtn}
               onClick={() => addToCart()}
             >
-              הוסף לעגלה{' '}
+              הוסף לעגלת הקניות
               <SvgIcon component={ShoppingCartOutlinedIcon}></SvgIcon>
             </Button>
           </Grid>
-          <Grid mt={2} mb={2}>
+          <Grid mt={2} mb={2} className={classes.hoverEffect}>
             <BackButton
               to={history.location.state ? history.location.state : '/'}
               text="חזור"
