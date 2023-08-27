@@ -184,10 +184,10 @@ export const AppHeader = () => {
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
               color="secondary"
-              style={{ color: 'transparent', background: 'transparent' }}
+              style={{ color: 'black', background: 'transparent' }}
               startIcon={
                 <ShoppingCartOutlinedIcon
-                  style={{ color: 'transparent', background: 'transparent' }}
+                  style={{ color: 'black', background: 'transparent' }}
                 />
               }
             >
