@@ -9,6 +9,8 @@ import { makeStyles } from '@mui/styles';
 const useStyles = makeStyles({
   optionsBtn: {
     maxWidth: '270px',
+    border: '2px solid !important',
+    color: '#674e31 !important',
   },
   typography: {
     display: 'flex',
@@ -18,6 +20,9 @@ const useStyles = makeStyles({
     width: '350px',
     '&:hover': {
       transform: 'scale(1.05)',
+    },
+    '& > *': {
+      fontWeight: 600 + '!important',
     },
   },
 });

@@ -16,7 +16,9 @@ export const Contact = () => {
         alignItems="center"
         flexDirection="column"
       >
-        <Typography variant="h2">צור קשר</Typography>
+        <Typography aria-label="צור קשר" fontSize={'4rem'} variant="h1">
+          צור קשר
+        </Typography>
         <Typography variant="h7">כתובת: המברג 10,טבריה.</Typography>
         <Typography variant="h7">
           טלפון :

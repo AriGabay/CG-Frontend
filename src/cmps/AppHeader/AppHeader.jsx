@@ -111,6 +111,20 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: '0px !important',
     },
   },
+  cancelHover: {
+    '&:hover': {
+      backgroundColor: 'unset !important',
+      textDecoration: 'unset',
+    },
+    '&:focus': {
+      // outline: 'none',
+      background: 'transparent !important',
+      outline: 'none !important',
+      backgroundColor: 'transparent !important',
+      boxShadow: 'none !important',
+      borderRadius: '0 !important',
+    },
+  },
 }));
 
 const style = {
@@ -163,15 +177,17 @@ export const AppHeader = () => {
               <MenuIcon />
             </IconButton>
             <Button
+              role="button"
+              tabIndex={0}
               aria-haspopup="true"
-              aria-label="This is aria label"
+              aria-label="עגלת קניות"
               onClick={(event) => handleClick(event)}
               sx={{ color: 'black' }}
               color="secondary"
+              style={{ color: 'transparent', background: 'transparent' }}
               startIcon={
                 <ShoppingCartOutlinedIcon
-                  color="black"
-                  className={classes.animation}
+                  style={{ color: 'transparent', background: 'transparent' }}
                 />
               }
             >
@@ -247,9 +263,17 @@ export const AppHeader = () => {
                 </Typography>
               </NavLink> */}
               <Button
+                disableFocusRipple={true}
+                tabIndex={0}
                 aria-label="עגלת קניות"
                 aria-haspopup="true"
+                role="button"
                 onClick={(event) => handleClick(event)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') {
+                    handleClick(event);
+                  }
+                }}
                 sx={{ color: 'black' }}
                 color="secondary"
                 classes={{

@@ -215,7 +215,6 @@ export default function SearchInput() {
             >
               בחר תפריט
             </InputLabel>
-            {console.log('menuTypeSerch', menuTypeSerch)}
             <Select
               labelId="label-drop-down-menu-serach"
               className={classes.selectDropDownMenuSerach}

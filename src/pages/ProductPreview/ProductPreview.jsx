@@ -49,10 +49,11 @@ const useStyles = makeStyles({
   imgContainer: {
     maxWidth: '300px',
   },
-  textOver: {
+  textOverDescription: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    fontWeight: 600,
   },
   hoverEffect: {
     '&:hover': {
@@ -159,7 +160,7 @@ export const ProductPreview = () => {
           )}
           {isMobile && product.description.length > 0 && (
             <Grid item mt={2} lg={3} md={3} sm={12}>
-              <Typography aria-label="תיאור" variant="h4">
+              <Typography fontSize={'2.5rem'} aria-label="תיאור" variant="h2">
                 תיאור:
               </Typography>
               <Typography className={classes.textOver} mt={2} mb={2}>
@@ -237,7 +238,9 @@ export const ProductPreview = () => {
         </Grid>
         {isMobile === false && product.description.length > 0 && (
           <Grid item mt={2} lg={3} md={3} sm={12}>
-            <Typography variant="h5">תיאור:</Typography>
+            <Typography aria-label="תיאור" fontSize={'2.5rem'} variant="h2">
+              תיאור:
+            </Typography>
             <Typography mt={2} mb={2} className={classes.textOver}>
               {product.description}
             </Typography>

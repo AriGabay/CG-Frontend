@@ -1,5 +1,4 @@
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
-import { VisuallyHidden } from '@reach/visually-hidden';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles } from '@mui/styles';
@@ -57,6 +56,14 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'space-around',
     maxWidth: '500px',
   },
+  titlePage: {
+    fontSize: '70px',
+    fontWeight: 600,
+    backgroundImage: 'linear-gradient(to left, #936a2d, #93764ca1)',
+    color: 'transparent',
+    backgroundClip: 'text',
+    WebkitBackgroundClip: 'text',
+  },
 }));
 
 export const HomePage = () => {
@@ -88,10 +95,19 @@ export const HomePage = () => {
         <meta name="home-page" content="menu and logo" />
       </Helmet>
       <Grid className={classes.imageContainer} tabIndex={0}>
+        <Typography
+          className={classes.titlePage}
+          mb={3}
+          aria-label="דף בית"
+          fontSize={'4rem'}
+          variant="h1"
+        >
+          דף בית
+        </Typography>
         <Typography classes={{ root: classes.textImageHomePage }} variant="h7">
           יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
-        <Grid className={classes.GridMenuButton}>
+        <Grid mt={3} className={classes.GridMenuButton}>
           {isMenuEnablesLoaded && menuEnables['weekend'] && (
             <BackButton
               classProp="menuButton"
@@ -116,17 +132,19 @@ export const HomePage = () => {
         </Grid>
         <Grid mb={6}>
           <>
-            <VisuallyHidden>
+            {/* <VisuallyHidden>
               {
                 'התיאור הבא מתאר את התמונה: קייטרינג גבאי בע"מ,\n”אוכל של אמא” - להתפנק ליהנות.\nבהשגחת הרבנות, כשר למהדרין טבריה.\n"גני איילון" כביש פוריה - טבריה טל. 04-6734949'
               }
-            </VisuallyHidden>
+            </VisuallyHidden> */}
             <ImageCloud
               ClassName={classes.imgHomePage}
               imageId="old_logo_rssqwk"
               maxWidth={imageSize.width}
               maxHeight={imageSize.height}
-              alt={'לוגו קיטריינג גבאי'}
+              alt={
+                'התיאור הבא מתאר את התמונה: קייטרינג גבאי בע"מ,\n”אוכל של אמא” - להתפנק ליהנות.\nבהשגחת הרבנות, כשר למהדרין טבריה.\n"גני איילון" כביש פוריה - טבריה טל. 04-6734949'
+              }
             />
           </>
 

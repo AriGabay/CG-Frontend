@@ -40,6 +40,8 @@ export const About = () => {
         <Grid className={`${classes.gridMap} ${classes.root}`}>
           <GoogleMaps />
         </Grid>
+        <Typography variant="p">כתובתנו :</Typography>
+        <Typography variant="p">רחוב המברג 10, טבריה</Typography>
       </Grid>
     </Fragment>
   );

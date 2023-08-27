@@ -95,7 +95,11 @@ export const Cart = ({
       open={Boolean(anchorEl)}
       onClose={handleClose}
     >
-      <IconButton edge="start" onClick={handleClose}>
+      <IconButton
+        style={{ marginRight: '1rem' }}
+        edge="start"
+        onClick={handleClose}
+      >
         <CloseOutlined />
       </IconButton>
       {cartComp && cartComp.length ? (
