@@ -125,6 +125,23 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: '0 !important',
     },
   },
+  customRipple: {
+    '& .MuiTouchRipple-root span': {
+      border: '1px solid black',
+      backgroundColor: 'transparent !important',
+      height: 'unset !important',
+      right: '0 !important',
+      left: '0 !important',
+      top: '0 !important',
+      bottom: '0 !important',
+      animationTimingFunction: 'unset !important',
+      animationName: 'unset !important',
+      opacity: 'unset !important',
+    },
+    '& .MuiTouchRipple-child': {
+      borderRadius: 'unset !important',
+    },
+  },
 }));
 
 const style = {
@@ -263,7 +280,6 @@ export const AppHeader = () => {
                 </Typography>
               </NavLink>
               <Button
-                disableFocusRipple={true}
                 tabIndex={0}
                 aria-label="עגלת קניות"
                 aria-haspopup="true"
@@ -276,13 +292,12 @@ export const AppHeader = () => {
                 }}
                 sx={{ color: 'black' }}
                 color="secondary"
-                classes={{
-                  root: { ...classes.ColorNavLink, ...classes.ButtonCart },
-                }}
+                className={classes.customRipple}
                 startIcon={
                   <ShakeRotate
                     style={{ fontSize: '0px', marginLeft: '8px' }}
                     active={true}
+                    trigger=":hover, :focus"
                   >
                     <span
                       style={{
@@ -291,15 +306,7 @@ export const AppHeader = () => {
                         justifyContent: 'center',
                       }}
                     >
-                      <ShoppingCartOutlinedIcon
-                        classes={{
-                          root: {
-                            ...classes.ColorNavLink,
-                            ...classes.startIcon,
-                          },
-                        }}
-                        style={{ marginLeft: '5px' }}
-                      />
+                      <ShoppingCartOutlinedIcon style={{ marginLeft: '5px' }} />
                       <Typography className={classes.ColorNavLink}>
                         עגלת קניות
                       </Typography>
