@@ -345,16 +345,16 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
           <Controls.Button
             type="submit"
             text="להזמנה"
-            style={{ color: 'black', display: 'none' }}
+            style={{ color: 'white' }}
             onClick={(event) => handleSubmit(event)}
           />
-          <Typography style={{ fontSize: '1.5rem' }} variant="p">
+          {/* <Typography style={{ fontSize: '1.5rem' }} variant="p">
             האתר סגור כרגע להזמנות.
           </Typography>
           <br />
           <Typography style={{ fontSize: '1.5rem' }} variant="p">
             להזמנות נא להתקשר : 04-6734949
-          </Typography>
+          </Typography> */}
         </Grid>
         <div style={{ marginBottom: 20 }}>
           <BackButton text="חזור" to="/"></BackButton>
