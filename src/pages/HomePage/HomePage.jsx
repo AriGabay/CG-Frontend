@@ -92,7 +92,7 @@ export const HomePage = () => {
     <Grid mt={2} className={classes.root}>
       <Helmet>
         <title>קייטרינג גבאי - דף בית</title>
-        <meta name="home-page" content="menu and logo" />
+        <meta name="home-page" content="homePage" />
       </Helmet>
       <Grid className={classes.imageContainer} tabIndex={0}>
         <Typography
@@ -105,7 +105,7 @@ export const HomePage = () => {
           דף בית
         </Typography>
         <Typography classes={{ root: classes.textImageHomePage }} variant="h7">
-          יום שישי פתוחים החל מהשעה 7:00-14:30
+          יום שישי פתוחים החל מהשעה 7:00-13:00
         </Typography>
         <Grid mt={3} className={classes.GridMenuButton}>
           {isMenuEnablesLoaded && menuEnables['weekend'] && (
