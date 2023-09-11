@@ -49,7 +49,7 @@ export const AccessibilityAnnouncement = () => {
     <>
       <Helmet>
         <title>Catering Gabay - Accessibility Announcement</title>
-        <mete
+        <meta
           name="accessibility-announcement"
           content="AccessibilityAnnouncement"
         />

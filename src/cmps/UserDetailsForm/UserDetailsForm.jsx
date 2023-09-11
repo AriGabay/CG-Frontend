@@ -47,9 +47,9 @@ const pickupItems = [
   { id: '12:00', title: '12:00' },
   { id: '12:30', title: '12:30' },
   { id: '13:00', title: '13:00' },
-  { id: '13:30', title: '13:30' },
-  { id: '14:00', title: '14:00' },
-  { id: '14:15', title: '14:15' },
+  // { id: '13:30', title: '13:30' },
+  // { id: '14:00', title: '14:00' },
+  // { id: '14:15', title: '14:15' },
 ];
 
 const styles = (theme) => ({

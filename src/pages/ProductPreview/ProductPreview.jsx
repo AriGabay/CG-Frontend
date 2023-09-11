@@ -108,7 +108,7 @@ export const ProductPreview = () => {
     <Fragment>
       <Helmet>
         <title>קייטרינג גבאי - מוצר</title>
-        <mete name="products-preview" content="products preview" />
+        <meta name="products-preview" content="products preview" />
       </Helmet>
       <Grid className={classes.Grid} container>
         <Grid item mt={2} lg={6} md={6} sm={12}>

@@ -3,6 +3,7 @@ import { TextField, Typography, Grid, Button } from '@mui/material';
 import { authService } from '../../services/authService';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
+import { Helmet } from 'react-helmet';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -42,30 +43,35 @@ export const LoginPage = () => {
   };
 
   return (
-    <Grid className={classes.grid}>
-      <form className={classes.root}>
-        <Typography className={classes.marginBottom}>התחברות</Typography>
-        <TextField
-          className={classes.marginBottom}
-          label="שם משתמש"
-          name="userName"
-          onChange={(event) => handelChange(event)}
-        ></TextField>
-        <TextField
-          className={classes.marginBottom}
-          label="סיסמה"
-          type="password"
-          name="password"
-          onChange={(event) => handelChange(event)}
-        ></TextField>
-        <Button
-          type="submit"
-          onSubmit={(event) => login(event)}
-          onClick={(event) => login(event)}
-        >
-          התחבר
-        </Button>
-      </form>
-    </Grid>
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex" />
+      </Helmet>
+      <Grid className={classes.grid}>
+        <form className={classes.root}>
+          <Typography className={classes.marginBottom}>התחברות</Typography>
+          <TextField
+            className={classes.marginBottom}
+            label="שם משתמש"
+            name="userName"
+            onChange={(event) => handelChange(event)}
+          ></TextField>
+          <TextField
+            className={classes.marginBottom}
+            label="סיסמה"
+            type="password"
+            name="password"
+            onChange={(event) => handelChange(event)}
+          ></TextField>
+          <Button
+            type="submit"
+            onSubmit={(event) => login(event)}
+            onClick={(event) => login(event)}
+          >
+            התחבר
+          </Button>
+        </form>
+      </Grid>
+    </>
   );
 };

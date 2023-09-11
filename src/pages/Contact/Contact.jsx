@@ -8,7 +8,7 @@ export const Contact = () => {
     <Fragment>
       <Helmet>
         <title>Catering Gabay - Content</title>
-        <mete name="content" content="content" />
+        <meta name="content" content="content" />
       </Helmet>
       <Grid
         display="flex"
