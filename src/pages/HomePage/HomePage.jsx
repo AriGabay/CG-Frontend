@@ -105,7 +105,7 @@ export const HomePage = () => {
           דף בית
         </Typography>
         <Typography classes={{ root: classes.textImageHomePage }} variant="h7">
-          יום שישי פתוחים החל מהשעה 7:00-13:00
+          יום שישי פתוחים החל מהשעה 7:00-14:30
         </Typography>
         <Grid mt={3} className={classes.GridMenuButton}>
           {isMenuEnablesLoaded && menuEnables['weekend'] && (
