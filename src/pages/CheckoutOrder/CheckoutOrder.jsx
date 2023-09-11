@@ -72,7 +72,7 @@ export const CheckoutOrder = () => {
     <Fragment>
       <Helmet>
         <title>Catering Gabay - Checkout</title>
-        <meta name="checkout" content="checkout" />
+        <meta name="robots" content="noindex" />
       </Helmet>
       <Grid mt={6} className={classes.root}>
         <Grid item sm={6} style={{ width: '100%' }}>
