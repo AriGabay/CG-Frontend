@@ -93,7 +93,7 @@ export const HomePage = () => {
       <Helmet>
         <title>קייטרינג גבאי - דף בית</title>
         <meta name="home-page" content="homePage" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="all" />
       </Helmet>
       <Grid className={classes.imageContainer} tabIndex={0}>
         <Typography
