@@ -26,7 +26,7 @@ export const About = () => {
       <Helmet>
         <title>Catering Gabay - About</title>
         <meta name="about" content="about" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="all" />
       </Helmet>
       <Grid classes={{ root: classes.root }}>
         <Grid classes={{ root: classes.root }}>

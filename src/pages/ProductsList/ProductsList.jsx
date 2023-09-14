@@ -129,7 +129,7 @@ export const ProductsList = () => {
       <Helmet>
         <title>קייטרינג גבאי - מוצרים</title>
         <meta name="products-list" content="products list" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="all" />
       </Helmet>
       <Grid className={classes.flexCenter} flexDirection="column">
         {categoryName && (

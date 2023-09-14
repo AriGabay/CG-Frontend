@@ -9,7 +9,7 @@ export const Contact = () => {
       <Helmet>
         <title>Catering Gabay - Contact</title>
         <meta name="contact" content="contact" />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="all" />
       </Helmet>
       <Grid
         display="flex"
