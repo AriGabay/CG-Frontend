@@ -91,6 +91,7 @@ export const Menu = ({ menuType }) => {
       <Helmet>
         <title>קייטרינג גבאי - תפריט</title>
         <meta name="menu-list" content="menu list" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Grid className={flexCenter}>
         {titlePage && (

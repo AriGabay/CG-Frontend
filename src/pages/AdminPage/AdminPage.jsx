@@ -49,6 +49,7 @@ export const AdminPage = () => {
     <>
       <Helmet>
         <meta name="robots" content="noindex" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       {Object.keys(userAuth).length && (
         <Grid mt={2} mr={2}>

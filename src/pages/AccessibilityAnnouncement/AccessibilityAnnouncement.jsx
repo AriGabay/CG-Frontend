@@ -53,6 +53,7 @@ export const AccessibilityAnnouncement = () => {
           name="accessibility-announcement"
           content="AccessibilityAnnouncement"
         />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Grid className={(classes.root, classes.textContainer)}>
         <Typography

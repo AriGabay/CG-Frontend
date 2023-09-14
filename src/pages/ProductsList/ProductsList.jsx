@@ -129,6 +129,7 @@ export const ProductsList = () => {
       <Helmet>
         <title>קייטרינג גבאי - מוצרים</title>
         <meta name="products-list" content="products list" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Grid className={classes.flexCenter} flexDirection="column">
         {categoryName && (

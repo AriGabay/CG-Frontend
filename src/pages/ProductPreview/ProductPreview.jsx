@@ -109,6 +109,7 @@ export const ProductPreview = () => {
       <Helmet>
         <title>קייטרינג גבאי - מוצר</title>
         <meta name="products-preview" content="products preview" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Grid className={classes.Grid} container>
         <Grid item mt={2} lg={6} md={6} sm={12}>
