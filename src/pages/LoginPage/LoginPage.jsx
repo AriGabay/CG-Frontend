@@ -46,6 +46,7 @@ export const LoginPage = () => {
     <>
       <Helmet>
         <meta name="robots" content="noindex" />
+        <meta name="robots" content="index, follow" />
       </Helmet>
       <Grid className={classes.grid}>
         <form className={classes.root}>
