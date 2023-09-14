@@ -90,11 +90,6 @@ jobs:
           app_location: '/' # App source code path
           api_location: '' # Api source code path - optional
           output_location: 'build' # Built app content directory - optional
-      - name: Merge PR into main
-        run: |
-          git checkout main
-          git merge --no-ff ${{ github.event.pull_request.head.ref }}
-          git push origin main
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
