@@ -10,6 +10,7 @@ import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles({
   gridMenu: {
@@ -36,17 +37,29 @@ const useStyles = makeStyles({
 });
 export const Menu = ({ menuType }) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { flexCenter, gridMenu } = useStyles();
   const { categories } = useSelector((state) => state);
   const [titlePage, setTitlePage] = useState(null);
   const [menuEnables, setMenuEnables] = useState({});
 
   const checkMenuEnables = useCallback(async () => {
+    let isEnable = false;
     const menus = await isMenuEnableService.getAllMenuEnables();
-    menus.forEach((menu) => {
-      const menuType = menu.menuType;
-      setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
-    });
+    const location = window.location.href;
+    await Promise.all(
+      menus.map(async (menu) => {
+        const menuType = menu.menuType;
+        if (location.includes(menuType)) {
+          console.log(location, menuType);
+          isEnable = true;
+        }
+        setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
+      })
+    );
+    if (isEnable !== true) {
+      history.push('/notEnable');
+    }
   }, []);
 
   useEffect(() => {
@@ -110,6 +123,7 @@ export const Menu = ({ menuType }) => {
           contnentLineOne={'הזמנות לחג הפסח מתבצעות בכפולות של חמש מנות.'}
           contnentLineTow={'שיהיה חג שמח וכשר'}
           type="pesach"
+          withCloseBtn={true}
         />
       ) : null}
       <Grid className={gridMenu}>

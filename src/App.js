@@ -15,6 +15,8 @@ import getCustomTheme from './hooks/getCustomTheme';
 import Loadable from 'react-loadable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AccessibilityAnnouncement } from './pages/AccessibilityAnnouncement';
+import { NotFound } from './pages/NotFound';
+import { NotEnable } from './pages/NotEnable';
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
@@ -54,6 +56,11 @@ function App() {
         <BrowserRouter>
           <AppHeader />
           <div className="App">
+            <Route exact component={HomePage} path="/" />
+            <Route path="/404">{<NotFound />}</Route>
+            <Route path="/notEnable">
+              <NotEnable></NotEnable>
+            </Route>
             <Route path="/menu/weekend">
               <Menu menuType="weekend" />
             </Route>
@@ -83,7 +90,7 @@ function App() {
               component={AccessibilityAnnouncement}
               path="/AccessibilityAnnouncement"
             />
-            <Route exact component={HomePage} path="/" />
+
             <SimpleSnackbar></SimpleSnackbar>
           </div>
         </BrowserRouter>

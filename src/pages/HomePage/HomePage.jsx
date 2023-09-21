@@ -77,6 +77,7 @@ export const HomePage = () => {
 
   const checkMenuEnables = useCallback(async () => {
     const menus = await isMenuEnableService.getAllMenuEnables();
+    if (!menus || !menus.length) return;
     menus.forEach((menu) => {
       const menuType = menu.menuType;
       setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
