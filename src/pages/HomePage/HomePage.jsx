@@ -152,8 +152,8 @@ export const HomePage = () => {
 
           {isMenuEnablesLoaded && menuEnables['message_home_page'] && (
             <BasicModal
-              contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.`}
-              contnentLineTow={' '}
+              contnentLineOne={`האתר סגור להזמנות חדשות, עקב המצב הבטחוני.`}
+              contnentLineTow={'הקייטרינג פתוח בימי שישי מהשעה 7:00 עד 14:00'}
               lockScreen={true}
               type="pesach"
               withCloseBtn={
