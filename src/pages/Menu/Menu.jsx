@@ -11,6 +11,8 @@ import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import { useHistory } from 'react-router-dom';
+import { getDay, setHours, setMinutes } from 'date-fns';
+import { utcToZonedTime } from 'date-fns-tz';
 
 const useStyles = makeStyles({
   gridMenu: {
@@ -65,6 +67,36 @@ export const Menu = ({ menuType }) => {
   useEffect(() => {
     checkMenuEnables();
   }, []);
+  const isThursdayAndTime = () => {
+    const now = new Date();
+    const timeZone = 'Asia/Jerusalem';
+    const nowInIsrael = utcToZonedTime(now, timeZone);
+    const day = getDay(nowInIsrael);
+
+    if (day === 4 && isTimeAfter(nowInIsrael, 19, 0)) {
+      return true;
+    }
+
+    if (day >= 5) {
+      return true;
+    }
+
+    if (day === 0 && isTimeBefore(nowInIsrael, 5, 0)) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const isTimeAfter = (date, hours, minutes) => {
+    const targetTime = setMinutes(setHours(date, hours), minutes);
+    return date >= targetTime;
+  };
+
+  const isTimeBefore = (date, hours, minutes) => {
+    const targetTime = setMinutes(setHours(date, hours), minutes);
+    return date < targetTime;
+  };
 
   const getCategoriesMenuCallBack = useCallback(async () => {
     if (!categories.length) {
@@ -140,6 +172,19 @@ export const Menu = ({ menuType }) => {
           contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.
               `}
           contnentLineTow={' '}
+          lockScreen={true}
+          type="pesach"
+          withCloseBtn={
+            menuEnables['withCloseBtn'] ? menuEnables['withCloseBtn'] : false
+          }
+        />
+      )}
+      {isThursdayAndTime() && (
+        <BasicModal
+          contnentLineOne={`האתר סגור להזמנות חדשות, עד יום שבת בשעה 8:00.`}
+          contnentLineTow={`הקייטרינג פתוח בימי שישי מהשעה 7:00 עד 14:00.
+              מספר טלפון לפרטים 04-6734949
+              `}
           lockScreen={true}
           type="pesach"
           withCloseBtn={
