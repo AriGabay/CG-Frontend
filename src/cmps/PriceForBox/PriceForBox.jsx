@@ -29,6 +29,7 @@ const useStyles = makeStyles({
 
 export const PriceForBox = ({ product, setProductOrder }) => {
   const [priceToShow, setPriceToShow] = useState(0);
+  const [label, setLabel] = useState('גרם');
   const shekel = '₪';
   const classes = useStyles();
   const updateOrder = (price) => {
@@ -40,6 +41,9 @@ export const PriceForBox = ({ product, setProductOrder }) => {
     });
   };
   useEffect(() => {
+    if (product.categoryId === 1 || product.categoryId == '1') {
+      setLabel('ליטר');
+    }
     return () => {
       setPriceToShow(0);
     };
@@ -57,7 +61,11 @@ export const PriceForBox = ({ product, setProductOrder }) => {
             }}
           >
             <Grid className={classes.typography}>
-              <Typography>קופסה בגודל של {price.size} גרם</Typography>
+              {label.length && (
+                <Typography>
+                  קופסה בגודל של {price.size} {label}
+                </Typography>
+              )}
               <Typography>|</Typography>
               <Typography>
                 מחיר: {price.amount}
