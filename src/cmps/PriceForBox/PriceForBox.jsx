@@ -42,7 +42,7 @@ export const PriceForBox = ({ product, setProductOrder }) => {
   };
   useEffect(() => {
     if (product.categoryId === 1 || product.categoryId == '1') {
-      setLabel('ליטר');
+      setLabel('מליליטר');
     }
     return () => {
       setPriceToShow(0);
