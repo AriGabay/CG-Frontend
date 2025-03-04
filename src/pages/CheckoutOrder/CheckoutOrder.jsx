@@ -107,7 +107,12 @@ export const CheckoutOrder = () => {
                       <span>{product.sizeToOrder} יחידות </span>
                     )}
                     {product.Price.priceType === 'box' && (
-                      <span>קופסה בגודל {product.sizeToOrder} גרם</span>
+                      <span>
+                        קופסה בגודל {product.sizeToOrder}{' '}
+                        {product.categoryId === 1 || product.categoryId === '1'
+                          ? 'מליליטר'
+                          : 'גרם'}
+                      </span>
                     )}
                   </Typography>
                   <Typography>
