@@ -166,13 +166,20 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           action: 'close'
-  dependabot:
-    needs: [build_and_deploy_job]
+
+  dependabot_update:
     runs-on: ubuntu-latest
     steps:
-      - name: Enable Dependabot auto-merge
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
+      - uses: actions/checkout@v3
+      - name: Auto-update dependencies
+        run: |
+          npm install -g npm-check-updates
+          ncu -u
+          npm install
+      - name: Commit changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add package.json package-lock.json || true
+          git commit -m "Auto-update dependencies" || echo "No changes to commit"
+          git push
