@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { getDay, setHours, setMinutes } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-import { PdfViewerPopup } from '../../cmps/PdfViewerPopup';
+// import { PdfViewerPopup } from '../../cmps/PdfViewerPopup';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -159,7 +159,7 @@ export const HomePage = () => {
               text="לתפריט פסח"
             />
           )}
-          
+
           {isMenuEnablesLoaded && menuEnables['tishray'] && (
             <BackButton
               classProp="menuButton"
