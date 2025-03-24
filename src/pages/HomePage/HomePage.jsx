@@ -152,12 +152,12 @@ export const HomePage = () => {
             />
           )}
           {isMenuEnablesLoaded && menuEnables['pesach'] && (
-            <PdfViewerPopup></PdfViewerPopup>
-            // <BackButton
-            //   classProp="menuButton"
-            //   to="/menu/pesach"
-            //   text="לתפריט פסח"
-            // />
+            // <PdfViewerPopup></PdfViewerPopup> // הצגת תפריט פסח 
+            <BackButton
+              classProp="menuButton"
+              to="/menu/pesach"
+              text="לתפריט פסח"
+            />
           )}
           {isMenuEnablesLoaded && menuEnables['tishray'] && (
             <BackButton
