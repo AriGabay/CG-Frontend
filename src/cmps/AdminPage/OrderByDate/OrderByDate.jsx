@@ -15,6 +15,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker as DatePickerMui } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import he from 'date-fns/locale/he';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,6 +66,7 @@ export const OrderByDate = () => {
     }
     setTotalProducts({ ...totalProducts });
     setOrders([...orders]);
+    exportOrdersWithSummary();
     orders.forEach((order) => {
       setSum((prev) => {
         return prev + order.totalPrice;
@@ -86,6 +89,113 @@ export const OrderByDate = () => {
     if (word.includes('unit')) return word.replace('unit', 'יחידות');
     if (word.includes('weight')) return word.replace('weight', 'גרם');
   };
+
+  // const exportOrdersToExcel = () => {
+  //   if (!orders || !orders.length) return;
+  
+  //   const allOrders = [];
+  
+  //   orders.forEach((order) => {
+  //     const baseInfo = {
+  //       'מספר הזמנה': order.id,
+  //       'שם פרטי': order.firstName,
+  //       'שם משפחה': order.lastName,
+  //       'ת.ז': order.idPersonal,
+  //       'עיר': order.city,
+  //       'נייד': order.mobile,
+  //       'נייד נוסף': order.mobileTow,
+  //       'שעת איסוף': order.pickup,
+  //       'תאריך איסוף': order.pickUpDate,
+  //       'תאריך ביצוע ההזמנה': formatDate(order.time),
+  //       'סכום כולל': order.totalPrice,
+  //     };
+  
+  //     if (order.products && order.products.length) {
+  //       order.products.forEach((product) => {
+  //         allOrders.push({
+  //           ...baseInfo,
+  //           'שם מוצר': product.displayName,
+  //           'כמות': product.sizeToOrder,
+  //           'יחידת מידה': trans(product.Price.priceType),
+  //           'מחיר ליחידה': product.pricePerSize,
+  //         });
+  //       });
+  //     } else {
+  //       allOrders.push(baseInfo);
+  //     }
+  //   });
+  
+  //   const worksheet = XLSX.utils.json_to_sheet(allOrders);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, 'הזמנות');
+  
+  //   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  //   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  //   saveAs(blob, `ריכוז-הזמנות-${new Date().toLocaleDateString('he-IL')}.xlsx`);
+  // };
+  
+  const exportOrdersWithSummary = () => {
+    if (!orders || !orders.length) return;
+  
+    const allOrders = [];
+    const productSummaryMap = {};
+  
+    orders.forEach((order) => {
+      if (order.products && order.products.length) {
+        order.products.forEach((product) => {
+          // טבלת ההזמנות
+          allOrders.push({
+            'מספר הזמנה': order.id,
+            'שם פרטי': order.firstName,
+            'שם משפחה': order.lastName,
+            'תעודת זהות': order.idPersonal,
+            'עיר': order.city,
+            'נייד': order.mobile,
+            'נייד נוסף': order.mobileTow,
+            'שעת איסוף': order.pickup,
+            'תאריך איסוף': order.pickUpDate,
+            'תאריך ביצוע ההזמנה': formatDate(order.time),
+            'כמות ללקוח': order.totalPrice,
+            'שם מוצר': product.displayName,
+            'כמות': product.sizeToOrder,
+            'יחידת מידה': trans(product.Price.priceType),
+          });
+  
+          // ריכוז
+          const key = `${product.displayName} - ${trans(product.Price.priceType)}`;
+          productSummaryMap[key] =
+            (productSummaryMap[key] || 0) + Number(product.sizeToOrder);
+        });
+      }
+    });
+  
+    // טבלת ריכוז
+    const productSummary = Object.entries(productSummaryMap).map(
+      ([productNameWithUnit, totalQty]) => {
+        return {
+          'שם מוצר + יחידת מידה': productNameWithUnit,
+          'כמות כוללת': totalQty,
+        };
+      }
+    );
+  
+    // יצירת גיליון אחד עם שני טבלאות — השנייה תתחיל משורה 2 אחרי סוף הראשונה + רווח
+    const worksheet = XLSX.utils.json_to_sheet(allOrders);
+  
+    // הכנסת טבלת הריכוז בעמודה U
+    XLSX.utils.sheet_add_json(worksheet, productSummary, {
+      origin: 'U1', // עמודה U, שורה 1
+      skipHeader: false,
+    });
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'הזמנות + ריכוז');
+  
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, `הזמנות_וריכוז_${new Date().toLocaleDateString('he-IL')}.xlsx`);
+  };
+
   return (
     <Grid>
       <Grid>
@@ -216,6 +326,15 @@ export const OrderByDate = () => {
             </Grid>
           );
         })}
+        <Button
+  onClick={exportOrdersWithSummary}
+  variant="contained"
+  color="secondary"
+  style={{ marginRight: 10 }}
+>
+  הורד ריכוז הזמנות
+</Button>
+
     </Grid>
   );
 };

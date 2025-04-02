@@ -23,6 +23,7 @@
     "date-fns": "^2.22.1",
     "date-fns-tz": "^2.0.0",
     "dotenv": "^16.0.0",
+    "file-saver": "^2.0.5",
     "google-map-react": "^2.1.10",
     "jss-rtl": "^0.3.0",
     "lodash": "^4.17.21",
@@ -38,7 +39,8 @@
     "stylis": "^4.3.0",
     "stylis-plugin-rtl": "^2.1.1",
     "web-vitals": "^1.1.1",
-    "webpack": "^5.88.1"
+    "webpack": "^5.88.1",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
