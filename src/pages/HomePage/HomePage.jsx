@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet';
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { getDay, setHours, setMinutes } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-// import { PdfViewerPopup } from '../../cmps/PdfViewerPopup';
+import { PdfViewerPopup } from '../../cmps/PdfViewerPopup';
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -152,12 +152,12 @@ export const HomePage = () => {
             />
           )}
           {isMenuEnablesLoaded && menuEnables['pesach'] && (
-            // <PdfViewerPopup></PdfViewerPopup> // הצגת תפריט פסח 
-            <BackButton
-              classProp="menuButton"
-              to="/menu/pesach"
-              text="לתפריט פסח"
-            />
+            <PdfViewerPopup></PdfViewerPopup> // הצגת תפריט פסח 
+            // <BackButton
+            //   classProp="menuButton"
+            //   to="/menu/pesach"
+            //   text="לתפריט פסח"
+            // />
           )}
 
           {isMenuEnablesLoaded && menuEnables['tishray'] && (
