@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import pdfFile from './Menu_Peacha_2024.pdf';
+import pdfFile from './Menu_Peacha_2025.pdf';
 
 const customTheme = getCustomTheme();
 
