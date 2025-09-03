@@ -76,11 +76,11 @@ export const PdfViewerPopup = () => {
         fullWidth
       >
         <DialogTitle
-          aria-label={`תפריט פסח 2025,
+          aria-label={`תפריט ראש השנה,
           שימו לב שבאפשרותכם להוריד את התפריט בכפתור ההורדה בצד ימין למעלה`}
           id="pdf-dialog-title"
         >
-          {`תפריט פסח 2025,
+          {`תפריט ראש השנה,
           שימו לב שבאפשרותכם להוריד את התפריט בכפתור ההורדה בצד ימין למעלה`}
         </DialogTitle>
 
@@ -91,7 +91,7 @@ export const PdfViewerPopup = () => {
               width="100%"
               height="500px"
               title="Menu_Peacha_2025.pdf"
-              aria-label="תפריט פסח 2025 קובץ pdf"
+              aria-label="תפריט ראש השנה קובץ pdf"
             ></iframe>
           )}
         </DialogContent>
