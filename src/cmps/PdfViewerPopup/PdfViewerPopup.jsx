@@ -66,7 +66,7 @@ export const PdfViewerPopup = () => {
         aria-label={'show more'}
         onClick={handleClickOpen}
       >
-        צפה בתפריט פסח
+        צפה בתפריט ראש השנה
       </Button>
       <Dialog
         open={open}
