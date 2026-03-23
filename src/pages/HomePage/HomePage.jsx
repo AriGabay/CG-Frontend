@@ -98,7 +98,7 @@ export const HomePage = () => {
     const nowInIsrael = utcToZonedTime(now, timeZone);
     const day = getDay(nowInIsrael);
 
-    if (day === 4 && isTimeAfter(nowInIsrael, 19, 0)) {
+    if (day === 4 && isTimeAfter(nowInIsrael, 18, 0)) {
       return true;
     }
 

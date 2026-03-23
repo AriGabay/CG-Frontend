@@ -19,6 +19,13 @@ const useStyles = makeStyles({
   },
 });
 
+const isSpecialDate = (date) => {
+  return (
+    (date.getDate() === 31 && date.getMonth() === 2 && date.getFullYear() === 2026) || // 31.3.2026
+    (date.getDate() === 1 && date.getMonth() === 3 && date.getFullYear() === 2026)    // 1.4.2026
+  );
+};
+
 export default function DatePicker(props) {
   let { name, label, value, onChange, required = false, error } = props;
   const [selectedDate] = useState(value);
@@ -31,7 +38,7 @@ export default function DatePicker(props) {
   const dateToStr = (date) => String(date).slice(0, 16);
 
   const daysPreview = ({ day, outsideCurrentMonth, ...other }) => {
-    const isSelected = isFriday(day);
+    const isSelected = isFriday(day) || isSpecialDate(day);
     return (
       <PickersDay
         {...other}
@@ -55,7 +62,7 @@ export default function DatePicker(props) {
           setIsOpen(true);
         }
       }}
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={() => setIsOpen(true)}
     >
       <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he}>
         <DatePickerMui
@@ -92,11 +99,12 @@ export default function DatePicker(props) {
               style={{ cursor: 'pointer' }}
             />
           )}
+          onClose={() => setIsOpen(false)}
           onChange={(day) => {
             setIsOpen(false);
             onChange(convertToDefEventPara(name, dateToStr(day)));
           }}
-          shouldDisableDate={(date) => date.getDay() !== 5}
+          shouldDisableDate={(date) => date.getDay() !== 5 && !isSpecialDate(date)}
           open={isOpen}
         />
         {error?.pickUpDate && (
