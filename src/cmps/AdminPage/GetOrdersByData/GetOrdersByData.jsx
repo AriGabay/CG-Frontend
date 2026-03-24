@@ -1,10 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePickerComp from '@mui/lab/DatePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker as DatePickerComp } from '@mui/x-date-pickers/DatePicker';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import { Button, Typography } from '@mui/material';
 import { ordersService } from '../../../services/ordersService';
 import { makeStyles } from '@mui/styles';
@@ -60,7 +59,7 @@ export const GetOrdersByData = () => {
     }
   };
   const displayDate = (dateObj) => {
-    const month = dateObj.getMonth();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
     const day = String(dateObj.getDate()).padStart(2, '0');
     const year = dateObj.getFullYear();
     return day + '.' + month + '.' + year;
@@ -71,13 +70,10 @@ export const GetOrdersByData = () => {
         <Typography>תאריך התחלתי</Typography>
         <DatePickerComp
           views={['year', 'month', 'day']}
-          variant="inline"
-          inputVariant="outlined"
           label="תאריך התחלתי"
           name="startDay"
           value={startDay}
-          required={true}
-          renderInput={(params) => <TextField {...params} />}
+          slotProps={{ textField: { size: 'small' } }}
           onChange={(date) => {
             setStartDay(date);
           }}
@@ -85,13 +81,10 @@ export const GetOrdersByData = () => {
         <Typography>תאריך סופי</Typography>
         <DatePickerComp
           views={['year', 'month', 'day']}
-          variant="inline"
-          inputVariant="outlined"
           label="תאריך סופי"
           name="endDay"
           value={endDay}
-          required={true}
-          renderInput={(params) => <TextField {...params} />}
+          slotProps={{ textField: { size: 'small' } }}
           onChange={(date) => {
             setEndDay(date);
           }}

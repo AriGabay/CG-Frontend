@@ -458,7 +458,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  TextField,
   Typography,
 } from '@mui/material';
 import { ordersService } from '../../../services/ordersService';
@@ -470,6 +469,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import he from 'date-fns/locale/he';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+
+const padDig = (dig) =>
+  dig.toString().length >= 2 ? dig : dig.toString().padStart(2, '0');
+
+const todayFormatted = () => {
+  const d = new Date();
+  return `${padDig(d.getDate())}/${padDig(d.getMonth() + 1)}/${d.getFullYear()}`;
+};
 
 const useStyles = makeStyles((theme) => ({
   root: { width: '100%' },
@@ -489,14 +496,11 @@ const useStyles = makeStyles((theme) => ({
 
 export const OrderByDate = () => {
   const classes = useStyles();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(todayFormatted());
   const [datePickerValue, setDatePickerValue] = useState(new Date());
   const [orders, setOrders] = useState([]);
   const [totalProducts, setTotalProducts] = useState({});
   const [sum, setSum] = useState(0);
-
-  const padDig = (dig) =>
-    dig.toString().length >= 2 ? dig : dig.toString().padStart(2, '0');
 
   const formatDate = (dateVal) => {
     const d = new Date(dateVal);
@@ -654,13 +658,11 @@ export const OrderByDate = () => {
             label="תאריך"
             name="date"
             value={datePickerValue}
-            renderInput={(params) => <TextField {...params} />}
+            slotProps={{ textField: { size: 'small' } }}
             onChange={(d) => {
               if (!d) return;
               setDate(
-                `${padDig(d.getDate())}/${padDig(
-                  d.getMonth() < 12 ? d.getMonth() + 1 : d.getMonth()
-                )}/${d.getFullYear()}`
+                `${padDig(d.getDate())}/${padDig(d.getMonth() + 1)}/${d.getFullYear()}`
               );
               setDatePickerValue(d);
             }}
