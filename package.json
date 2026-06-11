@@ -18,7 +18,7 @@
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^12.8.3",
-    "axios": ">=1.6.0",
+    "axios": "^1.17.0",
     "cloudinary-react": "^1.7.0",
     "date-fns": "^2.22.1",
     "date-fns-tz": "^2.0.0",
@@ -27,7 +27,7 @@
     "file-saver": "^2.0.5",
     "google-map-react": "^2.1.10",
     "jss-rtl": "^0.3.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
@@ -77,8 +77,26 @@
     "webpack-dev-server": "4.15.2",
     "@svgr/webpack": "6.5.1",
     "@svgr/plugin-svgo": "6.5.1",
-    "svgo": "2.8.0",
+    "svgo": "2.8.1",
     "css-select": "4.3.0",
-    "nth-check": "2.1.1"
+    "nth-check": "2.1.1",
+    "@babel/plugin-transform-modules-systemjs": "7.29.7",
+    "@tootallnate/once": "3.0.1",
+    "brace-expansion": "2.1.1",
+    "fast-uri": "4.0.0",
+    "follow-redirects": "1.16.0",
+    "node-forge": "1.4.0",
+    "picomatch": "4.0.4",
+    "postcss": "8.5.15",
+    "qs": "6.15.2",
+    "serialize-javascript": "7.0.5",
+    "shell-quote": "1.8.4",
+    "tmp": "0.2.7",
+    "underscore": "1.13.8",
+    "uuid": "11.1.1",
+    "ws": "8.21.0",
+    "express": {
+      "path-to-regexp": "0.1.13"
+    }
   }
 }
