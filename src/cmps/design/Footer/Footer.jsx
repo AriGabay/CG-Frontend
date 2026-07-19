@@ -59,6 +59,16 @@ const useStyles = makeStyles({
   link: {
     color: '#BEAD98',
     textDecoration: 'none',
+    // 15px text alone renders a ~24px-tall link: it clears the WCAG 2.2 24px
+    // floor but not the 44px touch norm. Below 640px the footer stacks to a
+    // single column and these become the primary touch targets, so lift them
+    // there only — desktop keeps the designed rhythm untouched. inline-flex
+    // (not flex) keeps the box hugging the text so the focus ring is unchanged.
+    '@media (max-width: 640px)': {
+      display: 'inline-flex',
+      alignItems: 'center',
+      minHeight: 44,
+    },
     '&:hover': {
       color: '#fff',
       textDecoration: 'underline',
@@ -77,7 +87,10 @@ const useStyles = makeStyles({
     padding: '16px 22px',
     textAlign: 'center',
     fontSize: 13,
-    color: '#9A8974',
+    // #9A8974 on the #43312A footer was 3.63:1 — a fail for 13px body text,
+    // which needs 4.5:1. #BEAD98 is 5.62:1 and is already the colour used by
+    // the footer's blurb, links and details, so the palette stays at one tone.
+    color: '#BEAD98',
   },
 });
 

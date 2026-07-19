@@ -60,14 +60,18 @@ const useStyles = makeStyles({
     color: '#fff',
     borderRadius: radii.pill,
     padding: '15px 36px',
+    minHeight: 44,
     fontFamily: fonts.body,
     fontWeight: 800,
     fontSize: 18,
     textDecoration: 'none',
     boxShadow: shadows.btnGreen,
     transition: 'background .15s, transform .15s',
+    // greenDeep (#5F8262) is only 4.32:1 against white — below the 4.5:1 this
+    // 18px/800 label needs (it is under the 18.66px "large text" threshold).
+    // greenInk is 5.92:1 and still reads as a darker press of the same green.
     '&:hover': {
-      background: colors.greenDeep,
+      background: colors.greenInk,
       color: '#fff',
       transform: 'translateY(-2px)',
     },
@@ -93,9 +97,9 @@ export const NotEnable = () => {
             🗓️
           </div>
           <h1 className={classes.title}>תפריט לא פעיל</h1>
-          <h2 className={classes.subtitle}>
+          <p className={classes.subtitle}>
             אנו מצטערים, התפריט שאתה מחפש אינו פעיל כרגע.
-          </h2>
+          </p>
           <Link className={classes.cta} to="/" aria-label="חזור לדף הבית">
             חזור לדף הבית
           </Link>

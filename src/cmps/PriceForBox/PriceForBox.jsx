@@ -30,6 +30,9 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     gap: 12,
     width: '100%',
+    // Floor for the 44px tap target. Inert at the current metrics (15px text +
+    // 26px padding + 3px border = 47px) — it only matters if the font changes.
+    minHeight: 44,
     border: `1.5px solid ${colors.borderInput}`,
     background: colors.surfaceAlt,
     borderRadius: radii.sm,

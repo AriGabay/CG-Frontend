@@ -34,9 +34,10 @@ const useStyles = makeStyles({
     '& > span': { order: 2 },
     '& > div > button': {
       order: 1,
-      width: 42,
-      height: 42,
-      minWidth: 42,
+      width: 44,
+      height: 44,
+      minWidth: 44,
+      minHeight: 44,
       padding: 0,
       borderRadius: '50%',
       border: `1px solid ${colors.borderInput} !important`,
@@ -55,14 +56,8 @@ const useStyles = makeStyles({
         outline: `3px solid ${colors.greenDeep}`,
         outlineOffset: 2,
       },
-      // Stretch the icon over the whole button so every pixel of the control
-      // is clickable (the icon, not the button, carries the click handler).
-      '& svg': {
-        width: '100%',
-        height: '100%',
-        padding: 9,
-        boxSizing: 'border-box',
-      },
+      // The glyph keeps its previous 22px; only the hit area around it grew.
+      '& svg': { width: 22, height: 22 },
     },
     '& > div > button:first-child': { order: 3 },
   },

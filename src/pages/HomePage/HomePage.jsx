@@ -104,6 +104,24 @@ const VALUE_PROPS = [
   },
 ];
 
+// WCAG 2.2 (2.5.8) puts the floor for a pointer target at 24x24 CSS px, and
+// 44x44 is the practical norm on touch. The links this is applied to render as
+// a single ~24px line of text, so grow the *hit area* only: 10px of padding on
+// each side of the block axis takes 24 -> 44, and the matching negative margin
+// pulls the layout back so nothing moves and no glyph changes size.
+// Deliberately block-axis (top/bottom) and symmetric, so there is nothing for
+// RTL to mirror; minWidth covers the inline axis for the short "עוד ←" link.
+// Check spacing before reusing this — the padding is real box area and would
+// otherwise steal clicks from a neighbour within 10px.
+const TAP_TARGET_44 = {
+  display: 'inline-block',
+  minWidth: 44,
+  paddingTop: 10,
+  paddingBottom: 10,
+  marginTop: -10,
+  marginBottom: -10,
+};
+
 const useStyles = makeStyles({
   page: {
     background: colors.bg,
@@ -130,6 +148,7 @@ const useStyles = makeStyles({
     fontWeight: 400,
   },
   moreLink: {
+    ...TAP_TARGET_44,
     color: colors.greenLink,
     fontWeight: 700,
     fontSize: 16,
@@ -158,7 +177,18 @@ const useStyles = makeStyles({
     padding: '16px 26px',
     fontWeight: 700,
     fontSize: 17,
-    '&:hover': { color: '#fff', filter: 'brightness(1.05)' },
+    // Deepen on hover by swapping the gradient, NOT with `filter`. A filter
+    // applies to the element as a group, so it repaints the white label too:
+    // brightness(1.05) lifted the light stop to #648466 and left the label
+    // white (it clips at 255) -> 4.16:1, and brightness(.94) darkened the
+    // stop to #59765B but also dimmed the label to #F0F0F0 -> 4.42:1. Both
+    // fail the 4.5:1 that 17px/700 normal text needs. Repainting the
+    // background leaves the label at pure #fff: greenInk is the lightest
+    // stop here, and white on it is 5.92:1.
+    '&:hover': {
+      color: '#fff',
+      background: `linear-gradient(120deg, ${colors.greenInk}, ${colors.greenDark})`,
+    },
     '&:focus-visible': {
       outline: `3px solid ${colors.text}`,
       outlineOffset: 3,
@@ -200,7 +230,11 @@ const useStyles = makeStyles({
   tileLabel: {
     position: 'relative',
     zIndex: 2,
-    color: '#33291C',
+    // The label sits at the bottom of the tile, i.e. over the *dark* end of
+    // the category gradient. #33291C hit only 4.08:1 on the darkest of them
+    // (מטוגנים, #A5835F) and this is 16px text, so AA wants 4.5:1.
+    // #211A11 reads the same near-black brown and clears 4.93:1 there.
+    color: '#211A11',
     fontWeight: 800,
     fontSize: 16,
   },
@@ -232,7 +266,11 @@ const useStyles = makeStyles({
     color: '#3A2C22',
     fontWeight: 400,
   },
-  h1Accent: { color: colors.greenDeep },
+  // greenDeep (#5F8262) only reached 3.18:1 on the dark edge of the hero
+  // gradient, and 2.47:1 where the decorative green blob drifts under the
+  // headline — below the 3:1 large-text floor. greenInk is the same family and
+  // never drops under 3.38:1 anywhere on the hero.
+  h1Accent: { color: colors.greenInk },
   heroText: {
     fontSize: 'clamp(16px, 2.4vw, 20px)',
     lineHeight: 1.55,
@@ -251,7 +289,11 @@ const useStyles = makeStyles({
     display: 'inline-flex',
     alignItems: 'center',
     gap: 9,
-    background: colors.greenDeep,
+    // At the low end of the clamp below this label is 17px — under the
+    // 18.66px+bold threshold for "large text", so it needs the full 4.5:1.
+    // White on greenDeep is only 4.32:1; `green` is the token meant for
+    // white-on-green surfaces and clears 4.52:1 at a visually identical hue.
+    background: colors.green,
     color: '#fff',
     border: 'none',
     borderRadius: radii.pill,
@@ -347,14 +389,23 @@ const useStyles = makeStyles({
     width: 220,
     height: 220,
     borderRadius: '50%',
-    background: 'rgba(255,255,255,.08)',
+    // This blob sits over the *light* end of the band gradient, and in RTL it
+    // lands squarely behind the stat column (and behind the kicker once
+    // .gb-band collapses to one column at 860px). At .08 it lifted the
+    // background to #697A92, where even pure white text is 4.38:1 — a fail no
+    // text colour could rescue. At .05 the worst spot is #64758E (white =
+    // 4.69:1) and the sheen is still visible.
+    background: 'rgba(255,255,255,.05)',
     pointerEvents: 'none',
   },
   bandKicker: {
     fontWeight: 700,
     fontSize: 15,
     letterSpacing: 1,
-    color: '#D5DEEC',
+    // 15px/700 is normal text, so it needs 4.5:1 against the lightest point of
+    // the band. The old #D5DEEC managed 3.83:1 on the plain gradient and
+    // 3.23:1 over the blob. The de-emphasis now comes from size and weight.
+    color: '#FFFFFF',
     marginBottom: 12,
     position: 'relative',
   },
@@ -368,7 +419,9 @@ const useStyles = makeStyles({
   },
   bandText: {
     fontSize: 18,
-    color: '#E3E9F2',
+    // 18px/500 is still normal text (large needs >=24px, or >=18.66px at
+    // weight >=700), so 4.26:1 from #E3E9F2 was not enough.
+    color: '#FFFFFF',
     maxWidth: 460,
     margin: '0 0 26px',
     fontWeight: 500,
@@ -388,13 +441,15 @@ const useStyles = makeStyles({
     '&:focus-visible': { outline: '3px solid #fff', outlineOffset: 3 },
   },
   bandStat: { textAlign: 'center', position: 'relative' },
-  bandStatTop: { fontSize: 15, color: '#D5DEEC', fontWeight: 600 },
+  // Both stat labels are 15px/600 = normal text, and they are the copy sitting
+  // directly under the blob, so they were the worst offenders at 3.23:1.
+  bandStatTop: { fontSize: 15, color: '#FFFFFF', fontWeight: 600 },
   bandStatNum: {
     fontFamily: fonts.display,
     fontSize: 'clamp(52px, 10vw, 76px)',
     lineHeight: 1,
   },
-  bandStatBottom: { fontSize: 15, color: '#D5DEEC', fontWeight: 600 },
+  bandStatBottom: { fontSize: 15, color: '#FFFFFF', fontWeight: 600 },
 
   /* ---------------- values / info ---------------- */
   tile: {
@@ -430,6 +485,18 @@ const useStyles = makeStyles({
     lineHeight: 1.6,
     color: colors.textSoft,
     margin: 0,
+  },
+  // The phone number is a real tap target on mobile but rendered as a plain
+  // inline link: 16px x 1.6 line-height = 25.6px tall. Same hit-area trick as
+  // the section links, plus an explicit focus ring (it was relying on the UA
+  // default, which every other control on this page overrides).
+  phoneLink: {
+    ...TAP_TARGET_44,
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 3,
+      borderRadius: 6,
+    },
   },
 
   /* ---------------- misc ---------------- */
@@ -941,7 +1008,11 @@ export const HomePage = () => {
           <div className={classes.infoCard}>
             <h3 className={classes.infoTitle}>הזמנות ובירורים</h3>
             <p className={classes.infoText}>
-              <a href={PHONE_HREF} aria-label={`חיוג לטלפון ${PHONE}`}>
+              <a
+                href={PHONE_HREF}
+                className={classes.phoneLink}
+                aria-label={`חיוג לטלפון ${PHONE}`}
+              >
                 {PHONE}
               </a>
             </p>

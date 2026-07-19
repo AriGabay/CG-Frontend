@@ -49,6 +49,21 @@ const useStyles = makeStyles({
     padding: 0,
     marginBottom: 20,
     cursor: 'pointer',
+    position: 'relative',
+    // The link box is only ~26px tall (16px text x the inherited 1.6
+    // line-height). This overlay lifts the hit area to 44px without moving the
+    // text or reflowing anything: it grows ~9px past each edge, well inside the
+    // 20px margin below and the page's 26px top padding, so it cannot swallow a
+    // click meant for a neighbouring control.
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      insetInlineStart: 0,
+      insetInlineEnd: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      height: 44,
+    },
     '&:hover': { color: colors.greenLink },
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
@@ -115,7 +130,9 @@ const useStyles = makeStyles({
   },
   chip: {
     background: colors.cream,
-    color: colors.textMuted,
+    // textMuted on cream is only 4.18:1 — an AA failure for 14px text. The
+    // kitniyot chip is the one place these two tokens meet. textSoft = 7.40:1.
+    color: colors.textSoft,
     fontWeight: 600,
     fontSize: 14,
     borderRadius: radii.pill,

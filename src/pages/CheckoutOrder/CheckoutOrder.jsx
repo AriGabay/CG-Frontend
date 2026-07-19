@@ -96,14 +96,44 @@ const useStyles = makeStyles({
   pickupLink: {
     color: colors.greenDark,
     fontWeight: 700,
+    // The phone number sat in a 22.4px line box (14px / 1.6), under the 24px
+    // floor. It stays `display: inline` on purpose: vertical padding on an
+    // inline box is hit-tested but does not touch the line box, so the
+    // paragraph does not move and the number still wraps where it always did.
+    // The negative inline margin cancels the only padding that would shift
+    // text. 22.4 -> 34.4px tall, 75 -> 87px wide. Not taken to 44px because a
+    // 44px focus ring would swallow the lines above and below, and 2.5.8
+    // exempts targets inline in a sentence anyway.
+    padding: '6px 6px',
+    margin: '0 -6px',
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 1,
+    },
   },
   // ---- summary ----
   summary: {
     padding: 26,
     position: 'sticky',
     top: 96,
+    // A sticky box taller than the viewport can never be scrolled to its end,
+    // so its last lines — here the totals — become unreachable. That happens
+    // at roughly 8 cart lines on a 900px viewport, and at 3 once text is
+    // zoomed to the 200% that WCAG 1.4.4 requires. Cap it and let it scroll
+    // internally; shorter carts are unaffected.
+    maxHeight: 'calc(100vh - 116px)',
+    overflowY: 'auto',
+    overscrollBehavior: 'contain',
+    // Chrome does not make scroll containers keyboard focusable on their own,
+    // so the aside carries tabIndex={0} (2.1.1) and needs a focus ring (2.4.7).
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 2,
+    },
     '@media (max-width: 860px)': {
       position: 'static',
+      maxHeight: 'none',
+      overflowY: 'visible',
     },
     '@media (max-width: 640px)': {
       padding: '22px 18px',
@@ -156,7 +186,9 @@ const useStyles = makeStyles({
     fontSize: 15,
     color: colors.text,
     minWidth: 64,
-    textAlign: 'left',
+    // Logical: @mui/styles is outside the emotion RTL cache, so a physical
+    // `left` is never flipped. In Hebrew RTL `end` resolves to the same edge.
+    textAlign: 'end',
     flex: 'none',
   },
   totals: {
@@ -331,7 +363,13 @@ export const CheckoutOrder = () => {
               </section>
 
               {/* ---------- order summary (left column in RTL) ---------- */}
-              <aside
+              {/* `summary` caps this card's height, so it is a scroll
+                  container for a long cart. Chrome gives a keyboard user no
+                  way to scroll it without a tab stop (axe flags exactly this
+                  as scrollable-region-focusable). The lint rule does not model
+                  scroll containers, so it is silenced for this attribute. */}
+              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+              <aside tabIndex={0}
                 className={`${classes.card} ${classes.summary}`}
                 aria-labelledby="checkout-summary-title"
               >
