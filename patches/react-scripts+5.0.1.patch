@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-scripts/config/webpack.config.js b/node_modules/react-scripts/config/webpack.config.js
+index e465d8e..84b4d94 100644
+--- a/node_modules/react-scripts/config/webpack.config.js
++++ b/node_modules/react-scripts/config/webpack.config.js
+@@ -661,6 +661,7 @@ module.exports = function (webpackEnv) {
+       // Watcher doesn't work well if you mistype casing in a path so we use
+       // a plugin that prints an error when you attempt to do this.
+       // See https://github.com/facebook/create-react-app/issues/240
++      isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
+       isEnvDevelopment && new CaseSensitivePathsPlugin(),
+       isEnvProduction &&
+         new MiniCssExtractPlugin({
