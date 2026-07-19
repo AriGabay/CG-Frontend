@@ -1,68 +1,147 @@
 import React, { useEffect, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
 import { makeStyles } from '@mui/styles';
 import { PlusMinus } from '../PlusMinus';
+import { priceInfo, money } from '../../services/viewModel.service';
+import { colors, radii, fonts } from '../../styles/designTokens';
+
 const useStyles = makeStyles({
-  marginTop: {
-    marginTop: 20,
-    marginBottom: 0,
-    padding: 0,
-  },
-  addToCartBtn: {
-    background:
-      'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
-    borderRadius: 3,
-    color: 'white',
-    height: 48,
-    padding: 30,
-    paddingTop: 0,
-    paddingBottom: 0,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-  },
-  Grid: {
+  wrap: {
     display: 'flex',
-    flexDirection: 'row',
-    direction: 'row',
-    justify: 'space-evenly',
-    alignItems: 'center',
-    paddingRight: 30,
-    paddingLeft: 30,
+    flexDirection: 'column',
+    gap: 10,
   },
-  buttonPlusMinus: {
+  label: {
+    fontWeight: 700,
+    fontSize: 14,
+    color: colors.textSoft,
+  },
+  // The +/- controls come from <PlusMinus>, which renders its own wrapper div.
+  // `display:contents` dissolves that wrapper so the two buttons become flex
+  // items here and can be ordered around the read-out: [−] [weight] [+].
+  stepper: {
     display: 'flex',
-    justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 0,
-    padding: 0,
+    justifyContent: 'center',
+    gap: 14,
+    alignSelf: 'flex-start',
+    background: colors.bg,
+    borderRadius: radii.pill,
+    padding: '8px 12px',
+    '& > div': { display: 'contents' },
+    '& > span': { order: 2 },
+    '& > div > button': {
+      order: 1,
+      width: 42,
+      height: 42,
+      minWidth: 42,
+      padding: 0,
+      borderRadius: '50%',
+      border: `1px solid ${colors.borderInput} !important`,
+      background: `${colors.surface} !important`,
+      color: `${colors.text} !important`,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      transition: 'transform .12s, border-color .12s',
+      '&:hover': {
+        borderColor: `${colors.green} !important`,
+        transform: 'scale(1.06)',
+      },
+      '&:focus-visible': {
+        outline: `3px solid ${colors.greenDeep}`,
+        outlineOffset: 2,
+      },
+      // Stretch the icon over the whole button so every pixel of the control
+      // is clickable (the icon, not the button, carries the click handler).
+      '& svg': {
+        width: '100%',
+        height: '100%',
+        padding: 9,
+        boxSizing: 'border-box',
+      },
+    },
+    '& > div > button:first-child': { order: 3 },
   },
-  inputDisableUpDown: {
-    '& input[type=number]': {
-      '-moz-appearance': 'textfield',
-    },
-    '& input[type=number]::-webkit-outer-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-    '& input[type=number]::-webkit-inner-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
+  amount: {
+    fontWeight: 800,
+    fontSize: 20,
+    minWidth: 110,
+    textAlign: 'center',
+    color: colors.text,
+  },
+  hint: {
+    fontSize: 13,
+    color: colors.textFaint,
+    fontWeight: 600,
+  },
+  totalRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+    paddingTop: 12,
+    borderTop: `1px solid ${colors.border}`,
+  },
+  totalLabel: {
+    fontWeight: 700,
+    fontSize: 15,
+    color: colors.textSoft,
+  },
+  total: {
+    fontFamily: fonts.display,
+    fontSize: 28,
+    color: colors.greenLink,
+  },
+  empty: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: colors.textFaint,
+  },
+  unavailable: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    fontSize: 15,
+    fontWeight: 600,
+    color: colors.textSoft,
+  },
+  unavailableTitle: {
+    fontFamily: fonts.display,
+    fontSize: 22,
+    color: colors.greenLink,
+  },
+  phone: {
+    color: colors.greenLink,
+    fontWeight: 800,
   },
 });
 
+/**
+ * Sold by weight: SizePrices[0].amount is the price per 100 grams.
+ */
 export const PriceForWeight = ({ product, setProductOrder }) => {
+  const classes = useStyles();
   const [priceToShow, setPriceToShow] = useState(0);
   const [weightInput, setWeightInput] = useState(0);
-  const shekel = '₪';
-  const classes = useStyles();
+
+  useEffect(() => {
+    setPriceToShow(0);
+    setWeightInput(0);
+  }, [product?.id]);
+
+  if (!product) return <CircularProgress />;
+
+  const info = priceInfo(product);
+  const base = product.Price?.SizePrices?.[0];
+  const step = Number(base?.size) || 100;
+
   const updateOrder = (weight) => {
     if (!weight && weight === '0') return;
+    if (!base) return;
     setWeightInput(weight);
-    const calc = product.Price.SizePrices[0].amount * (weight / 100);
+    const calc = base.amount * (weight / 100);
     setPriceToShow(calc.toFixed(2));
     setProductOrder({
       sizeToOrder: Number(weight),
@@ -70,57 +149,48 @@ export const PriceForWeight = ({ product, setProductOrder }) => {
       priceToShow: Number(calc.toFixed(2)),
     });
   };
-  useEffect(() => {
-    return () => {
-      setPriceToShow(0);
-      setWeightInput(0);
-    };
-  }, [product?.id]);
-  return product ? (
-    <Grid>
-      <Grid className={classes.buttonPlusMinus}>
-        <TextField
-          aria-label="גרם"
-          required
-          type="number"
-          InputProps={{
-            inputProps: {
-              step: 100,
-              max: 4000,
-              min: 100,
-            },
-          }}
-          label="גרם"
-          value={weightInput}
-          className={classes.inputDisableUpDown}
-          disabled={true}
-          onChange={(event) => updateOrder(event.target.value)}
-          onKeyDown={(event) =>
-            (event.target.value === '0' || event.target.value === 0) ??
-            event.preventDefault()
-          }
-          onKeyPress={(event) => event.preventDefault()}
+
+  if (!info.available) {
+    return (
+      <div className={classes.unavailable}>
+        <span className={classes.unavailableTitle}>לפרטים בטלפון</span>
+        <span>
+          למוצר זה אין מחיר מוגדר באתר. להזמנה חייגו{' '}
+          <a className={classes.phone} href="tel:04-6734949">
+            04-6734949
+          </a>
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={classes.wrap}>
+      <div className={classes.label}>בחרו משקל</div>
+      <div className={classes.stepper}>
+        <span className={classes.amount} aria-live="polite">
+          {weightInput} גרם
+        </span>
+        <PlusMinus
+          type="weight"
+          size={product.Price}
+          input={weightInput}
+          updateOrder={updateOrder}
         />
-        {product.Price && (
-          <PlusMinus
-            type="weight"
-            size={product.Price}
-            input={weightInput}
-            updateOrder={updateOrder}
-          ></PlusMinus>
+      </div>
+      <div className={classes.hint}>
+        לשינוי הכמות יש להשתמש בכפתורי הפלוס והמינוס, בכפולות של {step} גרם
+      </div>
+      <div className={classes.totalRow}>
+        {Number(priceToShow) ? (
+          <>
+            <span className={classes.totalLabel}>{'סה"כ'}</span>
+            <span className={classes.total}>{money(priceToShow)}</span>
+          </>
+        ) : (
+          <span className={classes.empty}>נא לבחור כמות</span>
         )}
-      </Grid>
-      <Typography>לשינוי כמות המוצר יש להשתמש בכפתורים פלוס ומינוס</Typography>
-      {priceToShow !== 0
-        ? priceToShow && (
-            <Typography>
-              מחיר: {priceToShow}
-              {shekel}
-            </Typography>
-          )
-        : 'נא לבחור גודל מוצר'}
-    </Grid>
-  ) : (
-    <CircularProgress></CircularProgress>
+      </div>
+    </div>
   );
 };

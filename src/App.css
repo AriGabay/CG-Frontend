@@ -1,8 +1,10 @@
+/* The redesigned pages manage their own alignment and gutters; the old
+   centred, padded shell fought the full-bleed hero and footer. */
 .App {
-  text-align: center;
-  padding-right: '20px';
-  padding-left: '20px';
-  padding-bottom: '20px';
+  text-align: start;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-logo {

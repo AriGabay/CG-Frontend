@@ -3,12 +3,19 @@ import { HomePage } from './pages/HomePage/HomePage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { ProductPreview } from './pages/ProductPreview';
 import { AppHeader } from './cmps/AppHeader/AppHeader';
+import { Footer } from './cmps/design/Footer';
 import SimpleSnackbar from './cmps/Snackbar/Snackbar';
 import { AdminPage } from './pages/AdminPage/AdminPage';
 import { About } from './pages/About/About';
 import { Contact } from './pages/Contact/Contact';
 import { CheckoutOrder } from './pages/CheckoutOrder/CheckoutOrder';
-import { Route, BrowserRouter } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  BrowserRouter,
+  useParams,
+} from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import getCustomTheme from './hooks/getCustomTheme';
@@ -40,14 +47,16 @@ const Menu = Loadable({
   },
 });
 
-const ProductsList = Loadable({
-  loader: async () => await import('./pages/ProductsList/ProductsList'),
-  loading: Loading,
-  render(loader, props) {
-    const { ProductsList } = loader;
-    return <ProductsList {...props} />;
-  },
-});
+/**
+ * The redesigned menu is a single flat, filterable grid, so the old
+ * per-category product pages no longer exist. Keep their URLs alive and send
+ * them to the menu with that category pre-selected, rather than 404ing links
+ * that are already indexed or bookmarked.
+ */
+const LegacyCategoryRedirect = () => {
+  const { categoryId, menuType } = useParams();
+  return <Redirect to={`/menu/${menuType}?cat=${categoryId}`} />;
+};
 
 function App() {
   return (
@@ -56,43 +65,60 @@ function App() {
         <BrowserRouter>
           <AppHeader />
           <div className="App">
-            <Route exact component={HomePage} path="/" />
-            <Route path="/404">{<NotFound />}</Route>
-            <Route path="/notEnable">
-              <NotEnable></NotEnable>
-            </Route>
-            <Route path="/menu/weekend">
-              <Menu menuType="weekend" />
-            </Route>
-            <Route path="/menu/tishray">
-              <Menu menuType="tishray" />
-            </Route>
-            <Route path="/menu/pesach">
-              <Menu menuType="pesach" />
-            </Route>
-            <Route path="/products/:categoryId/weekend/">
-              <ProductsList productsType="weekend" />
-            </Route>
-            <Route path="/products/:categoryId/tishray/">
-              <ProductsList productsType="tishray" />
-            </Route>
-            <Route path="/products/:categoryId/pesach/">
-              <ProductsList productsType="pesach" />
-            </Route>
-            <Route component={ProductPreview} path="/product/:productId/" />
-            <Route exact component={AdminPage} path="/adminPage" />
-            <Route exact component={LoginPage} path="/login" />
-            <Route exact component={CheckoutOrder} path="/checkout" />
-            <Route exact component={About} path="/about" />
-            <Route exact component={Contact} path="/contact" />
-            <Route
-              exact
-              component={AccessibilityAnnouncement}
-              path="/AccessibilityAnnouncement"
-            />
+            <Switch>
+              <Route exact path="/">
+                <HomePage />
+              </Route>
+              <Route path="/404">
+                <NotFound />
+              </Route>
+              <Route path="/notEnable">
+                <NotEnable />
+              </Route>
 
-            <SimpleSnackbar></SimpleSnackbar>
+              <Route path="/menu/weekend">
+                <Menu menuType="weekend" />
+              </Route>
+              <Route path="/menu/tishray">
+                <Menu menuType="tishray" />
+              </Route>
+              <Route path="/menu/pesach">
+                <Menu menuType="pesach" />
+              </Route>
+
+              <Route path="/products/:categoryId/:menuType">
+                <LegacyCategoryRedirect />
+              </Route>
+
+              <Route path="/product/:productId">
+                <ProductPreview />
+              </Route>
+              <Route exact path="/adminPage">
+                <AdminPage />
+              </Route>
+              <Route exact path="/login">
+                <LoginPage />
+              </Route>
+              <Route exact path="/checkout">
+                <CheckoutOrder />
+              </Route>
+              <Route exact path="/about">
+                <About />
+              </Route>
+              <Route exact path="/contact">
+                <Contact />
+              </Route>
+              <Route exact path="/AccessibilityAnnouncement">
+                <AccessibilityAnnouncement />
+              </Route>
+
+              <Route path="*">
+                <NotFound />
+              </Route>
+            </Switch>
           </div>
+          <Footer />
+          <SimpleSnackbar></SimpleSnackbar>
         </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>
@@ -100,3 +126,4 @@ function App() {
 }
 
 export default App;
+
