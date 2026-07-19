@@ -1,158 +1,401 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import { cartService } from '../../services/cartService';
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
 import { UserDetailsForm } from '../../cmps/UserDetailsForm/UserDetailsForm';
 import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
 import { makeStyles } from '@mui/styles';
 import { Helmet } from 'react-helmet';
+import { money } from '../../services/viewModel.service';
+import {
+  colors,
+  fonts,
+  radii,
+  shadows,
+  layout,
+  gradientFor,
+} from '../../styles/designTokens';
 
-const useStyles = makeStyles(() => ({
-  root: {
+const EMPTY_ORDER = { products: [], totalPrice: 0, Tax: 0, unTax: 0 };
+
+// The size wording differs per priceType. Mirrors the logic the page has
+// always used, so the label matches the PDF the backend mails out.
+const sizeLabelFor = (product) => {
+  const type = product?.Price?.priceType;
+  const size = product?.sizeToOrder;
+  if (size === undefined || size === null) return '';
+  if (type === 'weight') return `${size} גרם`;
+  if (type === 'unit') return `${size} יחידות`;
+  if (type === 'box') {
+    const unit =
+      product.categoryId === 1 || product.categoryId === '1'
+        ? 'מליליטר'
+        : 'גרם';
+    return `קופסה בגודל ${size} ${unit}`;
+  }
+  return '';
+};
+
+const useStyles = makeStyles({
+  page: {
+    maxWidth: layout.maxWidth,
+    margin: '0 auto',
+    padding: '30px 22px 60px',
+  },
+  h1: {
+    fontFamily: fonts.display,
+    fontSize: 'clamp(28px, 5vw, 40px)',
+    fontWeight: 400,
+    lineHeight: 1.25,
+    margin: '0 0 24px',
+    color: colors.text,
+  },
+  h2: {
+    fontFamily: fonts.display,
+    fontSize: 'clamp(20px, 3vw, 24px)',
+    fontWeight: 400,
+    margin: '0 0 18px',
+    color: colors.text,
+  },
+  card: {
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    borderRadius: radii.xl,
+    padding: '28px 30px',
+    '@media (max-width: 640px)': {
+      padding: '22px 18px',
+    },
+  },
+  // ---- pickup callout ----
+  pickup: {
     display: 'flex',
-    justifyContent: 'space-evenly',
+    gap: 14,
     alignItems: 'flex-start',
-    flexDirection: 'row',
-    '@media (max-width: 700px)': {
-      flexDirection: 'column!important',
-    },
+    background: colors.greenPale,
+    borderRadius: radii.md,
+    padding: '16px 18px',
+    marginBottom: 22,
   },
-  Paper: {
-    minWidth: '250px',
-    minHeight: '450px',
+  pickupIcon: {
+    fontSize: 24,
+    lineHeight: 1,
+    flex: 'none',
   },
-  formSide: {
+  pickupTitle: {
+    fontWeight: 800,
+    color: colors.greenDark,
+    fontSize: 15,
+    marginBottom: 2,
+  },
+  pickupTxt: {
+    fontSize: 14,
+    color: colors.greenInk,
+    lineHeight: 1.6,
+    margin: 0,
+  },
+  pickupLink: {
+    color: colors.greenDark,
+    fontWeight: 700,
+  },
+  // ---- summary ----
+  summary: {
+    padding: 26,
     position: 'sticky',
-    bottom: 0,
-    '@media (max-width: 700px)': {
-      position: 'unset',
-
-      marginRight: '20px!important',
-      marginLeft: '20px!important',
+    top: 96,
+    '@media (max-width: 860px)': {
+      position: 'static',
+    },
+    '@media (max-width: 640px)': {
+      padding: '22px 18px',
     },
   },
-  productCard: {
-    marginRight: '64px!important',
-    marginLeft: '20px!important',
-
-    marginBottom: '24px!important',
+  lines: {
+    listStyle: 'none',
+    margin: '0 0 18px',
+    padding: 0,
     display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
     flexDirection: 'column',
-    '@media (max-width: 700px)': {
-      marginRight: '20px!important',
-      marginLeft: '20px!important',
+    gap: 14,
+  },
+  line: {
+    display: 'flex',
+    gap: 12,
+    alignItems: 'center',
+  },
+  thumb: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    flex: 'none',
+    overflow: 'hidden',
+    display: 'block',
+    '& img': {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      display: 'block',
     },
   },
-}));
+  lineBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  lineName: {
+    fontWeight: 700,
+    fontSize: 15,
+    color: colors.text,
+    margin: 0,
+  },
+  lineMeta: {
+    fontSize: 13,
+    color: colors.textFaint,
+    margin: 0,
+  },
+  linePrice: {
+    fontWeight: 800,
+    fontSize: 15,
+    color: colors.text,
+    minWidth: 64,
+    textAlign: 'left',
+    flex: 'none',
+  },
+  totals: {
+    borderTop: `1px solid ${colors.border}`,
+    paddingTop: 16,
+  },
+  totalRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 12,
+    fontSize: 15,
+    color: colors.textMuted,
+    marginBottom: 8,
+  },
+  grandRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 12,
+    fontWeight: 800,
+    fontSize: 20,
+    color: colors.text,
+    marginTop: 4,
+  },
+  grandValue: {
+    color: colors.greenLink,
+  },
+  note: {
+    fontSize: 13,
+    color: colors.textFaint,
+    lineHeight: 1.6,
+    margin: '10px 0 0',
+  },
+  // ---- empty ----
+  empty: {
+    textAlign: 'center',
+    padding: '70px 20px',
+    background: colors.surface,
+    border: `1px solid ${colors.border}`,
+    borderRadius: radii.lg,
+  },
+  emptyIcon: {
+    fontSize: 52,
+    marginBottom: 14,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: 800,
+    color: colors.text,
+    margin: '0 0 8px',
+  },
+  emptyTxt: {
+    fontSize: 16,
+    color: colors.textFaint,
+    margin: '0 0 22px',
+  },
+  emptyCta: {
+    display: 'inline-block',
+    background: colors.green,
+    color: colors.surface,
+    border: 'none',
+    borderRadius: radii.pill,
+    padding: '15px 34px',
+    fontWeight: 800,
+    fontSize: 17,
+    textDecoration: 'none',
+    cursor: 'pointer',
+    boxShadow: shadows.btnGreen,
+    '&:hover': { background: colors.greenDeep },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 3,
+    },
+  },
+  loader: {
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '90px 20px',
+  },
+});
 
 export const CheckoutOrder = () => {
-  const [cart, setCart] = useState();
-  const [totalPrice, setTotalPrice] = useState();
-  const [tax, setTax] = useState();
-  const [unTax, setUnTax] = useState();
   const classes = useStyles();
-  const shekel = '₪';
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    cartService.getCart().then((data) => {
-      cartService.checkOutOrder(data).then((res) => {
-        setCart(res.products);
-        setTotalPrice(res.totalPrice);
-        setTax(res.Tax);
-        setUnTax(res.unTax);
-      });
-    });
+    let alive = true;
+    const done = (data) => {
+      if (!alive) return;
+      setOrder(data);
+      setLoading(false);
+    };
+    cartService
+      .getCart()
+      .then((cart) => {
+        if (!cart || !cart.length) return done(EMPTY_ORDER);
+        return cartService.checkOutOrder(cart).then((res) => {
+          // checkOutOrder swallows network errors and resolves undefined.
+          done(res && res.products ? res : EMPTY_ORDER);
+        });
+      })
+      .catch(() => done(EMPTY_ORDER));
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  return cart ? (
+  const products = order?.products || [];
+  const isEmpty = !products.length;
+
+  return (
     <Fragment>
       <Helmet>
         <title>Catering Gabay - Checkout</title>
         <meta name="robots" content="noindex" />
-        <meta name="robots" content="all" />
       </Helmet>
-      <Grid mt={6} className={classes.root}>
-        <Grid item sm={6} style={{ width: '100%' }}>
-          <Container>
-            <Typography
-              mr={'20px'}
-              textAlign="start"
-              aria-label={'סיכום הזמנה'}
-              fontSize={'4rem'}
-              variant="h1"
-            >
-              סיכום הזמנה:
-            </Typography>
-          </Container>
-          {cart.map((product, index) => {
-            return (
-              <Grid mt={2} item key={index} className={classes.productCard}>
-                <Paper variant="outlined" className={classes.Paper}>
-                  <Typography
-                    variant="h2"
-                    component="h2"
-                    style={{ fontSize: '1.25rem', fontWeight: 400 }}
-                  >
-                    {product.displayName}
-                  </Typography>
-                  <Typography>
-                    {product.Price.priceType === 'weight' && (
-                      <span> {product.sizeToOrder} גרם</span>
-                    )}
-                    {product.Price.priceType === 'unit' && (
-                      <span>{product.sizeToOrder} יחידות </span>
-                    )}
-                    {product.Price.priceType === 'box' && (
-                      <span>
-                        קופסה בגודל {product.sizeToOrder}{' '}
-                        {product.categoryId === 1 || product.categoryId === '1'
-                          ? 'מליליטר'
-                          : 'גרם'}
-                      </span>
-                    )}
-                  </Typography>
-                  <Typography>
-                    מחיר : {product.pricePerSize.toFixed(2)}
-                    {shekel}
-                  </Typography>
-                  <ImageCloud
-                    imageId={product.imgUrl}
-                    maxWidth={350}
-                    maxHeight={300}
-                    alt={`תמונה של מוצר ${
-                      product.displayName ? product.displayName : product.id
-                    }`}
-                  ></ImageCloud>
-                </Paper>
-              </Grid>
-            );
-          })}
-        </Grid>
-        {totalPrice && cart && tax && unTax && (
-          <Grid item sm={3} className={classes.formSide}>
-            <Typography
-              aria-label={'פרטי ההזמנה'}
-              fontSize={'2rem'}
-              variant="h2"
-            >
-              פרטי הזמנה:
-            </Typography>
-            <UserDetailsForm
-              totalPrice={totalPrice}
-              tax={tax}
-              unTax={unTax}
-              checkOutTotal={cartService.checkOutTotal}
-              cart={cart}
-            ></UserDetailsForm>
-          </Grid>
-        )}
-      </Grid>
+
+      {loading ? (
+        <div className={classes.loader}>
+          <CircularProgress aria-label="טוען את סיכום ההזמנה" />
+        </div>
+      ) : (
+        <main className={`${classes.page} gbFade gb-pad`}>
+          <h1 className={classes.h1}>סיום הזמנה · איסוף עצמי</h1>
+
+          {isEmpty ? (
+            <div className={classes.empty}>
+              <div className={classes.emptyIcon} aria-hidden="true">
+                🛒
+              </div>
+              <p className={classes.emptyTitle}>העגלה ריקה</p>
+              <p className={classes.emptyTxt}>
+                הוסיפו מנות מהתפריט כדי להתחיל
+              </p>
+              <Link
+                to="/menu/weekend"
+                className={classes.emptyCta}
+                aria-label="מעבר לתפריט סוף שבוע"
+              >
+                לתפריט ←
+              </Link>
+            </div>
+          ) : (
+            <div className="gb-checkout">
+              {/* ---------- details + form (right column in RTL) ---------- */}
+              <section
+                className={classes.card}
+                aria-labelledby="checkout-details-title"
+              >
+                <h2 id="checkout-details-title" className={classes.h2}>
+                  פרטי ההזמנה
+                </h2>
+
+                <div className={classes.pickup}>
+                  <span className={classes.pickupIcon} aria-hidden="true">
+                    🏠
+                  </span>
+                  <div>
+                    <p className={classes.pickupTitle}>איסוף עצמי מהמטבח</p>
+                    <p className={classes.pickupTxt}>
+                      רחוב המברג 10, טבריה · איסוף בימי שישי בין 8:30 ל־13:00.
+                      <br />
+                      הזמנות ליום שישי נסגרות ב־10:00 בבוקר. לשאלות:{' '}
+                      <a href="tel:04-6734949" className={classes.pickupLink}>
+                        04-6734949
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
+                <UserDetailsForm checkOutTotal={cartService.checkOutTotal} />
+              </section>
+
+              {/* ---------- order summary (left column in RTL) ---------- */}
+              <aside
+                className={`${classes.card} ${classes.summary}`}
+                aria-labelledby="checkout-summary-title"
+              >
+                <h2 id="checkout-summary-title" className={classes.h2}>
+                  ההזמנה שלך
+                </h2>
+
+                <ul className={classes.lines}>
+                  {products.map((product, index) => {
+                    const name = product.displayName || `מוצר ${product.id}`;
+                    return (
+                      <li
+                        className={classes.line}
+                        key={`${product.id}-${product.sizeToOrder}-${index}`}
+                      >
+                        <span
+                          className={classes.thumb}
+                          style={{ background: gradientFor(product.categoryId) }}
+                        >
+                          <ImageCloud
+                            imageId={product.imgUrl}
+                            maxWidth={120}
+                            maxHeight={120}
+                            alt={`תמונה של ${name}`}
+                          />
+                        </span>
+                        <div className={classes.lineBody}>
+                          <p className={classes.lineName}>{name}</p>
+                          <p className={classes.lineMeta}>
+                            {sizeLabelFor(product)}
+                          </p>
+                        </div>
+                        <span className={classes.linePrice}>
+                          {money(product.pricePerSize)}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <div className={classes.totals}>
+                  <div className={classes.totalRow}>
+                    <span>לפני מע&quot;מ</span>
+                    <span>{money(order.unTax)}</span>
+                  </div>
+                  <div className={classes.totalRow}>
+                    <span>מע&quot;מ</span>
+                    <span>{money(order.Tax)}</span>
+                  </div>
+                  <div className={classes.grandRow}>
+                    <span>סה&quot;כ משוער</span>
+                    <span className={classes.grandValue}>
+                      {money(order.totalPrice)}
+                    </span>
+                  </div>
+                  <p className={classes.note}>
+                    המחיר משוער — מנות הנמכרות במשקל מתומחרות לפי 100 גרם.
+                  </p>
+                </div>
+              </aside>
+            </div>
+          )}
+        </main>
+      )}
     </Fragment>
-  ) : (
-    <CircularProgress />
   );
 };

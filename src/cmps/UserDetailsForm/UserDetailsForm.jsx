@@ -9,6 +9,7 @@ import Checkbox from '../../cmps/Controls/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import Button from '@mui/material/Button';
 import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from '@mui/styles';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import MuiDialogContent from '@mui/material/DialogContent';
 import MuiDialogActions from '@mui/material/DialogActions';
@@ -21,6 +22,7 @@ import format from 'date-fns/format';
 import { isFriday } from 'date-fns';
 import isToday from 'date-fns/isToday';
 import { nextFriday } from 'date-fns';
+import { colors, fonts, radii, shadows } from '../../styles/designTokens';
 const initialDate = new Date();
 const initialFValues = {
   id: 0,
@@ -65,6 +67,120 @@ const styles = (theme) => ({
   },
 });
 
+// Redesign styling only — the field set, names and validation below are
+// untouched because the backend turns them straight into the order PDF.
+const useFormStyles = makeStyles({
+  fields: {
+    // Beat both the `Form` wrapper (80% width) and Input's `withStyle` (50%).
+    '& .MuiFormControl-root.MuiFormControl-root': {
+      width: '100% !important',
+      margin: '0 !important',
+    },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: radii.sm,
+      background: colors.surfaceAlt,
+      fontSize: 15,
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: colors.borderInput,
+    },
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: colors.green,
+    },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: colors.greenDeep,
+      borderWidth: 2,
+    },
+    '& .MuiInputLabel-root': {
+      color: `${colors.textSoft} !important`,
+      fontSize: 14,
+    },
+    '& .MuiFormHelperText-root': {
+      marginInlineStart: 2,
+      fontSize: 13,
+    },
+    '& .Mui-error .MuiOutlinedInput-notchedOutline': {
+      borderColor: `${colors.danger} !important`,
+    },
+  },
+  sectionTitle: {
+    fontFamily: fonts.display,
+    fontSize: 17,
+    fontWeight: 400,
+    color: colors.text,
+    margin: '26px 0 12px',
+    '&:first-child': { marginTop: 0 },
+  },
+  pickupBlock: {
+    background: colors.surfaceAlt,
+    border: `1px solid ${colors.borderInput}`,
+    borderRadius: radii.md,
+    padding: '14px 16px',
+    marginBottom: 16,
+    '& .MuiFormControl-root': {
+      width: '100% !important',
+      margin: '0 !important',
+    },
+    '& .MuiFormLabel-root': {
+      color: `${colors.textSoft} !important`,
+      fontSize: 14,
+    },
+    '& .MuiFormControlLabel-label': { fontSize: 14 },
+  },
+  dateNote: {
+    fontSize: 13.5,
+    color: colors.textMuted,
+    background: colors.greenPale,
+    borderRadius: radii.sm,
+    padding: '10px 14px',
+    lineHeight: 1.6,
+    margin: '0 0 14px',
+  },
+  termsRow: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 4,
+    marginTop: 18,
+    '& .MuiFormControl-root': {
+      width: 'auto !important',
+      margin: '0 !important',
+    },
+  },
+  termsLink: {
+    color: `${colors.greenLink} !important`,
+    fontWeight: 700,
+    textDecoration: 'underline',
+    minWidth: 'auto !important',
+  },
+  submitWrap: {
+    marginTop: 22,
+  },
+  submitBtn: {
+    width: '100% !important',
+    background: `${colors.green} !important`,
+    color: `${colors.surface} !important`,
+    borderRadius: `${radii.md} !important`,
+    padding: '16px !important',
+    fontWeight: '800 !important',
+    fontSize: '19px !important',
+    boxShadow: `${shadows.btnGreen} !important`,
+    margin: '0 !important',
+    '&:hover': {
+      background: `${colors.greenDeep} !important`,
+      transform: 'none !important',
+    },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 3,
+    },
+  },
+  backWrap: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
+});
+
 const DialogTitle = withStyles(styles)((props) => {
   const { children, classes, onClose, ...other } = props;
   return (
@@ -96,11 +212,12 @@ const DialogActions = withStyles((theme) => ({
   },
 }))(MuiDialogActions);
 
-export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
+export const UserDetailsForm = ({ checkOutTotal }) => {
   const history = useHistory();
   const [terms, setTerms] = useState(false);
   const [open, setOpen] = useState(false);
   const requiredInputStr = 'שדה חובה';
+  const classes = useFormStyles();
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
@@ -174,192 +291,186 @@ export const UserDetailsForm = ({ totalPrice, tax, unTax, checkOutTotal }) => {
 
   return (
     <Form>
-      <Grid item xs={12}>
-        <Controls.Input
-          name="firstName"
-          label="שם פרטי"
-          value={values.firstName}
-          onChange={handleInputChange}
-          error={errors.firstName}
-          withStyle={true}
-          required={true}
-        />
-        <Controls.Input
-          name="lastName"
-          label="שם משפחה"
-          value={values.lastName}
-          onChange={handleInputChange}
-          error={errors.lastName}
-          withStyle={true}
-          required={true}
-        />
-        <Controls.Input
-          label="Email"
-          name="email"
-          value={values.email}
-          onChange={handleInputChange}
-          error={errors.email}
-          withStyle={true}
-          required={true}
-        />
-        <Controls.Input
-          label="פלאפון"
-          name="mobile"
-          value={values.mobile}
-          onChange={handleInputChange}
-          error={errors.mobile}
-          withStyle={true}
-          required={true}
-        />
-        <Controls.Input
-          label="פלאפון נוסף"
-          name="mobileTow"
-          value={values.mobileTow}
-          onChange={handleInputChange}
-          error={errors.mobileTow}
-          withStyle={true}
-          required={true}
-        />
-        <Controls.Input
-          label="עיר מגורים"
-          required={true}
-          name="city"
-          value={values.city}
-          error={errors.city}
-          withStyle={true}
-          onChange={handleInputChange}
-        />
-        <Controls.Input
-          label="רחוב"
-          required={true}
-          error={errors.street}
-          withStyle={true}
-          name="street"
-          value={values.street}
-          onChange={handleInputChange}
-        />
-        <Controls.Input
-          label="מספר ת.ז"
-          required={true}
-          error={errors.idPersonal}
-          withStyle={true}
-          name="idPersonal"
-          value={values.idPersonal}
-          onChange={handleInputChange}
-        />
-        <Grid item xs={12} mb={2} mt={2}>
-          <Controls.RadioGroup
-            name="pickup"
-            label="שעת איסוף"
-            value={values.pickup}
+      <h3 className={classes.sectionTitle}>פרטים אישיים</h3>
+      <div className={`${classes.fields} gb-form2`}>
+        <div>
+          <Controls.Input
+            name="firstName"
+            label="שם פרטי"
+            value={values.firstName}
             onChange={handleInputChange}
-            items={pickupItems}
-            required={true}
-            error={errors.pickup}
+            error={errors.firstName}
             withStyle={true}
-          />
-        </Grid>
-        <Grid>
-          <Typography
-            mb={2}
-            mt={2}
-            borderBottom={'1px solid black'}
-            borderTop={'1px solid black'}
-          >
-            אם לא נבחר תאריך ההזמנה תבוצע ליום שישי של אותו השבוע
-          </Typography>
-        </Grid>
-        <Grid>
-          <Controls.DatePicker
             required={true}
-            name="pickUpDate"
-            label="תאריך איסוף"
-            value={new Date(values.pickUpDate)}
-            onChange={handleInputChange}
-            error={errors}
-            setError={setErrors}
           />
-        </Grid>
-        <Grid display="flex" justifyContent="flex-start" alignContent="center">
-          <Grid
-            display="flex"
-            justifyContent="flex-start"
-            alignContent="center"
-          >
-            <Checkbox
-              style={{
-                margin: 0,
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexDirection: 'row-reverse',
-              }}
-              id="id-label-terms"
-              name="terms"
-              required={true}
-              value={terms}
-              onChange={() => setTerms(!terms)}
-            ></Checkbox>
-
-            {terms === false && (
-              <FormHelperText>{requiredInputStr}</FormHelperText>
-            )}
-          </Grid>
-          <Dialog
-            onClose={handleClose}
-            aria-labelledby="customized-dialog-title"
-            open={open}
-          >
-            <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-              תקנון
-            </DialogTitle>
-            <DialogContent dividers>
-              {termsTxt && <Typography gutterBottom>{termsTxt}</Typography>}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                חזרה
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Button
-            style={{
-              margin: 0,
-              padding: 0,
-              width: 'auto',
-              flexDirection: 'row-reverse',
-              color: 'black',
-            }}
-            onClick={handleClickOpen}
-          >
-            קריאת התקנון
-          </Button>
-        </Grid>
-        <Grid mt={2} mb={2}>
-          <Typography>לפני מע&apos;&apos;מ: {unTax} ₪</Typography>
-          <Typography>מע&apos;&apos;מ: {tax} ₪</Typography>
-          <Typography>מחיר משוער : {totalPrice} ₪</Typography>
-        </Grid>
-        <Grid mb={2}>
-          <Controls.Button
-            type="submit"
-            text="להזמנה"
-            style={{ color: 'white' }}
-            onClick={(event) => handleSubmit(event)}
-          />
-          {/* <Typography style={{ fontSize: '1.5rem' }} variant="p">
-            האתר סגור כרגע להזמנות.
-          </Typography>
-          <br />
-          <Typography style={{ fontSize: '1.5rem' }} variant="p">
-            להזמנות נא להתקשר : 04-6734949
-          </Typography> */}
-        </Grid>
-        <div style={{ marginBottom: 20 }}>
-          <BackButton text="חזור" to="/"></BackButton>
         </div>
+        <div>
+          <Controls.Input
+            name="lastName"
+            label="שם משפחה"
+            value={values.lastName}
+            onChange={handleInputChange}
+            error={errors.lastName}
+            withStyle={true}
+            required={true}
+          />
+        </div>
+        <div style={{ gridColumn: 'span 2' }}>
+          <Controls.Input
+            label="Email"
+            name="email"
+            value={values.email}
+            onChange={handleInputChange}
+            error={errors.email}
+            withStyle={true}
+            required={true}
+          />
+        </div>
+        <div>
+          <Controls.Input
+            label="פלאפון"
+            name="mobile"
+            value={values.mobile}
+            onChange={handleInputChange}
+            error={errors.mobile}
+            withStyle={true}
+            required={true}
+          />
+        </div>
+        <div>
+          <Controls.Input
+            label="פלאפון נוסף"
+            name="mobileTow"
+            value={values.mobileTow}
+            onChange={handleInputChange}
+            error={errors.mobileTow}
+            withStyle={true}
+            required={true}
+          />
+        </div>
+        <div>
+          <Controls.Input
+            label="עיר מגורים"
+            required={true}
+            name="city"
+            value={values.city}
+            error={errors.city}
+            withStyle={true}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <Controls.Input
+            label="רחוב"
+            required={true}
+            error={errors.street}
+            withStyle={true}
+            name="street"
+            value={values.street}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div style={{ gridColumn: 'span 2' }}>
+          <Controls.Input
+            label="מספר ת.ז"
+            required={true}
+            error={errors.idPersonal}
+            withStyle={true}
+            name="idPersonal"
+            value={values.idPersonal}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+
+      <h3 className={classes.sectionTitle}>מועד איסוף</h3>
+      <div className={classes.pickupBlock}>
+        <Controls.RadioGroup
+          name="pickup"
+          label="שעת איסוף"
+          value={values.pickup}
+          onChange={handleInputChange}
+          items={pickupItems}
+          required={true}
+          error={errors.pickup}
+          withStyle={true}
+        />
+      </div>
+      <p className={classes.dateNote}>
+        אם לא נבחר תאריך ההזמנה תבוצע ליום שישי של אותו השבוע
+      </p>
+      <div className={classes.fields}>
+        <Controls.DatePicker
+          required={true}
+          name="pickUpDate"
+          label="תאריך איסוף"
+          value={new Date(values.pickUpDate)}
+          onChange={handleInputChange}
+          error={errors}
+          setError={setErrors}
+        />
+      </div>
+
+      <div className={classes.termsRow}>
+        <Checkbox
+          style={{
+            margin: 0,
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexDirection: 'row-reverse',
+          }}
+          id="id-label-terms"
+          name="terms"
+          required={true}
+          value={terms}
+          onChange={() => setTerms(!terms)}
+        ></Checkbox>
+        {terms === false && <FormHelperText>{requiredInputStr}</FormHelperText>}
+        <Button
+          className={classes.termsLink}
+          style={{
+            margin: 0,
+            padding: 0,
+            width: 'auto',
+            flexDirection: 'row-reverse',
+          }}
+          onClick={handleClickOpen}
+        >
+          קריאת התקנון
+        </Button>
+      </div>
+
+      <Dialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+          תקנון
+        </DialogTitle>
+        <DialogContent dividers>
+          {termsTxt && <Typography gutterBottom>{termsTxt}</Typography>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            חזרה
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Grid className={classes.submitWrap}>
+        <Controls.Button
+          type="submit"
+          text="שליחת הזמנה ←"
+          className={classes.submitBtn}
+          onClick={(event) => handleSubmit(event)}
+        />
       </Grid>
+      <div className={classes.backWrap}>
+        <BackButton text="חזור" to="/"></BackButton>
+      </div>
     </Form>
   );
 };

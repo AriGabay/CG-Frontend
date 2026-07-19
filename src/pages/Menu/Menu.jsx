@@ -1,72 +1,251 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { categoryService } from '../../services/categoryService';
-import { CategoryCard } from '../../cmps/CategoryCard';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import BackButton from '../../cmps/Controls/BackButton';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { useDispatch } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { makeStyles } from '@mui/styles';
-import { Helmet } from 'react-helmet';
-import BasicModal from '../../cmps/BasicModal/BasicModal';
-import { useSelector, useDispatch } from 'react-redux';
-import { isMenuEnableService } from '../../services/isMenuEnableService';
-import { useHistory } from 'react-router-dom';
 import { getDay, setHours, setMinutes } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
+import _ from 'lodash';
+
+import BasicModal from '../../cmps/BasicModal/BasicModal';
+import { ProductCard } from '../../cmps/design/ProductCard';
+import { QuickAddModal } from '../../cmps/design/QuickAddModal';
+import { useCatalog } from '../../hooks/useCatalog';
+import { isMenuEnableService } from '../../services/isMenuEnableService';
+import {
+  MENU_LABEL,
+  categoriesPresent,
+  filterByMenu,
+  searchProducts,
+  toCardVM,
+} from '../../services/viewModel.service';
+import { colors, fonts, layout, radii } from '../../styles/designTokens';
+
+// Display order of the seasonal menus in the tab strip.
+const MENU_ORDER = ['weekend', 'tishray', 'pesach'];
 
 const useStyles = makeStyles({
-  gridMenu: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    gridTemplateRows: 'auto',
-    gap: '40px 40px',
-    gridTemplateAreas: '. . .',
-    '& > *': {
-      margin: '0 auto',
-    },
-    '@media (max-width: 1000px)': {
-      gridTemplateColumns: '1fr 1fr',
-    },
-    '@media (max-width: 800px)': {
-      gridTemplateColumns: '1fr',
+  page: {
+    maxWidth: layout.maxWidth,
+    margin: '0 auto',
+    padding: '34px 22px 40px',
+  },
+  head: {
+    marginBottom: 18,
+  },
+  eyebrow: {
+    fontSize: 14,
+    color: colors.textFaint,
+    fontWeight: 600,
+    marginBottom: 6,
+  },
+  title: {
+    fontFamily: fonts.display,
+    fontSize: 44,
+    fontWeight: 400,
+    lineHeight: 1.2,
+    margin: 0,
+    color: colors.text,
+    '@media (max-width: 640px)': {
+      fontSize: 30,
     },
   },
-  flexCenter: {
+  tabs: {
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    gap: 8,
+    background: colors.surfaceSunken,
+    borderRadius: 14,
+    padding: 5,
+    marginBottom: 22,
+    width: 'fit-content',
+  },
+  tab: {
+    border: 'none',
+    background: 'transparent',
+    borderRadius: 10,
+    padding: '9px 18px',
+    fontFamily: fonts.body,
+    fontSize: 15,
+    fontWeight: 700,
+    color: colors.textSoft,
+    cursor: 'pointer',
+    '&:hover': {
+      color: colors.text,
+    },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 2,
+    },
+  },
+  tabActive: {
+    background: colors.surface,
+    color: colors.text,
+    boxShadow: '0 4px 10px -6px rgba(67,49,42,.5)',
+  },
+  searchWrap: {
+    position: 'relative',
+    maxWidth: 520,
+    marginBottom: 20,
+  },
+  searchIcon: {
+    position: 'absolute',
+    top: '50%',
+    insetInlineStart: 16,
+    transform: 'translateY(-50%)',
+    pointerEvents: 'none',
+  },
+  searchInput: {
+    width: '100%',
+    border: `1px solid ${colors.borderInput}`,
+    background: colors.surface,
+    borderRadius: radii.pill,
+    padding: '14px 18px',
+    paddingInlineStart: 48,
+    fontFamily: fonts.body,
+    fontSize: 16,
+    color: colors.text,
+    outline: 'none',
+    '&::placeholder': {
+      color: colors.textFaint,
+    },
+    '&:focus': {
+      borderColor: colors.greenDeep,
+      boxShadow: `0 0 0 3px ${colors.greenPale}`,
+    },
+  },
+  chips: {
+    display: 'flex',
+    gap: 10,
+    flexWrap: 'wrap',
+    marginBottom: 26,
+    padding: 0,
+    listStyle: 'none',
+  },
+  chip: {
+    background: colors.surface,
+    border: `1px solid ${colors.borderInput}`,
+    borderRadius: radii.pill,
+    padding: '9px 18px',
+    fontFamily: fonts.body,
+    fontSize: 15,
+    fontWeight: 600,
+    color: colors.text,
+    cursor: 'pointer',
+    transition: 'background .15s, color .15s, border-color .15s',
+    '&:hover': {
+      borderColor: colors.text,
+    },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 2,
+    },
+  },
+  chipActive: {
+    background: colors.text,
+    borderColor: colors.text,
+    color: '#fff',
+  },
+  state: {
+    textAlign: 'center',
+    padding: '70px 20px',
+    color: colors.textFaint,
+  },
+  stateIcon: {
+    fontSize: 46,
+    marginBottom: 12,
+  },
+  stateTitle: {
+    fontSize: 20,
+    fontWeight: 700,
+    color: colors.text,
+    marginBottom: 6,
+  },
+  stateText: {
+    fontSize: 16,
+  },
+  srOnly: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: 'hidden',
+    clip: 'rect(0 0 0 0)',
+    whiteSpace: 'nowrap',
+    border: 0,
   },
 });
+
 export const Menu = ({ menuType }) => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const { flexCenter, gridMenu } = useStyles();
-  const { categories } = useSelector((state) => state);
-  const [titlePage, setTitlePage] = useState(null);
+  const location = useLocation();
+
+  const { products, loading, error } = useCatalog();
   const [menuEnables, setMenuEnables] = useState({});
+  const [query, setQuery] = useState('');
+  const [activeCat, setActiveCat] = useState(null);
+  const [quickAddProduct, setQuickAddProduct] = useState(null);
 
-  const checkMenuEnables = useCallback(async () => {
-    let isEnable = false;
-    const menus = await isMenuEnableService.getAllMenuEnables();
-    const location = window.location.href;
-    await Promise.all(
-      menus.map(async (menu) => {
-        const menuType = menu.menuType;
-        if (location.includes(menuType)) {
-          console.log(location, menuType);
-          isEnable = true;
-        }
-        setMenuEnables((prev) => ({ ...prev, [menuType]: menu.enable }));
-      })
-    );
-    if (isEnable !== true) {
-      history.push('/notEnable');
-    }
-  }, []);
-
+  // ---- menu availability -------------------------------------------------
+  // The admin can switch a seasonal menu off; a request for a menu that is not
+  // currently open goes to /notEnable. `menuEnables` doubles as the source for
+  // the maintenance banner and the menu tab strip.
   useEffect(() => {
-    checkMenuEnables();
-  }, []);
+    let alive = true;
+    isMenuEnableService
+      .getAllMenuEnables()
+      .then((menus) => {
+        if (!alive) return;
+        const map = {};
+        (menus || []).forEach((menu) => {
+          map[menu.menuType] = menu.enable;
+        });
+        setMenuEnables(map);
+        if (!map[menuType]) history.push('/notEnable');
+      })
+      .catch((err) => {
+        // Fail open: a flaky settings call should not lock customers out of a
+        // menu that is actually open.
+        console.error('Error fetching menu enables:', err);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [menuType, history]);
+
+  // Other pages (CategoryCard, ProductsList) read the active menu from redux.
+  useEffect(() => {
+    dispatch({ type: 'SET_MENU_TYPE', payload: menuType || '' });
+  }, [dispatch, menuType]);
+
+  // ---- deep links --------------------------------------------------------
+  // ?q= comes from the header search box, ?cat= from the home category strip.
+  // Re-running on `location.search` also covers a second header search while
+  // already standing on this page. Typing never rewrites the URL, so this
+  // never fights the user's input.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setQuery(params.get('q') || '');
+    const cat = params.get('cat');
+    const catId = Number(cat);
+    setActiveCat(cat && !Number.isNaN(catId) ? catId : null);
+  }, [location.search]);
+
+  // ---- ordering window ---------------------------------------------------
+  // Thursday 18:00 -> Saturday 05:00 Asia/Jerusalem the shop takes no orders.
+  const isTimeAfter = (date, hours, minutes) => {
+    const targetTime = setMinutes(setHours(date, hours), minutes);
+    return date >= targetTime;
+  };
+
+  const isTimeBefore = (date, hours, minutes) => {
+    const targetTime = setMinutes(setHours(date, hours), minutes);
+    return date < targetTime;
+  };
+
   const isThursdayAndTime = () => {
     const now = new Date();
     const timeZone = 'Asia/Jerusalem';
@@ -88,68 +267,196 @@ export const Menu = ({ menuType }) => {
     return false;
   };
 
-  const isTimeAfter = (date, hours, minutes) => {
-    const targetTime = setMinutes(setHours(date, hours), minutes);
-    return date >= targetTime;
-  };
+  // ---- data --------------------------------------------------------------
+  const menuProducts = useMemo(
+    () => filterByMenu(products, menuType),
+    [products, menuType]
+  );
 
-  const isTimeBefore = (date, hours, minutes) => {
-    const targetTime = setMinutes(setHours(date, hours), minutes);
-    return date < targetTime;
-  };
+  // Chips are derived from the menu, not from the current search, so they stay
+  // put while the customer types.
+  const categories = useMemo(
+    () => categoriesPresent(menuProducts),
+    [menuProducts]
+  );
 
-  const getCategoriesMenuCallBack = useCallback(async () => {
-    if (!categories.length) {
-      try {
-        const categoriesMenu = await categoryService.getCategoriesMenu({
-          include: false,
-        });
-        if (categoriesMenu && categoriesMenu.length) {
-          dispatch({ type: 'SET_CATEGORIES', payload: categoriesMenu });
-        }
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    }
-    switch (menuType) {
-      case 'weekend':
-        setTitlePage('תפריט סוף שבוע');
-        break;
-      case 'tishray':
-        setTitlePage('תפריט חגי תשרי');
-        break;
-      case 'pesach':
-        setTitlePage('תפריט פסח');
-        break;
-      default:
-        setTitlePage('');
-        break;
-    }
-    dispatch({
-      type: 'SET_MENU_TYPE',
-      payload: menuType.length ? menuType : '',
-    });
+  const visible = useMemo(() => {
+    const byCat =
+      activeCat === null
+        ? menuProducts
+        : menuProducts.filter(
+            (p) => Number(p.Category?.id ?? p.categoryId) === activeCat
+          );
+    return searchProducts(byCat, query);
+  }, [menuProducts, activeCat, query]);
+
+  const handleOpen = useCallback(
+    (product) => {
+      // ProductPreview renders from state.product immediately, then refetches.
+      dispatch({ type: 'SET_PRODUCT', payload: _.cloneDeep(product) });
+      history.push({
+        pathname: `/product/${product.id}`,
+        state: `${location.pathname}${location.search}`,
+      });
+    },
+    [dispatch, history, location.pathname, location.search]
+  );
+
+  const handleAdd = useCallback((product) => {
+    setQuickAddProduct(product);
   }, []);
-  useEffect(() => getCategoriesMenuCallBack(), [menuType]);
+
+  const cards = useMemo(
+    () =>
+      visible.map((product) =>
+        toCardVM(product, { onOpen: handleOpen, onAdd: handleAdd })
+      ),
+    [visible, handleOpen, handleAdd]
+  );
+
+  const enabledMenus = useMemo(
+    () => MENU_ORDER.filter((type) => !!menuEnables[type]),
+    [menuEnables]
+  );
+  const showTabs = enabledMenus.length > 1;
+
+  const menuLabel = MENU_LABEL[menuType] || '';
+  const titlePage = menuLabel ? `תפריט ${menuLabel}` : 'תפריט';
+
   return (
-    <Grid className="menu">
+    <main className={`${classes.page} gb-pad gbFade`}>
       <Helmet>
         <title>קייטרינג גבאי - תפריט</title>
         <meta name="menu-list" content="menu list" />
         <meta name="robots" content="all" />
       </Helmet>
-      <Grid className={flexCenter}>
-        {titlePage && (
-          <Typography
-            aria-label={titlePage}
-            fontSize={'4rem'}
-            variant="h1"
-            gutterBottom
-          >
-            {titlePage}
-          </Typography>
-        )}
-      </Grid>
+
+      <div className={classes.head}>
+        <div className={classes.eyebrow}>התפריט שלנו</div>
+        <h1 className={classes.title} aria-label={titlePage}>
+          {titlePage}
+        </h1>
+      </div>
+
+      {showTabs && (
+        <nav className={classes.tabs} aria-label="בחירת תפריט">
+          {enabledMenus.map((type) => (
+            <button
+              key={type}
+              type="button"
+              className={`${classes.tab} ${
+                type === menuType ? classes.tabActive : ''
+              }`}
+              aria-current={type === menuType ? 'page' : undefined}
+              onClick={() => history.push(`/menu/${type}`)}
+            >
+              {MENU_LABEL[type]}
+            </button>
+          ))}
+        </nav>
+      )}
+
+      <div className={classes.searchWrap}>
+        <svg
+          className={classes.searchIcon}
+          viewBox="0 0 24 24"
+          width="20"
+          height="20"
+          fill="none"
+          stroke={colors.textFaint}
+          strokeWidth="2"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.5" y2="16.5" />
+        </svg>
+        <input
+          type="search"
+          className={classes.searchInput}
+          value={query}
+          onChange={(ev) => setQuery(ev.target.value)}
+          placeholder="חיפוש מנה..."
+          aria-label="חיפוש מנה בתפריט"
+        />
+      </div>
+
+      {categories.length > 0 && (
+        <ul className={classes.chips} aria-label="סינון לפי קטגוריה">
+          <li>
+            <button
+              type="button"
+              className={`${classes.chip} ${
+                activeCat === null ? classes.chipActive : ''
+              }`}
+              aria-pressed={activeCat === null}
+              onClick={() => setActiveCat(null)}
+            >
+              הכל
+            </button>
+          </li>
+          {categories.map((cat) => (
+            <li key={cat.id}>
+              <button
+                type="button"
+                className={`${classes.chip} ${
+                  activeCat === Number(cat.id) ? classes.chipActive : ''
+                }`}
+                aria-pressed={activeCat === Number(cat.id)}
+                onClick={() => setActiveCat(Number(cat.id))}
+              >
+                {cat.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className={classes.srOnly} role="status" aria-live="polite">
+        {loading ? 'טוען את התפריט' : `נמצאו ${visible.length} מנות`}
+      </div>
+
+      {loading && (
+        <div className={classes.state}>
+          <CircularProgress aria-label="טוען את התפריט" />
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className={classes.state}>
+          <div className={classes.stateIcon}>😕</div>
+          <div className={classes.stateTitle}>לא הצלחנו לטעון את התפריט</div>
+          <div className={classes.stateText}>
+            נסו לרענן את העמוד, או התקשרו אלינו: 04-6734949
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && cards.length > 0 && (
+        <div className="gb-grid4">
+          {cards.map((vm) => (
+            <ProductCard key={vm.id} vm={vm} showCat />
+          ))}
+        </div>
+      )}
+
+      {!loading && !error && cards.length === 0 && (
+        <div className={classes.state}>
+          <div className={classes.stateIcon} aria-hidden="true">
+            🔍
+          </div>
+          <div className={classes.stateTitle}>לא מצאנו מנות שמתאימות</div>
+          <div className={classes.stateText}>נסו חיפוש אחר או בחרו קטגוריה</div>
+        </div>
+      )}
+
+      <QuickAddModal
+        product={quickAddProduct}
+        open={!!quickAddProduct}
+        onClose={() => setQuickAddProduct(null)}
+        onAdded={() => setQuickAddProduct(null)}
+      />
+
       {menuType === 'pesach' ? (
         <BasicModal
           contnentLineOne={'הזמנות לחג הפסח מתבצעות בכפולות של חמש מנות.'}
@@ -158,15 +465,7 @@ export const Menu = ({ menuType }) => {
           withCloseBtn={true}
         />
       ) : null}
-      <Grid className={gridMenu}>
-        {categories && categories.length ? (
-          categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))
-        ) : (
-          <CircularProgress></CircularProgress>
-        )}
-      </Grid>
+
       {menuEnables['message_home_page'] && (
         <BasicModal
           contnentLineOne={`האתר סגור להזמנות חדשות, עקב עבודת תחזוקה באתר.
@@ -179,6 +478,7 @@ export const Menu = ({ menuType }) => {
           }
         />
       )}
+
       {isThursdayAndTime() && (
         <BasicModal
           contnentLineOne={`האתר סגור להזמנות חדשות, עד יום שבת בשעה 8:00.`}
@@ -192,9 +492,6 @@ export const Menu = ({ menuType }) => {
           }
         />
       )}
-      <Grid mt={2} mb={2} container className={flexCenter}>
-        <BackButton text="חזור" to="/" classProp={'center'}></BackButton>
-      </Grid>
-    </Grid>
+    </main>
   );
 };

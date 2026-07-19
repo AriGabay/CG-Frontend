@@ -1,125 +1,205 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
-import { makeStyles } from '@mui/styles';
 import CircularProgress from '@mui/material/CircularProgress';
-import { PlusMinus } from '../PlusMinus';
+import { makeStyles } from '@mui/styles';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
+import { PlusMinus } from '../PlusMinus';
+import { priceInfo, money } from '../../services/viewModel.service';
+import { colors, radii, fonts } from '../../styles/designTokens';
 
 const useStyles = makeStyles({
-  marginTop: {
-    marginTop: '25px',
-  },
-  addToCartBtn: {
-    background:
-      'linear-gradient(90deg, hsla(36, 50%, 30%, 1) 0%, hsla(36, 35%, 56%, 0.8) 90%)',
-    borderRadius: 3,
-    color: 'white',
-    height: 48,
-    padding: 30,
-    paddingTop: 0,
-    paddingBottom: 0,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-  },
-  Grid: {
+  wrap: {
     display: 'flex',
-    flexDirection: 'row',
-    direction: 'row',
-    justify: 'space-evenly',
-    alignItems: 'center',
-    paddingRight: 30,
-    paddingLeft: 30,
+    flexDirection: 'column',
+    gap: 10,
   },
-  buttonPlusMinus: {
+  label: {
+    fontWeight: 700,
+    fontSize: 14,
+    color: colors.textSoft,
+  },
+  // The +/- controls come from <PlusMinus>, which renders its own wrapper div.
+  // `display:contents` dissolves that wrapper so the two buttons become flex
+  // items here and can be ordered around the read-out: [−] [units] [+].
+  stepper: {
     display: 'flex',
-    justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 0,
-    padding: 0,
+    justifyContent: 'center',
+    gap: 14,
+    alignSelf: 'flex-start',
+    background: colors.bg,
+    borderRadius: radii.pill,
+    padding: '8px 12px',
+    '& > div': { display: 'contents' },
+    '& > span': { order: 2 },
+    '& > div > button': {
+      order: 1,
+      width: 42,
+      height: 42,
+      minWidth: 42,
+      padding: 0,
+      borderRadius: '50%',
+      border: `1px solid ${colors.borderInput} !important`,
+      background: `${colors.surface} !important`,
+      color: `${colors.text} !important`,
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      transition: 'transform .12s, border-color .12s',
+      '&:hover': {
+        borderColor: `${colors.green} !important`,
+        transform: 'scale(1.06)',
+      },
+      '&:focus-visible': {
+        outline: `3px solid ${colors.greenDeep}`,
+        outlineOffset: 2,
+      },
+      // Stretch the icon over the whole button so every pixel of the control
+      // is clickable (the icon, not the button, carries the click handler).
+      '& svg': {
+        width: '100%',
+        height: '100%',
+        padding: 9,
+        boxSizing: 'border-box',
+      },
+    },
+    '& > div > button:first-child': { order: 3 },
+  },
+  amount: {
+    fontWeight: 800,
+    fontSize: 20,
+    minWidth: 110,
+    textAlign: 'center',
+    color: colors.text,
+  },
+  hint: {
+    fontSize: 13,
+    color: colors.textFaint,
+    fontWeight: 600,
+  },
+  totalRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+    paddingTop: 12,
+    borderTop: `1px solid ${colors.border}`,
+  },
+  totalLabel: {
+    fontWeight: 700,
+    fontSize: 15,
+    color: colors.textSoft,
+  },
+  total: {
+    fontFamily: fonts.display,
+    fontSize: 28,
+    color: colors.greenLink,
+  },
+  empty: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: colors.textFaint,
+  },
+  unavailable: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    fontSize: 15,
+    fontWeight: 600,
+    color: colors.textSoft,
+  },
+  unavailableTitle: {
+    fontFamily: fonts.display,
+    fontSize: 22,
+    color: colors.greenLink,
+  },
+  phone: {
+    color: colors.greenLink,
+    fontWeight: 800,
   },
 });
 
+/**
+ * Sold by unit: SizePrices[0] means "`size` units cost `amount`", and the
+ * order steps by `size`.
+ */
 export const PriceForUnit = ({ productOrder, setProductOrder }) => {
+  const classes = useStyles();
   let product = useSelector((state) => _.cloneDeep(state.product));
   if (!Object.keys(product).length) product = { ...productOrder };
   const [unitInput, setUnitInput] = useState(0);
   const [priceToShow, setPriceToShow] = useState(0);
-  const shekel = '₪';
-  const classes = useStyles();
+
   const setProps = useCallback(() => {
     setProductOrder(productOrder);
   }, [setProductOrder, productOrder]);
+
   useEffect(() => {
     setProps();
   }, [setProps]);
+
   useEffect(() => {
-    return () => {
-      setPriceToShow(0);
-      setUnitInput(0);
-    };
-  }, [productOrder?.id]);
+    setPriceToShow(0);
+    setUnitInput(0);
+  }, [product?.id]);
+
+  if (!product || !Object.keys(product).length) return <CircularProgress />;
+
+  const info = priceInfo(product);
+  const base = product.Price?.SizePrices?.[0];
+  const step = Number(base?.size) || 1;
+
   const updateOrder = (size) => {
     if (size === 0 || size === '0' || !size) return;
+    if (!base) return;
     setUnitInput(size);
-    const calc =
-      (size / product.Price.SizePrices[0].size) *
-      product.Price.SizePrices[0].amount;
+    const calc = (size / base.size) * base.amount;
     setPriceToShow(calc);
     setProductOrder({ sizeToOrder: Number(size), product, priceToShow: calc });
   };
-  return product && !!Object.keys(product).length ? (
-    <Grid>
-      <Grid className={classes.buttonPlusMinus}>
-        <TextField
-          required
-          type="number"
-          style={{ width: '150px' }}
-          aria-label="יחידות"
-          InputProps={{
-            inputProps: {
-              max: 100,
-              min: product.Price.SizePrices[0].size,
-              step: product.Price.SizePrices[0].size,
-            },
-          }}
-          label="יחידות"
-          value={unitInput}
-          onChange={(event) => updateOrder(event.target.value)}
-          onKeyDown={(event) =>
-            (event.target.value === '0' || event.target.value === 0) ??
-            event.preventDefault()
-          }
-          onKeyPress={(event) => event.preventDefault()}
+
+  if (!info.available) {
+    return (
+      <div className={classes.unavailable}>
+        <span className={classes.unavailableTitle}>לפרטים בטלפון</span>
+        <span>
+          למוצר זה אין מחיר מוגדר באתר. להזמנה חייגו{' '}
+          <a className={classes.phone} href="tel:04-6734949">
+            04-6734949
+          </a>
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={classes.wrap}>
+      <div className={classes.label}>בחרו כמות</div>
+      <div className={classes.stepper}>
+        <span className={classes.amount} aria-live="polite">
+          {unitInput} יחידות
+        </span>
+        <PlusMinus
+          type="unit"
+          size={product.Price}
+          input={unitInput}
+          updateOrder={updateOrder}
         />
-        {product.Price && (
-          <PlusMinus
-            type="unit"
-            size={product.Price}
-            input={unitInput}
-            updateOrder={updateOrder}
-          ></PlusMinus>
-        )}
-      </Grid>
-      <Typography>לשינוי כמות המוצר יש להשתמש בכפתורים פלוס ומינוס</Typography>
-      <Grid>
-        {priceToShow !== 0 ? (
-          priceToShow && (
-            <Typography mt={2} mb={2}>
-              מחיר: {priceToShow}
-              {shekel}
-            </Typography>
-          )
+      </div>
+      <div className={classes.hint}>
+        לשינוי הכמות יש להשתמש בכפתורי הפלוס והמינוס, בכפולות של {step} יחידות
+      </div>
+      <div className={classes.totalRow}>
+        {Number(priceToShow) ? (
+          <>
+            <span className={classes.totalLabel}>{'סה"כ'}</span>
+            <span className={classes.total}>{money(priceToShow)}</span>
+          </>
         ) : (
-          <Typography mt={2} mb={2}>
-            נא לבחור כמות יחידות
-          </Typography>
+          <span className={classes.empty}>נא לבחור כמות יחידות</span>
         )}
-      </Grid>
-    </Grid>
-  ) : (
-    <CircularProgress></CircularProgress>
+      </div>
+    </div>
   );
 };

@@ -1,333 +1,566 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/MenuOutlined';
-import { NavLink } from 'react-router-dom';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import { cartService } from '../../services/cartService';
-import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Link, NavLink, useHistory, useLocation } from 'react-router-dom';
+import { ImageCloud } from '../ImageCloud/ImageCloud';
 import { Cart } from '../Cart';
-import getCustomTheme from '../../hooks/getCustomTheme';
-import { ShakeRotate } from 'reshake';
-import SearchInput from '../SearchInput/SearchInput';
+import { cartService } from '../../services/cartService';
+import { eventBus } from '../../services/event-bus';
+import { colors, radii, layout } from '../../styles/designTokens';
 
-const customTheme = getCustomTheme();
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-  ColorNavLink: {
-    color: 'black',
-    textDecoration: 'none',
-    fontWeight: '600 !important',
-    '&:hover': {
-      transform: 'scale(1.1)',
-    },
-  },
-  Navlink: {
-    textDecoration: 'none',
-    marginLeft: 5,
-    marginRight: 5,
-  },
-  CenterToolBar: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    Width: '90%',
-  },
-  CenterToolBarr: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  toolBar: {
-    '@media (max-width: 700px)': {
-      transition: 'top 600ms cubic-bezier(0.17, 0.04, 0.03, 0.94)',
-      alignItems: 'flex-start',
-      flexDirection: 'column',
-      position: 'fixed !important',
-      backgroundColor: customTheme.palette.primary.main,
-      right: '0',
-      left: '0',
-      top: '0',
-      bottom: '0',
-      marginLeft: '0',
-      zIndex: 10000,
-    },
-  },
-  colorWhite: {
-    color: 'white',
-    paddingRight: theme.spacing(1),
-  },
-  Header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'inherit',
-  },
-
-  LogoContainer: {
-    width: '10%',
-  },
-  Width90: {
-    width: '90%',
-  },
-  paper: {
-    backgroundColor: `${customTheme.palette.primary.main}!important`,
-  },
-  exitButtom: {
-    display: 'none',
-    '@media (max-width: 700px)': {
-      position: 'relative',
-      display: 'unset',
-      margin: '0 auto',
-      padding: '10px',
-      borderRadius: '8rem',
-      with: '100%',
-      height: '100%',
-      cursor: 'pointer',
-      backgroundColor: 'white',
-      zIndex: 100000,
-    },
-  },
-  startIcon: {
-    marginRight: '0px',
-  },
-  ButtonCart: {
-    paddingRight: '0px !important',
-    '@media (max-width: 700px)': {
-      paddingTop: '0px !important',
-    },
-  },
-  cancelHover: {
-    '&:hover': {
-      backgroundColor: 'unset !important',
-      textDecoration: 'unset',
-    },
-    '&:focus': {
-      // outline: 'none',
-      background: 'transparent !important',
-      outline: 'none !important',
-      backgroundColor: 'transparent !important',
-      boxShadow: 'none !important',
-      borderRadius: '0 !important',
-    },
-  },
-  customRipple: {
-    '& .MuiTouchRipple-root span': {
-      border: '1px solid black',
-      backgroundColor: 'transparent !important',
-      height: 'unset !important',
-      right: '0 !important',
-      left: '0 !important',
-      top: '0 !important',
-      bottom: '0 !important',
-      animationTimingFunction: 'unset !important',
-      animationName: 'unset !important',
-      opacity: 'unset !important',
-    },
-    '& .MuiTouchRipple-child': {
-      borderRadius: 'unset !important',
-    },
-  },
-}));
-
-const style = {
-  flexDirection: 'row',
-  justifyContent: 'center',
+/** Real business details — sourced from src/pages/Contact and src/pages/About. */
+export const BUSINESS = {
+  phoneDisplay: '04-6734949',
+  phoneHref: 'tel:04-6734949',
+  email: 'gabay.catering@gmail.com',
+  address: 'המברג 10, טבריה',
 };
+
+/**
+ * Every claim in this strip must be traceable to existing site copy, so no
+ * invented hours / certifications / addresses reach a real customer:
+ *   hours    -> HomePage.jsx ("הקייטרינג פתוח בימי שישי מהשעה 7:00 עד 14:00")
+ *   address  -> Contact.jsx / About.jsx ("המברג 10, טבריה")
+ *   kashrut  -> HomePage.jsx logo alt ("בהשגחת הרבנות, כשר למהדרין טבריה")
+ */
+const ANNOUNCEMENT =
+  'איסוף בימי שישי 7:00–14:00 · המברג 10, טבריה · כשר למהדרין בהשגחת הרבנות טבריה';
+
+const DEFAULT_MENU_PATH = '/menu/weekend';
+
+const NAV_LINKS = [
+  { to: '/', label: 'בית', exact: true },
+  { to: DEFAULT_MENU_PATH, label: 'התפריט', exact: false },
+  { to: '/about', label: 'עלינו', exact: false },
+  { to: '/contact', label: 'צור קשר', exact: false },
+];
+
+const MOBILE_EXTRA_LINKS = [
+  { to: '/AccessibilityAnnouncement', label: 'הצהרת נגישות' },
+];
+
+const useStyles = makeStyles({
+  announcement: {
+    background: colors.text,
+    color: colors.cream,
+    fontSize: 14,
+    fontWeight: 500,
+    textAlign: 'center',
+    padding: '9px 16px',
+    letterSpacing: '.2px',
+    lineHeight: 1.5,
+  },
+  header: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 50,
+    background: 'rgba(245,241,234,.92)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    borderBottom: `1px solid ${colors.border}`,
+  },
+  bar: {
+    maxWidth: layout.maxWidth,
+    margin: '0 auto',
+    padding: '12px 22px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 16,
+    flexWrap: 'wrap',
+  },
+  logoLink: {
+    display: 'block',
+    flex: 'none',
+    lineHeight: 0,
+    borderRadius: radii.sm,
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 3,
+    },
+  },
+  logoImg: {
+    height: 52,
+    width: 'auto',
+    maxWidth: 120,
+    objectFit: 'contain',
+    '@media (max-width: 640px)': {
+      height: 42,
+    },
+  },
+  navLinks: {
+    display: 'flex',
+    gap: 26,
+    fontWeight: 600,
+    fontSize: 16,
+    marginInlineStart: 8,
+  },
+  navLink: {
+    color: colors.text,
+    textDecoration: 'none',
+    padding: '4px 2px',
+    borderRadius: 6,
+    transition: 'color .15s',
+    '&:hover': { color: colors.greenLink },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 3,
+    },
+  },
+  navLinkActive: {
+    color: colors.greenLink,
+    boxShadow: `inset 0 -2px 0 ${colors.green}`,
+  },
+  searchForm: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    minWidth: 0,
+  },
+  searchWrap: {
+    position: 'relative',
+    width: '100%',
+    maxWidth: 360,
+  },
+  searchIcon: {
+    position: 'absolute',
+    top: '50%',
+    insetInlineStart: 14,
+    transform: 'translateY(-50%)',
+    pointerEvents: 'none',
+  },
+  searchInput: {
+    width: '100%',
+    border: `1px solid ${colors.borderInput}`,
+    background: colors.surface,
+    borderRadius: radii.pill,
+    padding: '11px 16px',
+    paddingInlineStart: 44,
+    paddingInlineEnd: 16,
+    fontSize: 15,
+    color: colors.text,
+    outline: 'none',
+    '&::placeholder': { color: colors.textFaint },
+    '&:focus': {
+      borderColor: colors.green,
+      boxShadow: `0 0 0 3px ${colors.greenPale}`,
+    },
+  },
+  phoneLink: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 7,
+    color: colors.text,
+    fontWeight: 700,
+    fontSize: 15,
+    flex: 'none',
+    textDecoration: 'none',
+    borderRadius: 6,
+    '&:hover': { color: colors.greenLink },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 3,
+    },
+  },
+  cartBtn: {
+    position: 'relative',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    background: colors.green,
+    color: '#fff',
+    border: 'none',
+    borderRadius: radii.pill,
+    padding: '11px 20px',
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: 'pointer',
+    flex: 'none',
+    boxShadow: '0 8px 18px -8px rgba(94,124,79,.7)',
+    transition: 'background .15s, transform .12s',
+    '&:hover': { background: colors.greenDeep },
+    '&:active': { transform: 'translateY(1px)' },
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 2,
+    },
+  },
+  cartBadge: {
+    background: '#fff',
+    color: colors.greenLink,
+    fontWeight: 800,
+    fontSize: 13,
+    borderRadius: radii.pill,
+    minWidth: 22,
+    height: 22,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '0 6px',
+  },
+  burger: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 42,
+    height: 42,
+    flex: 'none',
+    border: `1px solid ${colors.borderInput}`,
+    background: colors.surface,
+    color: colors.text,
+    borderRadius: radii.sm,
+    cursor: 'pointer',
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 2,
+    },
+  },
+  mobileNav: {
+    borderTop: `1px solid ${colors.border}`,
+    background: colors.bg,
+    padding: '10px 22px 16px',
+  },
+  mobileList: {
+    listStyle: 'none',
+    margin: 0,
+    padding: 0,
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  mobileLink: {
+    display: 'block',
+    padding: '13px 4px',
+    fontSize: 17,
+    fontWeight: 700,
+    color: colors.text,
+    textDecoration: 'none',
+    borderBottom: `1px solid ${colors.border}`,
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: -2,
+    },
+  },
+  mobilePhone: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 7,
+    marginTop: 14,
+    fontWeight: 700,
+    fontSize: 16,
+    color: colors.greenLink,
+  },
+});
+
+const IconSearch = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke={colors.textFaint}
+    strokeWidth="2"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <line x1="21" y1="21" x2="16.5" y2="16.5" />
+  </svg>
+);
+
+const IconPhone = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="17"
+    height="17"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.6A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2Z" />
+  </svg>
+);
+
+const IconCart = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <circle cx="9" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L23 6H6" />
+  </svg>
+);
+
+const IconBurger = ({ open }) => (
+  <svg
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {open ? (
+      <>
+        <line x1="5" y1="5" x2="19" y2="19" />
+        <line x1="19" y1="5" x2="5" y2="19" />
+      </>
+    ) : (
+      <>
+        <line x1="4" y1="7" x2="20" y2="7" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <line x1="4" y1="17" x2="20" y2="17" />
+      </>
+    )}
+  </svg>
+);
+
 export const AppHeader = () => {
-  const matches = useMediaQuery('(min-width:700px)');
   const classes = useStyles();
+  const history = useHistory();
+  const location = useLocation();
+  const isMobile = useMediaQuery('(max-width:900px)');
+
+  const [cart, setCart] = useState([]);
+  const [cartCount, setCartCount] = useState(0);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [, setIsOpenMenu] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const [cart, setCart] = useState();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const [query, setQuery] = useState('');
 
-  const getProductCart = useCallback(async () => {
+  const isMountedRef = useRef(true);
+  // Last query string this component itself put into the URL. Used so the
+  // URL -> input sync below ignores our own navigations.
+  const lastPushedRef = useRef('');
+
+  const isMenuRoute = location.pathname.startsWith('/menu/');
+
+  /* ---------------- cart count (live, via eventBus) ---------------- */
+
+  const refreshCart = useCallback(async () => {
     const cartData = await cartService.getCart();
-    setCart(cartData);
-  }, [setCart]);
+    if (!isMountedRef.current) return;
+    const items = Array.isArray(cartData) ? cartData : [];
+    setCart(items);
+    setCartCount(items.length);
+  }, []);
 
-  const handleChange = () => {
-    setChecked((prev) => !prev);
-  };
-  const handleClick = (event) => {
+  useEffect(() => {
+    isMountedRef.current = true;
+    refreshCart();
+    eventBus.on('addProductToCart', refreshCart);
+    eventBus.on('removeProductToCart', refreshCart);
+    eventBus.on('checkOutOrder', refreshCart);
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [refreshCart]);
+
+  const openCart = (event) => {
     setAnchorEl(event.currentTarget);
-    getProductCart();
-    setChecked(false);
+    setIsMobileNavOpen(false);
+    refreshCart();
   };
+
+  /* ---------------- search -> /menu/:type?q= ---------------- */
+
+  const goSearch = useCallback(
+    (value) => {
+      const trimmed = value.trim();
+      const onMenu = location.pathname.startsWith('/menu/');
+      const base = onMenu ? location.pathname : DEFAULT_MENU_PATH;
+      // Only keep sibling query params when we are already on the menu page.
+      const params = new URLSearchParams(onMenu ? location.search : '');
+      if (trimmed) params.set('q', trimmed);
+      else params.delete('q');
+      const qs = params.toString();
+      const target = qs ? `${base}?${qs}` : base;
+
+      lastPushedRef.current = trimmed;
+      if (onMenu) history.replace(target);
+      else history.push(target);
+    },
+    [history, location.pathname, location.search]
+  );
+
+  // Debounced search-as-you-type.
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed === lastPushedRef.current) return undefined;
+    // Do not yank the visitor off another page for a single character.
+    if (!isMenuRoute && trimmed.length < 2) return undefined;
+    const timeoutId = setTimeout(() => goSearch(query), 400);
+    return () => clearTimeout(timeoutId);
+  }, [query, isMenuRoute, goSearch]);
+
+  // Keep the input in sync with the URL (deep links, back/forward, nav away).
+  useEffect(() => {
+    const urlQuery = new URLSearchParams(location.search).get('q') || '';
+    if (urlQuery !== lastPushedRef.current) {
+      lastPushedRef.current = urlQuery;
+      setQuery(urlQuery);
+    }
+  }, [location.search]);
+
+  const onSubmitSearch = (event) => {
+    event.preventDefault();
+    goSearch(query);
+  };
+
+  /* ---------------- mobile nav ---------------- */
+
+  useEffect(() => {
+    setIsMobileNavOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isMobile) setIsMobileNavOpen(false);
+  }, [isMobile]);
+
+  const closeMobileNav = () => setIsMobileNavOpen(false);
 
   return (
-    <AppBar
-      position="static"
-      style={style}
-      color="default"
-      className={classes.Header}
-      classes={{ root: classes.paper }}
-    >
-      <Grid className={classes.Width90}>
-        {!matches ? (
-          <Grid
-            className={classes.Header}
-            style={{ justifyContent: 'flex-start' }}
-          >
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="menu"
-              onClick={() => handleChange()}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Button
-              role="button"
-              tabIndex={0}
-              aria-haspopup="true"
-              aria-label="עגלת קניות"
-              onClick={(event) => handleClick(event)}
-              sx={{ color: 'black' }}
-              color="secondary"
-              style={{ color: 'black', background: 'transparent' }}
-              startIcon={
-                <ShoppingCartOutlinedIcon
-                  style={{ color: 'black', background: 'transparent' }}
-                />
-              }
-            >
-              <Typography style={{ paddingRight: '10px', fontWeight: 600 }}>
-                עגלת קניות
-              </Typography>
-            </Button>
-            {anchorEl && (
-              <Cart
-                cart={cart}
-                anchorEl={anchorEl}
-                setAnchorEl={setAnchorEl}
-                setCart={setCart}
-                setIsOpenMenu={setIsOpenMenu}
-              ></Cart>
-            )}
-            {!matches && <SearchInput />}
-          </Grid>
-        ) : null}
-        {(matches || checked) && (
-          <Grid className={classes.CenterToolBarr}>
-            <Typography
-              className={classes.exitButtom}
-              onClick={() => setChecked(false)}
-            >
-              X
-            </Typography>
-            <Toolbar
-              classes={{ root: classes.toolBar }}
-              className={classes.CenterToolBar}
-            >
-              <NavLink
-                onClick={() => setChecked(false)}
-                className={classes.Navlink}
-                to="/"
-              >
-                <Typography aria-label="בית" className={classes.ColorNavLink}>
-                  בית
-                </Typography>
-              </NavLink>
-              <NavLink
-                onClick={() => setChecked(false)}
-                className={classes.Navlink}
-                to="/about"
-              >
-                <Typography aria-label="אודות" className={classes.ColorNavLink}>
-                  אודות
-                </Typography>
-              </NavLink>
+    <>
+      <div className={classes.announcement}>{ANNOUNCEMENT}</div>
 
+      <header className={classes.header}>
+        <div className={classes.bar}>
+          <Link
+            to="/"
+            className={classes.logoLink}
+            aria-label="קייטרינג גבאי — מעבר לדף הבית"
+          >
+            <ImageCloud
+              ClassName={classes.logoImg}
+              imageId="old_logo_rssqwk"
+              maxHeight={104}
+              alt="הלוגו של קייטרינג גבאי"
+            />
+          </Link>
+
+          <nav className={`gb-navlinks ${classes.navLinks}`} aria-label="ניווט ראשי">
+            {NAV_LINKS.map((link) => (
               <NavLink
-                onClick={() => setChecked(false)}
-                className={classes.Navlink}
-                to="/contact"
+                key={link.to}
+                to={link.to}
+                exact={link.exact}
+                className={classes.navLink}
+                activeClassName={classes.navLinkActive}
               >
-                <Typography
-                  aria-label="צור קשר"
-                  className={classes.ColorNavLink}
-                >
-                  צור קשר
-                </Typography>
+                {link.label}
               </NavLink>
-              <NavLink
-                onClick={() => setChecked(false)}
-                className={classes.Navlink}
-                to="/AccessibilityAnnouncement"
-              >
-                <Typography
-                  aria-label="הצהרת נגישות"
-                  className={classes.ColorNavLink}
-                >
-                  הצהרת נגישות
-                </Typography>
-              </NavLink>
-              <Button
-                tabIndex={0}
-                aria-label="עגלת קניות"
-                aria-haspopup="true"
-                role="button"
-                onClick={(event) => handleClick(event)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    handleClick(event);
-                  }
-                }}
-                sx={{ color: 'black' }}
-                color="secondary"
-                className={classes.customRipple}
-                startIcon={
-                  <ShakeRotate
-                    style={{ fontSize: '0px', marginLeft: '8px' }}
-                    active={true}
-                    trigger=":hover, :focus"
+            ))}
+          </nav>
+
+          <form
+            className={`gb-navsearch ${classes.searchForm}`}
+            role="search"
+            onSubmit={onSubmitSearch}
+          >
+            <div className={classes.searchWrap}>
+              <span className={classes.searchIcon}>
+                <IconSearch />
+              </span>
+              <input
+                type="search"
+                className={classes.searchInput}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="חיפוש מנה, קטגוריה..."
+                aria-label="חיפוש מנה או קטגוריה בתפריט"
+              />
+            </div>
+          </form>
+
+          <a
+            href={BUSINESS.phoneHref}
+            className={classes.phoneLink}
+            aria-label={`חיוג לקייטרינג גבאי בטלפון ${BUSINESS.phoneDisplay}`}
+          >
+            <IconPhone />
+            <span className="gb-phone-txt">{BUSINESS.phoneDisplay}</span>
+          </a>
+
+          <button
+            type="button"
+            className={classes.cartBtn}
+            onClick={openCart}
+            aria-haspopup="true"
+            aria-expanded={Boolean(anchorEl)}
+            aria-label={
+              cartCount
+                ? `עגלת קניות, ${cartCount} פריטים`
+                : 'עגלת קניות, ריקה'
+            }
+          >
+            <IconCart />
+            העגלה
+            {cartCount > 0 && (
+              <span className={classes.cartBadge}>{cartCount}</span>
+            )}
+          </button>
+
+          {isMobile && (
+            <button
+              type="button"
+              className={classes.burger}
+              onClick={() => setIsMobileNavOpen((prev) => !prev)}
+              aria-expanded={isMobileNavOpen}
+              aria-controls="gb-mobile-nav"
+              aria-label={isMobileNavOpen ? 'סגירת התפריט' : 'פתיחת התפריט'}
+            >
+              <IconBurger open={isMobileNavOpen} />
+            </button>
+          )}
+        </div>
+
+        {isMobile && isMobileNavOpen && (
+          <nav
+            id="gb-mobile-nav"
+            className={classes.mobileNav}
+            aria-label="ניווט ראשי לנייד"
+          >
+            <ul className={classes.mobileList}>
+              {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link) => (
+                <li key={link.to}>
+                  <NavLink
+                    to={link.to}
+                    exact={link.exact}
+                    className={classes.mobileLink}
+                    activeClassName={classes.navLinkActive}
+                    onClick={closeMobileNav}
                   >
-                    <span
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <ShoppingCartOutlinedIcon style={{ marginLeft: '5px' }} />
-                      <Typography className={classes.ColorNavLink}>
-                        עגלת קניות
-                      </Typography>
-                    </span>
-                  </ShakeRotate>
-                }
-              ></Button>
-              {matches && <SearchInput />}
-              {anchorEl && (
-                <Cart
-                  cart={cart}
-                  anchorEl={anchorEl}
-                  setAnchorEl={setAnchorEl}
-                  setCart={setCart}
-                  setIsOpenMenu={setIsOpenMenu}
-                ></Cart>
-              )}
-            </Toolbar>
-          </Grid>
+                    {link.label}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+            <a href={BUSINESS.phoneHref} className={classes.mobilePhone}>
+              <IconPhone />
+              {BUSINESS.phoneDisplay}
+            </a>
+          </nav>
         )}
-      </Grid>
-    </AppBar>
+      </header>
+
+      {anchorEl && (
+        <Cart
+          cart={cart}
+          anchorEl={anchorEl}
+          setAnchorEl={setAnchorEl}
+          setCart={setCart}
+          setIsOpenMenu={setIsMobileNavOpen}
+        />
+      )}
+    </>
   );
 };
