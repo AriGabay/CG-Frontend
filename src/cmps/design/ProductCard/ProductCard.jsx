@@ -52,6 +52,10 @@ const useStyles = makeStyles({
       objectFit: 'cover',
     },
   },
+  // Both overlays are decoration, not controls. Without pointerEvents:'none'
+  // they sit at zIndex 2 — above the title button's ::after (zIndex 1) — and
+  // swallow clicks aimed at the card, which on a narrow card is a sizeable
+  // dead zone right next to the quick-add button.
   badge: {
     position: 'absolute',
     top: 12,
@@ -63,6 +67,7 @@ const useStyles = makeStyles({
     borderRadius: radii.pill,
     padding: '5px 12px',
     zIndex: 2,
+    pointerEvents: 'none',
   },
   catChip: {
     position: 'absolute',
@@ -75,6 +80,7 @@ const useStyles = makeStyles({
     borderRadius: radii.pill,
     padding: '4px 10px',
     zIndex: 2,
+    pointerEvents: 'none',
   },
   addBtn: {
     position: 'absolute',
@@ -95,6 +101,16 @@ const useStyles = makeStyles({
     boxShadow: '0 6px 14px -6px rgba(0,0,0,.35)',
     zIndex: 3,
     transition: 'transform .12s',
+    // The painted circle stays 42px so the design is unchanged; an invisible
+    // 1px ring lifts the hit area to 44x44 (WCAG 2.2 AA 2.5.8 floors at 24, 44
+    // is the mobile norm). It inherits the button's zIndex 3, so it still sits
+    // above the title button's ::after (zIndex 1) and the two stay
+    // independently clickable. `inset` keeps this direction-agnostic under RTL.
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      inset: '-1px',
+    },
     '&:hover': { transform: 'scale(1.08)' },
     '&:disabled': { opacity: 0.45, cursor: 'not-allowed' },
   },
@@ -115,9 +131,18 @@ const useStyles = makeStyles({
     fontSize: 13.5,
     color: colors.textFaint,
     lineHeight: 1.4,
-    minHeight: 38,
-    maxHeight: 38,
+    // Two lines, clamped with an ellipsis instead of the old hard
+    // maxHeight/overflow cut, so a long description degrades legibly.
+    // The reserved height is in em, not px: under text-only zoom (Firefox, and
+    // OS-level font scaling) the font grows but px lengths do not, so the old
+    // maxHeight:38 would have sliced through the first line at 200%. 2.8em is
+    // exactly 2 x lineHeight, so it renders identically to the previous 38px
+    // at the default size and grows with the text. WCAG 2.0 AA 1.4.4.
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
     overflow: 'hidden',
+    minHeight: '2.8em',
     margin: 0,
     maxWidth: 'none',
   },

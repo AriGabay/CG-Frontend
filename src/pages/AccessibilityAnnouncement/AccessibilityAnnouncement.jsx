@@ -91,14 +91,32 @@ const useStyles = makeStyles({
     color: colors.textSoft,
   },
   link: {
+    position: 'relative',
     color: colors.greenLink,
     fontWeight: 700,
     textDecoration: 'none',
     borderRadius: 4,
+    overflowWrap: 'anywhere',
     '&:hover': { color: colors.greenDark, textDecoration: 'underline' },
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
       outlineOffset: 3,
+    },
+    // Touch-target padding. The rendered inline box is only ~19.5px tall, so an
+    // invisible overlay grows the hit area without touching the type.
+    // Capped at 38px, not 44px: consecutive contactLine links sit 40.9px apart
+    // centre-to-centre, so a 44px overlay would overlap its neighbour and a tap
+    // just below the office number would dial the mobile one. 38px leaves 3.4px
+    // of daylight while keeping contactBox's original 12px rhythm. These are
+    // inline links in a sentence, so WCAG 2.2 2.5.8 exempts them anyway.
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      insetInlineStart: 0,
+      insetInlineEnd: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      height: 38,
     },
   },
   meta: {

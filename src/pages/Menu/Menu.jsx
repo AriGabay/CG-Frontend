@@ -25,6 +25,27 @@ import { colors, fonts, layout, radii } from '../../styles/designTokens';
 // Display order of the seasonal menus in the tab strip.
 const MENU_ORDER = ['weekend', 'tishray', 'pesach'];
 
+// Pointer-target floor. WCAG 2.2 AA (2.5.8) asks for 24x24 CSS px and 44x44 is
+// the mobile norm; the menu tabs render at 40px and the category chips at 42px.
+// The fix expands only the hit area with a transparent overlay — the pill keeps
+// the size it was designed at. `height: 100%` keeps the overlay from ever being
+// smaller than the control itself (e.g. at 200% text zoom), and `minHeight`
+// raises it to 44 when the control is shorter. Logical insets keep it correct
+// under RTL.
+const tapTarget = {
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    insetInlineStart: 0,
+    insetInlineEnd: 0,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    height: '100%',
+    minHeight: 44,
+  },
+};
+
 const useStyles = makeStyles({
   page: {
     maxWidth: layout.maxWidth,
@@ -53,14 +74,20 @@ const useStyles = makeStyles({
   },
   tabs: {
     display: 'flex',
+    // Wraps instead of overflowing once a third seasonal menu is open and the
+    // viewport is very narrow. At normal widths the strip still fits one line,
+    // so nothing moves.
+    flexWrap: 'wrap',
     gap: 8,
     background: colors.surfaceSunken,
     borderRadius: 14,
     padding: 5,
     marginBottom: 22,
     width: 'fit-content',
+    maxWidth: '100%',
   },
   tab: {
+    ...tapTarget,
     border: 'none',
     background: 'transparent',
     borderRadius: 10,
@@ -97,6 +124,9 @@ const useStyles = makeStyles({
   },
   searchInput: {
     width: '100%',
+    // An <input> cannot carry a ::after overlay, so the field itself has to
+    // clear the 44px pointer-target floor.
+    minHeight: 44,
     border: `1px solid ${colors.borderInput}`,
     background: colors.surface,
     borderRadius: radii.pill,
@@ -113,9 +143,19 @@ const useStyles = makeStyles({
       borderColor: colors.greenDeep,
       boxShadow: `0 0 0 3px ${colors.greenPale}`,
     },
+    // The greenPale ring is only 1.14:1 against the page background, so on its
+    // own it is not a focus indicator anyone can see (2.4.7). Match the outline
+    // the tabs and chips already use.
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 2,
+    },
   },
   chips: {
     display: 'flex',
+    // Row gap has to stay clear of the 44px hit areas: the chips render at 42px
+    // so each overlay grows by 1px per side, leaving 8px between the hit areas
+    // of chips on adjacent rows. No overlap, so the gap stays as designed.
     gap: 10,
     flexWrap: 'wrap',
     marginBottom: 26,
@@ -123,6 +163,7 @@ const useStyles = makeStyles({
     listStyle: 'none',
   },
   chip: {
+    ...tapTarget,
     background: colors.surface,
     border: `1px solid ${colors.borderInput}`,
     borderRadius: radii.pill,

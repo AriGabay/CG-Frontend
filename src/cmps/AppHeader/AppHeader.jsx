@@ -39,6 +39,27 @@ const MOBILE_EXTRA_LINKS = [
   { to: '/AccessibilityAnnouncement', label: 'הצהרת נגישות' },
 ];
 
+/**
+ * WCAG 2.2 AA (2.5.8) puts a 24x24 CSS px floor under pointer targets, and
+ * 44x44 is the mobile norm. Several header controls are small by design, so we
+ * grow only the *hit* area with a transparent overlay and leave the rendered
+ * icon/text untouched.
+ *
+ * `left` + `translate` are deliberately physical rather than logical: a
+ * perfectly centred overlay is symmetric, so it lands identically in RTL and
+ * LTR, whereas `insetInlineStart` would need the translate flipped to match.
+ */
+const hitArea = (minWidth = 44) => ({
+  content: '""',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '100%',
+  minWidth,
+  height: 44,
+});
+
 const useStyles = makeStyles({
   announcement: {
     background: colors.text,
@@ -67,11 +88,20 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: 16,
     flexWrap: 'wrap',
+    // Trimmed on phones so the enlarged 44px controls still fit on one row
+    // rather than pushing the burger onto a line of its own, which also keeps
+    // the sticky header from eating more vertical space than it did before.
+    '@media (max-width: 640px)': {
+      padding: '10px 16px',
+    },
   },
   logoLink: {
-    display: 'block',
+    display: 'inline-flex',
+    alignItems: 'center',
     flex: 'none',
     lineHeight: 0,
+    // The logo image drops to 42px tall at <=640px; hold the target at 44.
+    minHeight: 44,
     borderRadius: radii.sm,
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
@@ -95,11 +125,17 @@ const useStyles = makeStyles({
     marginInlineStart: 8,
   },
   navLink: {
+    position: 'relative',
     color: colors.text,
     textDecoration: 'none',
     padding: '4px 2px',
     borderRadius: 6,
     transition: 'color .15s',
+    // Rendered at ~29-59 x 32. The overlay lifts every link to >=44x44 while
+    // the text and the active underline stay exactly where they were. The
+    // narrowest link ("בית") overhangs 7.5px per side into a 26px gap, so
+    // neighbouring hit areas keep ~11px of clearance and never overlap.
+    '&::after': hitArea(),
     '&:hover': { color: colors.greenLink },
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
@@ -133,6 +169,10 @@ const useStyles = makeStyles({
     border: `1px solid ${colors.borderInput}`,
     background: colors.surface,
     borderRadius: radii.pill,
+    // minHeight rather than height so the field grows with the text at 200%
+    // zoom instead of clipping (WCAG 1.4.4). 11px padding + a 15px line box
+    // left this at 42px.
+    minHeight: 44,
     padding: '11px 16px',
     paddingInlineStart: 44,
     paddingInlineEnd: 16,
@@ -146,6 +186,7 @@ const useStyles = makeStyles({
     },
   },
   phoneLink: {
+    position: 'relative',
     display: 'inline-flex',
     alignItems: 'center',
     gap: 7,
@@ -155,6 +196,11 @@ const useStyles = makeStyles({
     flex: 'none',
     textDecoration: 'none',
     borderRadius: 6,
+    // Below 900px `.gb-phone-txt` is hidden and the link collapses to the bare
+    // 17x17 icon. The overlay restores a 44x44 target there and a full-width
+    // 44px-tall one on desktop. Its 13.5px per-side overhang on mobile sits
+    // inside the bar's 16px flex gap, leaving 2.5px clear of the logo and cart.
+    '&::after': hitArea(),
     '&:hover': { color: colors.greenLink },
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
@@ -171,12 +217,19 @@ const useStyles = makeStyles({
     border: 'none',
     borderRadius: radii.pill,
     padding: '11px 20px',
+    // 11px padding around an 18px icon rendered a 40px-tall button; the pill
+    // grows 2px top and bottom to clear 44 with the label staying centred.
+    minHeight: 44,
     fontWeight: 700,
     fontSize: 15,
     cursor: 'pointer',
     flex: 'none',
     boxShadow: '0 8px 18px -8px rgba(94,124,79,.7)',
     transition: 'background .15s, transform .12s',
+    // greenDeep has since been retuned to #546F55 (5.55:1, genuinely darker
+    // than `green`), so the standard hover token is correct here again and
+    // matches the other green CTAs.
+    // and genuinely darker. Same swap NotFound/NotEnable made for this pair.
     '&:hover': { background: colors.greenDeep },
     '&:active': { transform: 'translateY(1px)' },
     '&:focus-visible': {
@@ -201,8 +254,9 @@ const useStyles = makeStyles({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 42,
-    height: 42,
+    // 42 -> 44; the 22px icon inside is unchanged.
+    width: 44,
+    height: 44,
     flex: 'none',
     border: `1px solid ${colors.borderInput}`,
     background: colors.surface,
@@ -217,7 +271,9 @@ const useStyles = makeStyles({
   mobileNav: {
     borderTop: `1px solid ${colors.border}`,
     background: colors.bg,
-    padding: '10px 22px 16px',
+    // Bottom padding trimmed by the 8px the phone link below gained when its
+    // tap target grew, so the panel keeps its original overall height.
+    padding: '10px 22px 8px',
   },
   mobileList: {
     listStyle: 'none',
@@ -243,10 +299,19 @@ const useStyles = makeStyles({
     display: 'inline-flex',
     alignItems: 'center',
     gap: 7,
-    marginTop: 14,
+    // Was a ~24px-tall target. minHeight lifts it to 44 and the smaller
+    // marginTop absorbs the 10px that grows above the text, so the number
+    // stays visually where it was relative to the last menu link.
+    minHeight: 44,
+    marginTop: 4,
     fontWeight: 700,
     fontSize: 16,
     color: colors.greenLink,
+    borderRadius: 6,
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDeep}`,
+      outlineOffset: 3,
+    },
   },
 });
 
@@ -338,6 +403,7 @@ export const AppHeader = () => {
   const [query, setQuery] = useState('');
 
   const isMountedRef = useRef(true);
+  const burgerRef = useRef(null);
   // Last query string this component itself put into the URL. Used so the
   // URL -> input sync below ignores our own navigations.
   const lastPushedRef = useRef('');
@@ -426,6 +492,19 @@ export const AppHeader = () => {
     if (!isMobile) setIsMobileNavOpen(false);
   }, [isMobile]);
 
+  // Escape closes the panel and hands focus back to the button that opened it,
+  // so a keyboard user is never left with the caret inside a hidden panel.
+  useEffect(() => {
+    if (!isMobileNavOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      setIsMobileNavOpen(false);
+      if (burgerRef.current) burgerRef.current.focus();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isMobileNavOpen]);
+
   const closeMobileNav = () => setIsMobileNavOpen(false);
 
   return (
@@ -512,6 +591,7 @@ export const AppHeader = () => {
           {isMobile && (
             <button
               type="button"
+              ref={burgerRef}
               className={classes.burger}
               onClick={() => setIsMobileNavOpen((prev) => !prev)}
               aria-expanded={isMobileNavOpen}

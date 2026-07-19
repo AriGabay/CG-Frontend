@@ -111,6 +111,15 @@ const useFormStyles = makeStyles({
     margin: '26px 0 12px',
     '&:first-child': { marginTop: 0 },
   },
+  // `.gb-form2` drops to a single column at 640px. An inline `span 2` there
+  // would still ask for a second track, so the grid grows an implicit column
+  // and the full-width fields end up narrower than the half-width ones.
+  span2: {
+    gridColumn: 'span 2',
+    '@media (max-width: 640px)': {
+      gridColumn: 'auto',
+    },
+  },
   pickupBlock: {
     background: colors.surfaceAlt,
     border: `1px solid ${colors.borderInput}`,
@@ -129,7 +138,10 @@ const useFormStyles = makeStyles({
   },
   dateNote: {
     fontSize: 13.5,
-    color: colors.textMuted,
+    // textMuted is only rated against #FFFFFF (5.17) and the page bg #F5F1EA
+    // (4.60). On the greenPale panel it drops to 4.05:1 — an AA failure at
+    // 13.5px. greenInk is 4.63:1 on the same panel.
+    color: colors.greenInk,
     background: colors.greenPale,
     borderRadius: radii.sm,
     padding: '10px 14px',
@@ -146,12 +158,30 @@ const useFormStyles = makeStyles({
       width: 'auto !important',
       margin: '0 !important',
     },
+    // 2.5.8 target size: the 24px tick keeps its size, only the padding grows
+    // from 9 to 10 so the hit box goes 42x42 -> 44x44. The checkbox is the
+    // first item in the row, so the extra pixel cannot reach another control.
+    '& .MuiCheckbox-root': {
+      padding: 10,
+    },
+    '& .MuiCheckbox-root.Mui-focusVisible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: -3,
+    },
   },
   termsLink: {
     color: `${colors.greenLink} !important`,
     fontWeight: 700,
     textDecoration: 'underline',
     minWidth: 'auto !important',
+    // The inline `padding: 0` on this button collapsed it to a 24.5px line
+    // box. minHeight restores a 44px hit area without moving the text: the
+    // row is already ~44px tall because of the checkbox next to it.
+    minHeight: '44px !important',
+    '&:focus-visible': {
+      outline: `3px solid ${colors.greenDark}`,
+      outlineOffset: 2,
+    },
   },
   submitWrap: {
     marginTop: 22,
@@ -178,6 +208,11 @@ const useFormStyles = makeStyles({
   backWrap: {
     marginTop: 16,
     marginBottom: 8,
+    // MuiButton size="large" is 42.25px tall (8px padding + 15px/1.75 text).
+    // 1.75px of extra box takes it to the 44px floor; the label does not move.
+    '& .MuiButton-root': {
+      minHeight: 44,
+    },
   },
 });
 
@@ -315,7 +350,7 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
             required={true}
           />
         </div>
-        <div style={{ gridColumn: 'span 2' }}>
+        <div className={classes.span2}>
           <Controls.Input
             label="Email"
             name="email"
@@ -370,7 +405,7 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
             onChange={handleInputChange}
           />
         </div>
-        <div style={{ gridColumn: 'span 2' }}>
+        <div className={classes.span2}>
           <Controls.Input
             label="מספר ת.ז"
             required={true}

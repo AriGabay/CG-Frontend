@@ -49,8 +49,12 @@ const useStyles = makeStyles({
     fontSize: 18,
     lineHeight: 1.6,
     color: colors.textSoft,
+    // The email address is a single unbreakable token; let it break rather than
+    // widen the row past the viewport on very narrow screens.
+    overflowWrap: 'anywhere',
     borderBottom: `1px solid ${colors.border}`,
     '&:last-child': { borderBottom: 'none' },
+    '& > span': { minWidth: 0 },
   },
   icon: {
     flex: 'none',
@@ -64,6 +68,7 @@ const useStyles = makeStyles({
     fontSize: 20,
   },
   link: {
+    position: 'relative',
     color: colors.greenLink,
     fontWeight: 700,
     textDecoration: 'none',
@@ -72,6 +77,19 @@ const useStyles = makeStyles({
     '&:focus-visible': {
       outline: `3px solid ${colors.greenDeep}`,
       outlineOffset: 3,
+    },
+    // Touch-target padding. The rendered inline box is only ~20.5px tall, so an
+    // invisible overlay grows the hit area to 44px instead of enlarging the
+    // text. Row pitch is 77px (the 44px icon, not the text, sets row height),
+    // leaving 33px of daylight between adjacent link targets.
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      insetInlineStart: 0,
+      insetInlineEnd: 0,
+      top: '50%',
+      transform: 'translateY(-50%)',
+      height: 44,
     },
   },
   note: {

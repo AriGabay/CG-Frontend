@@ -70,8 +70,16 @@ const useStyles = makeStyles({
     background: colors.surfaceAlt,
     display: 'flex',
     justifyContent: 'center',
-    // GoogleMaps sets its own inline width; let it fill the framed card.
-    '& > div': { width: '100% !important' },
+    width: '100%',
+    maxWidth: '100%',
+    // GoogleMaps sets its own inline percentage width (90% / 50%). Force the
+    // embed to fill the framed card instead, so it can never resolve against
+    // anything but this container and push the page wider than the viewport.
+    '& > div': { width: '100% !important', maxWidth: '100% !important' },
+    // design.css sets a global `img { max-width: 100% }`. Google's tile images
+    // must stay unconstrained or the map renders skewed; scope the reset off
+    // inside the embed only.
+    '& img': { maxWidth: 'none' },
   },
   addressBlock: {
     marginTop: 24,
@@ -117,7 +125,11 @@ export const About = () => {
           </section>
 
           <section className={classes.mapCard}>
-            <div className={classes.mapFrame}>
+            <div
+              className={classes.mapFrame}
+              role="region"
+              aria-label="מפת הגעה למעדנייה"
+            >
               <GoogleMaps />
             </div>
             <div className={classes.addressBlock}>
