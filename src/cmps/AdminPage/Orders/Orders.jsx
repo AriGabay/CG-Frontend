@@ -3,7 +3,7 @@ import { ordersService } from '../../../services/ordersService';
 import { productService } from '../../../services/productService';
 import { cartService } from '../../../services/cartService';
 import Grid from '@mui/material/Grid';
-import { InputLabel, MenuItem, Select } from '@mui/material';
+import { Autocomplete, TextField } from '@mui/material';
 import Controls from '../../Controls/Controls';
 import { PriceForUnit } from '../../PriceForUnit/PriceForUnit';
 import { PriceForBox } from '../../PriceForBox/PriceForBox';
@@ -36,11 +36,16 @@ export const Orders = () => {
       setProductToAdd({ ...copyProductToAdd });
     }
   }, [productOrder]);
-  const handelOrders = (event) => {
-    const orderParse = JSON.parse(event.target.value);
-    const productsLocal = orderParse.order.products;
-    setOrder({ ...orderParse });
-    setProducts([...productsLocal]);
+  // The Autocomplete hands us the selected order object directly (the old raw
+  // Select round-tripped it through JSON.stringify / JSON.parse).
+  const handelOrders = (selectedOrder) => {
+    if (!selectedOrder) {
+      setOrder({});
+      setProducts([]);
+      return;
+    }
+    setOrder({ ...selectedOrder });
+    setProducts([...selectedOrder.order.products]);
   };
   const trans = (word) => {
     if (word.includes('box')) return word.replace('box', 'קופסה');
@@ -61,55 +66,56 @@ export const Orders = () => {
   return (
     <Grid>
       {orders && orders.length && (
-        <>
-          <InputLabel id="order-to-select-label">
-            נא לבחור מספר הזמנה
-          </InputLabel>
-          <Select
-            labelId="order-to-select-label"
-            label="קטגוריה לעריכה"
-            name="editOrder"
-            value={order ? order.id : ''}
-            options={orders}
-            onChange={(event) => handelOrders(event)}
-            style={{ minWidth: '200px', marginBottom: '20px' }}
-          >
-            {orders.map((order) => {
-              return (
-                <MenuItem key={order.id} value={JSON.stringify(order)}>
-                  הזמנה מספר - {order.id}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </>
+        <Autocomplete
+          options={orders}
+          value={orders.find((o) => o.id === order?.id) || null}
+          onChange={(_event, selectedOrder) => handelOrders(selectedOrder)}
+          getOptionLabel={(o) => `הזמנה מספר - ${o.id}`}
+          isOptionEqualToValue={(opt, val) => opt.id === val.id}
+          noOptionsText="לא נמצאו תוצאות"
+          clearText="ניקוי"
+          openText="פתיחה"
+          closeText="סגירה"
+          style={{ minWidth: '260px', marginBottom: '20px' }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              name="editOrder"
+              label="נא לבחור מספר הזמנה"
+              variant="outlined"
+            />
+          )}
+        />
       )}
       {order &&
         !!Object.keys(order).length &&
         allProducts &&
         allProducts.length && (
           <div>
-            <InputLabel id="product-to-add-label">
-              נא לבחור מוצר להוספה
-            </InputLabel>
-            <Select
-              labelId="product-to-add-label"
-              style={{ minWidth: '200px', marginBottom: '20px' }}
-              label="נא לבחור מוצר להוספה"
-              name="addProduct"
+            <Autocomplete
               options={allProducts}
-              onChange={(event) =>
-                setProductToAdd(JSON.parse(event.target.value))
+              value={
+                allProducts.find((p) => p.id === productToAdd?.id) || null
               }
-            >
-              {allProducts.map((product) => {
-                return (
-                  <MenuItem key={product.id} value={JSON.stringify(product)}>
-                    {product.displayName}
-                  </MenuItem>
-                );
-              })}
-            </Select>
+              onChange={(_event, selectedProduct) =>
+                setProductToAdd(selectedProduct || {})
+              }
+              getOptionLabel={(p) => p.displayName || ''}
+              isOptionEqualToValue={(opt, val) => opt.id === val.id}
+              noOptionsText="לא נמצאו תוצאות"
+              clearText="ניקוי"
+              openText="פתיחה"
+              closeText="סגירה"
+              style={{ minWidth: '260px', marginBottom: '20px' }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  name="addProduct"
+                  label="נא לבחור מוצר להוספה"
+                  variant="outlined"
+                />
+              )}
+            />
             {productToAdd && !!Object.keys(productToAdd).length && (
               <div>
                 {productToAdd.Price.priceType === 'unit' ? (
