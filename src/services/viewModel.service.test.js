@@ -93,7 +93,7 @@ describe('priceInfo - box', () => {
   it('advertises the cheapest tier as a "from" price', () => {
     expect(info.available).toBe(true);
     expect(info.fromAmount).toBe(16);
-    expect(info.priceLabel).toBe('החל מ־₪16');
+    expect(info.priceLabel).toBe('החל מ-₪16');
   });
 
   it('uses millilitres for salads (categoryId 1) and grams elsewhere', () => {

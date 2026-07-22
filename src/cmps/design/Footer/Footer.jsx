@@ -185,8 +185,8 @@ export const Footer = () => {
               </a>
             </li>
             <li className={classes.detail}>איסוף: {BUSINESS.address}</li>
-            <li className={classes.detail}>איסוף בימי שישי: 7:00–14:00</li>
-            <li className={classes.detail}>מענה טלפוני להזמנות: 10:00–18:00</li>
+            <li className={classes.detail}>איסוף בימי שישי: 7:00-14:00</li>
+            <li className={classes.detail}>מענה טלפוני להזמנות: 10:00-18:00</li>
           </ul>
         </div>
       </div>
