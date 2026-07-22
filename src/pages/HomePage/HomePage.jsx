@@ -32,8 +32,8 @@ import {
 // artwork. Nothing here is invented — keep it that way.
 const PHONE = '04-6734949';
 const PHONE_HREF = 'tel:046734949';
-const PICKUP_HOURS = 'ימי שישי, 7:00–14:00';
-const ADDRESS = '״גני איילון״, כביש פוריה – טבריה';
+const PICKUP_HOURS = 'ימי שישי, 7:00-14:00';
+const ADDRESS = '״גני איילון״, כביש פוריה - טבריה';
 
 // The four categories the featured strip leads with, in order. Chosen for
 // spread across the menu, not from sales data.
@@ -919,7 +919,7 @@ export const HomePage = () => {
             <h2 id="home-band" className={classes.bandTitle}>
               בונים את השבת שלכם,
               <br />
-              מנה־מנה
+              מנה-מנה
             </h2>
             <p className={classes.bandText}>
               בוחרים מהתפריט בדיוק את מה שאתם רוצים ובכמות שמתאימה לכם — סלטים,
@@ -938,7 +938,7 @@ export const HomePage = () => {
                   {weekendProducts.length}
                 </div>
                 <div className={classes.bandStatBottom}>
-                  מנות ב־{categories.length} קטגוריות
+                  מנות ב-{categories.length} קטגוריות
                 </div>
               </>
             )}

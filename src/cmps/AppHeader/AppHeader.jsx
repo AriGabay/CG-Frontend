@@ -24,7 +24,7 @@ export const BUSINESS = {
  *   kashrut  -> HomePage.jsx logo alt ("בהשגחת הרבנות, כשר למהדרין טבריה")
  */
 const ANNOUNCEMENT =
-  'איסוף בימי שישי 7:00–14:00 · המברג 10, טבריה · כשר למהדרין בהשגחת הרבנות טבריה';
+  'איסוף בימי שישי 7:00-14:00 · המברג 10, טבריה · כשר למהדרין בהשגחת הרבנות טבריה';
 
 const DEFAULT_MENU_PATH = '/menu/weekend';
 

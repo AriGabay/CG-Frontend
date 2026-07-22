@@ -349,9 +349,9 @@ export const CheckoutOrder = () => {
                   <div>
                     <p className={classes.pickupTitle}>איסוף עצמי מהמטבח</p>
                     <p className={classes.pickupTxt}>
-                      רחוב המברג 10, טבריה · איסוף בימי שישי בין 8:30 ל־13:00.
+                      רחוב המברג 10, טבריה · איסוף בימי שישי בין 8:30 ל-13:00.
                       <br />
-                      הזמנות ליום שישי נסגרות ב־10:00 בבוקר. לשאלות:{' '}
+                      הזמנות ליום שישי נסגרות ב-10:00 בבוקר. לשאלות:{' '}
                       <a href="tel:04-6734949" className={classes.pickupLink}>
                         04-6734949
                       </a>

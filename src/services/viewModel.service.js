@@ -84,10 +84,10 @@ export function priceInfo(product) {
       type,
       available: true,
       fromAmount: cheapest,
-      priceLabel: single ? money(cheapest) : `החל מ־${money(cheapest)}`,
+      priceLabel: single ? money(cheapest) : `החל מ-${money(cheapest)}`,
       servingLabel: single
         ? `קופסה ${options[0].size} ${unit}`
-        : `${options.length} גדלים · ${options[0].size}–${
+        : `${options.length} גדלים · ${options[0].size}-${
             options[options.length - 1].size
           } ${unit}`,
       unitLabel: unit,
