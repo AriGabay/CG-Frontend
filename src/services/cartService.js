@@ -40,9 +40,23 @@ async function checkOutTotal(userDetails) {
       cart,
     });
     await storageService.clearAll();
-    return res;
+    return { ok: true, message: res };
   } catch (error) {
     console.log('error:', error);
+    const status = error?.response?.status;
+    const message = error?.response?.data;
+    // 502 = ההזמנה נשמרה בשרת אך המייל נכשל. יש לרוקן את העגלה כדי שהלקוח
+    // לא ישלח שוב ותיווצר הזמנה כפולה - ההודעה מפנה אותו לטלפון של העסק.
+    if (status === 502) {
+      await storageService.clearAll();
+    }
+    return {
+      ok: false,
+      message:
+        typeof message === 'string' && message
+          ? message
+          : 'שליחת ההזמנה נכשלה. נא ליצור קשר טלפוני עם קייטרינג גבאי בטלפון 04-6734949.',
+    };
   }
 }
 async function removeProductFromCart(id) {

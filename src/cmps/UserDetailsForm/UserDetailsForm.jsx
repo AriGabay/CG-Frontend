@@ -308,8 +308,13 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
     e.preventDefault();
     if (validate()) {
       values.pickUpDate = format(new Date(values.pickUpDate), 'dd/MM/yyyy');
-      checkOutTotal(values).then((msg) =>
-        eventBus.dispatch('checkOutOrder', { message: msg })
+      checkOutTotal(values).then((res) =>
+        // נשאר 'checkOutOrder' גם בכישלון - זה האירוע שמרענן את מונה העגלה
+        // ב-AppHeader. הכישלון מסומן דרך severity כדי שיוצג באדום ולא בירוק.
+        eventBus.dispatch('checkOutOrder', {
+          message: res?.message,
+          severity: res?.ok ? 'success' : 'error',
+        })
       );
       resetForm();
       history.push('/');

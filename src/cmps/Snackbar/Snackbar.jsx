@@ -46,7 +46,8 @@ export default function SimpleSnackbar() {
     });
     eventBus.on('checkOutOrder', (data) => {
       setMsg(data.message);
-      setSeverity('success');
+      // כישלון בשליחת ההזמנה/המייל חייב להיראות כשגיאה, לא כהצלחה ירוקה.
+      setSeverity(data.severity || 'success');
       handleOpen();
     });
     eventBus.on('addProduct', (data) => {
@@ -125,7 +126,8 @@ export default function SimpleSnackbar() {
         horizontal: 'center',
       }}
       open={open}
-      autoHideDuration={2000}
+      // 2 שניות לא מספיקות כדי לקרוא הודעת שגיאה ולרשום מספר טלפון.
+      autoHideDuration={severity === 'error' ? 20000 : 2000}
       onClose={handleClose}
     >
       <Alert tabIndex={0} action={action1} role="none" severity={severity}>
