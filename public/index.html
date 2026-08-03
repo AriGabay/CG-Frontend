@@ -2,6 +2,50 @@
 <html lang="he" dir="rtl">
   <head>
     <meta charset="utf-8" />
+
+    <!--
+      Google tag (gtag.js). Lives here rather than in the bundle so it starts
+      before React parses, as Google recommends. The measurement id is public —
+      it ships in the page source either way — so there is nothing to hide in an
+      environment variable, and hardcoding it keeps the build free of one more
+      setting that can silently go missing.
+    -->
+    <script>
+      (function () {
+        var MEASUREMENT_ID = 'G-9PNRG536DT';
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+
+        // Development runs the same bundle as production, so without this the
+        // reports would be polluted with our own browsing. gtag is still
+        // defined above, which lets the app call it unconditionally.
+        var host = window.location.hostname;
+        var isLocal =
+          host === '' ||
+          host === 'localhost' ||
+          host === '127.0.0.1' ||
+          host === '[::1]' ||
+          host.slice(-10) === '.localhost';
+        if (isLocal) return;
+
+        gtag('js', new Date());
+        // Page views are sent by hand from PageViewTracker: a route change in a
+        // single page app never reloads the document, so gtag would otherwise
+        // only ever see the first one. Leaving send_page_view on as well would
+        // double count the landing page.
+        gtag('config', MEASUREMENT_ID, { send_page_view: false });
+
+        var script = document.createElement('script');
+        script.async = true;
+        script.src =
+          'https://www.googletagmanager.com/gtag/js?id=' + MEASUREMENT_ID;
+        document.head.appendChild(script);
+      })();
+    </script>
+
     <!-- <link rel="icon" href="%PUBLIC_URL%/favicon.ico" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
