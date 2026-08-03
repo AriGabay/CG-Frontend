@@ -1,23 +1,31 @@
 import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_API_HOST;
+
+// A page usually fires several reads at once, and with the API down they all
+// fail together. Without this latch each one starts its own navigation and the
+// browser aborts the previous, so the visitor pays for three page loads to
+// reach the same place.
+let isLeavingForNotFound = false;
+
 export const httpService = {
   async get(endpoint, query = {}) {
     try {
       const queryStr = Object.keys(query)
         .map((key) => key + '=' + query[key])
         .join('&');
-      const response = await axios
-        .get(`${BASE_URL}${endpoint}?${queryStr}`)
-        .catch((error) => {
-          throw new Error(error);
-        });
+      const response = await axios.get(`${BASE_URL}${endpoint}?${queryStr}`);
       return response.data;
     } catch (error) {
-      if (!window.location.href.includes(404)) {
-        console.log(window.location.replace(window.location.href + '404'));
+      // Every failed read sends the visitor to the 404 page, whether the server
+      // reported the resource missing or never answered at all: with the API
+      // down there is no page left worth showing. The pathname check is what
+      // stops the 404 page's own failing requests from redirecting forever.
+      if (!isLeavingForNotFound && window.location.pathname !== '/404') {
+        isLeavingForNotFound = true;
+        window.location.replace('/404');
       }
-      throw new Error(error);
+      throw error;
     }
   },
   post(endpoint, data) {
