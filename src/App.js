@@ -3,6 +3,7 @@ import { HomePage } from './pages/HomePage/HomePage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { ProductPreview } from './pages/ProductPreview';
 import { AppHeader } from './cmps/AppHeader/AppHeader';
+import { PageViewTracker } from './cmps/PageViewTracker/PageViewTracker';
 import { Footer } from './cmps/design/Footer';
 import SimpleSnackbar from './cmps/Snackbar/Snackbar';
 import { AdminPage } from './pages/AdminPage/AdminPage';
@@ -63,6 +64,7 @@ function App() {
     <CssBaseline>
       <ThemeProvider theme={customTheme}>
         <BrowserRouter>
+          <PageViewTracker />
           <AppHeader />
           <div className="App">
             <Switch>
