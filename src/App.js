@@ -23,6 +23,7 @@ import getCustomTheme from './hooks/getCustomTheme';
 import Loadable from 'react-loadable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { AccessibilityAnnouncement } from './pages/AccessibilityAnnouncement';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { NotFound } from './pages/NotFound';
 import { NotEnable } from './pages/NotEnable';
 const customTheme = getCustomTheme();
@@ -112,6 +113,9 @@ function App() {
               </Route>
               <Route exact path="/AccessibilityAnnouncement">
                 <AccessibilityAnnouncement />
+              </Route>
+              <Route exact path="/privacy">
+                <PrivacyPolicy />
               </Route>
 
               <Route path="*">

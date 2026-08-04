@@ -12,6 +12,7 @@ const INFO_LINKS = [
   { to: '/about', label: 'עלינו' },
   { to: '/contact', label: 'צור קשר' },
   { to: '/AccessibilityAnnouncement', label: 'הצהרת נגישות' },
+  { to: '/privacy', label: 'מדיניות פרטיות' },
 ];
 
 const useStyles = makeStyles({
