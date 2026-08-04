@@ -37,6 +37,7 @@ const NAV_LINKS = [
 
 const MOBILE_EXTRA_LINKS = [
   { to: '/AccessibilityAnnouncement', label: 'הצהרת נגישות' },
+  { to: '/privacy', label: 'מדיניות פרטיות' },
 ];
 
 /**
