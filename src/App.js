@@ -4,6 +4,7 @@ import { LoginPage } from './pages/LoginPage/LoginPage';
 import { ProductPreview } from './pages/ProductPreview';
 import { AppHeader } from './cmps/AppHeader/AppHeader';
 import { PageViewTracker } from './cmps/PageViewTracker/PageViewTracker';
+import { ConsentBanner } from './cmps/ConsentBanner/ConsentBanner';
 import { Footer } from './cmps/design/Footer';
 import SimpleSnackbar from './cmps/Snackbar/Snackbar';
 import { AdminPage } from './pages/AdminPage/AdminPage';
@@ -125,6 +126,7 @@ function App() {
           </div>
           <Footer />
           <SimpleSnackbar></SimpleSnackbar>
+          <ConsentBanner />
         </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>
