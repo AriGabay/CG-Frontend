@@ -4,9 +4,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { consentService } from '../../services/consent.service';
 
 /**
- * Asks visitors covered by European privacy law whether they accept analytics
- * cookies. Everyone else never sees it — see consent.service for who is asked
- * and why enforcement does not depend on that guess.
+ * Asks every visitor whether they accept analytics cookies. What the answer
+ * changes differs by region — see consent.service for why that is settled in
+ * the tag snippet rather than here.
  */
 export function ConsentBanner() {
   // Read once on mount: the answer cannot change until the visitor gives one.
