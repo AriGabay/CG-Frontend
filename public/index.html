@@ -31,6 +31,52 @@
           host.slice(-10) === '.localhost';
         if (isLocal) return;
 
+        // Consent mode, advanced. These defaults must be set before the tag is
+        // configured or they are ignored. Storage is denied only where the law
+        // demands it, and Google resolves the region by IP on its side — the
+        // browser cannot be trusted to place itself. Everyone else is granted,
+        // which keeps the Israeli audience, nearly all of the traffic here,
+        // measured in full rather than modelled.
+        gtag('consent', 'default', {
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+          analytics_storage: 'denied',
+          region: [
+            'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+            'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+            'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', 'IS', 'LI', 'NO',
+            'GB',
+          ],
+        });
+        gtag('consent', 'default', {
+          ad_storage: 'granted',
+          ad_user_data: 'granted',
+          ad_personalization: 'granted',
+          analytics_storage: 'granted',
+        });
+
+        // A returning visitor already answered the banner, so their choice is
+        // restored here rather than waiting for React to mount. Reading it now
+        // is what makes wait_for_update unnecessary: the update lands before
+        // the tag below has even been requested, so no hit is sent under the
+        // wrong assumption. localStorage throws in Safari's private mode, and
+        // an unreadable choice simply means we ask again.
+        var consent = null;
+        try {
+          consent = window.localStorage.getItem('cg-consent');
+        } catch (error) {
+          consent = null;
+        }
+        if (consent === 'granted' || consent === 'denied') {
+          gtag('consent', 'update', {
+            ad_storage: consent,
+            ad_user_data: consent,
+            ad_personalization: consent,
+            analytics_storage: consent,
+          });
+        }
+
         gtag('js', new Date());
         // Page views are sent by hand from PageViewTracker: a route change in a
         // single page app never reloads the document, so gtag would otherwise
