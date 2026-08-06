@@ -364,6 +364,13 @@ const useStyles = makeStyles({
     borderRadius: '50%',
     margin: '0 auto 10px',
     overflow: 'hidden',
+    // cloudinary-react overlays its blur placeholder as an absolutely
+    // positioned <img>. Without a positioned ancestor that <img> resolves its
+    // 100% against the viewport instead of this circle, so it rendered at the
+    // full 375x812 and dragged the whole page sideways on a phone. `overflow`
+    // alone cannot clip it, because clipping only reaches descendants whose
+    // containing block sits inside the clipper.
+    position: 'relative',
     '& img': { width: '100%', height: '100%', objectFit: 'cover' },
   },
   catLabel: { fontWeight: 700, fontSize: 15, color: colors.text },
