@@ -159,6 +159,10 @@ const useStyles = makeStyles({
     flex: 'none',
     overflow: 'hidden',
     display: 'block',
+    // Anchors the absolutely positioned blur placeholder cloudinary-react
+    // overlays. Without it the placeholder sizes itself against the viewport
+    // and spills out of the row, widening the page on a phone.
+    position: 'relative',
     '& img': {
       width: '100%',
       height: '100%',
