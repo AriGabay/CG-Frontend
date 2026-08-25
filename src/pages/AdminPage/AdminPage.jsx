@@ -5,6 +5,7 @@ import { Price as AdminPagePrice } from '../../cmps/AdminPage/Price';
 import { SizePrice as AdminPageSizePrice } from '../../cmps/AdminPage/SizePrice';
 import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
 import { Menu as AdminMenu } from '../../cmps/AdminPage/Menu';
+import { MenuEditor } from '../../cmps/AdminPage/MenuEditor';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
 import { OrderByDate as AdminPageOrderByDate } from '../../cmps/AdminPage/OrderByDate';
 import { GetOrdersByData as AdminPageGetOrdersByData } from '../../cmps/AdminPage/GetOrdersByData';
@@ -53,6 +54,11 @@ export const AdminPage = () => {
       </Helmet>
       {Object.keys(userAuth).length && (
         <Grid mt={2} mr={2}>
+          <Button
+            className={classes.marginLeft}
+            text="הצגת תפריטים"
+            onClick={() => handleClick('MenuEditor')}
+          />
           <Button
             className={classes.marginLeft}
             text="קטגוריה"
@@ -108,6 +114,11 @@ export const AdminPage = () => {
             text="ענן תמונות"
             onClick={() => handleClick('GetCloudinaryDetails')}
           />
+          {status && status === 'MenuEditor' ? (
+            <Grid mt={2}>
+              <MenuEditor eventBus={eventBus}></MenuEditor>
+            </Grid>
+          ) : null}
           {status && status === 'Category' ? (
             <Grid mt={2}>
               <AdminPageCategory eventBus={eventBus}></AdminPageCategory>
