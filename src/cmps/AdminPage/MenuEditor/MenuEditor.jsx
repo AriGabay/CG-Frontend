@@ -26,7 +26,9 @@ import {
   AdminProductCard,
   MENU_FLAG_OF,
   MENU_TYPES,
+  buildDuplicateDraft,
 } from './AdminProductCard';
+import { DuplicateDialog } from './DuplicateDialog';
 
 const useStyles = makeStyles({
   wrap: {
@@ -187,6 +189,10 @@ const useStyles = makeStyles({
   },
 });
 
+// Makes each duplication distinct, so duplicating the same product twice
+// re-seeds the form instead of keeping the first attempt's values.
+let dupSeq = 0;
+
 /** SizePrice rows the form works on: same numbers, plus a stable React key. */
 let seedSeq = 0;
 const toFormRows = (rows) =>
@@ -227,6 +233,11 @@ export const MenuEditor = ({ eventBus }) => {
   const [editingId, setEditingId] = useState(null);
   const [busyId, setBusyId] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [duplicateSource, setDuplicateSource] = useState(null);
+  // Seeds the 'new' card when it stands for a duplicate rather than a blank
+  // product. `seedId` makes each seeding distinct so the form re-seeds when a
+  // second product is duplicated while the first form is still open.
+  const [newSeed, setNewSeed] = useState(null);
 
   const notify = useCallback(
     (message, severity = 'success') => {
@@ -323,11 +334,13 @@ export const MenuEditor = ({ eventBus }) => {
 
   /** Attach the Category / Price shapes the cards read, for a freshly created row. */
   const enrich = useCallback(
-    (row, rowsByPrice) => {
+    (row, rowsByPrice, priceList) => {
       const cat = categories.find(
         (c) => String(c.id) === String(row.categoryId)
       );
-      const price = prices.find((p) => String(p.id) === String(row.priceId));
+      const price = (priceList || prices).find(
+        (p) => String(p.id) === String(row.priceId)
+      );
       return {
         ...row,
         Category: cat ? { id: cat.id, displayName: cat.displayName } : null,
@@ -424,11 +437,30 @@ export const MenuEditor = ({ eventBus }) => {
 
   const handleSave = async (product, draft) => {
     const isNew = !product;
+    // Only a duplicate carries a source; a blank new product does not.
+    const duplicateOf = isNew ? newSeed?.source || null : null;
     setBusyId(isNew ? 'new' : product.id);
     try {
-      const newRows = await syncSizePrices(draft.priceId, draft.sizePrices);
+      // A duplicate may have asked for a price list of its own. Until now it
+      // existed only as a description, so create it before anything refers to
+      // it — this is what lets the copy be repriced without touching the
+      // original.
+      let createdPrice = null;
+      let priceId = draft.priceId;
+      if (draft.pendingPrice) {
+        createdPrice = await pricesService.addPrice({
+          displayName: draft.pendingPrice.displayName,
+          priceType: draft.pendingPrice.priceType,
+        });
+        if (!createdPrice || !createdPrice.id)
+          throw new Error('create price failed');
+        priceId = createdPrice.id;
+      }
+      const pricesNow = createdPrice ? [...prices, createdPrice] : prices;
+
+      const newRows = await syncSizePrices(priceId, draft.sizePrices);
       const rowsByPrice = { ...sizeRowsByPrice };
-      if (newRows) rowsByPrice[String(draft.priceId)] = newRows;
+      if (newRows) rowsByPrice[String(priceId)] = newRows;
 
       const payload = {
         displayName: draft.displayName,
@@ -440,7 +472,7 @@ export const MenuEditor = ({ eventBus }) => {
         isMenuWeekend: !!draft.isMenuWeekend,
         isMenuTishray: !!draft.isMenuTishray,
         isMenuPesach: !!draft.isMenuPesach,
-        priceId: draft.priceId === '' ? null : Number(draft.priceId),
+        priceId: priceId === '' ? null : Number(priceId),
       };
 
       let savedId;
@@ -453,39 +485,78 @@ export const MenuEditor = ({ eventBus }) => {
         await productService.updateProduct({ ...payload, id: savedId });
       }
 
+      // Splitting a dish off into a single menu only works if the original
+      // stops claiming that menu — otherwise both copies show up side by side.
+      // Skipped if the admin unticked the menu on the copy before saving, in
+      // which case removing the original would empty the menu of the dish.
+      const flag = MENU_FLAG_OF[menuType];
+      const detachOriginal = !!duplicateOf && !!payload[flag];
+      if (detachOriginal) {
+        await productService.updateProduct({ id: duplicateOf.id, [flag]: false });
+      }
+
+      if (createdPrice) setPrices(pricesNow);
       setSizeRowsByPrice(rowsByPrice);
       setProducts((list) => {
         // Every product on the edited price list gets the new rows, not just
         // this one — they all read their price off the same Price row.
         const patched = list.map((p) =>
-          newRows && String(p.priceId) === String(draft.priceId) && p.Price
+          newRows && String(p.priceId) === String(priceId) && p.Price
             ? {
                 ...p,
                 Price: {
                   ...p.Price,
                   SizePrices: newRows.map((r) => ({
                     ...r,
-                    priceId: Number(draft.priceId),
+                    priceId: Number(priceId),
                   })),
                 },
               }
             : p
         );
-        const saved = enrich({ ...payload, id: savedId }, rowsByPrice);
+        const withOriginal = detachOriginal
+          ? patched.map((p) =>
+              p.id === duplicateOf.id ? { ...p, [flag]: false } : p
+            )
+          : patched;
+        const saved = enrich({ ...payload, id: savedId }, rowsByPrice, pricesNow);
         return isNew
-          ? [...patched, saved]
-          : patched.map((p) => (p.id === savedId ? saved : p));
+          ? [...withOriginal, saved]
+          : withOriginal.map((p) => (p.id === savedId ? saved : p));
       });
 
       clearCatalogCache();
       setEditingId(null);
-      notify(isNew ? `${payload.displayName} נוסף בהצלחה` : `${payload.displayName} עודכן בהצלחה`);
+      setNewSeed(null);
+      notify(
+        duplicateOf
+          ? `${payload.displayName} שוכפל${
+              detachOriginal
+                ? `, והמקור הוסר מתפריט ${MENU_LABEL[menuType]}`
+                : ''
+            }`
+          : isNew
+          ? `${payload.displayName} נוסף בהצלחה`
+          : `${payload.displayName} עודכן בהצלחה`
+      );
     } catch (err) {
       console.error('save product failed', err);
       notify('השמירה נכשלה. נסה שוב.', 'error');
     } finally {
       setBusyId(null);
     }
+  };
+
+  const startDuplicate = (priceChoice) => {
+    const source = duplicateSource;
+    setDuplicateSource(null);
+    if (!source) return;
+    setNewSeed({
+      seedId: `${source.id}-${(dupSeq += 1)}`,
+      source,
+      draft: buildDuplicateDraft(source, menuType, sizeRowsFor, priceChoice),
+    });
+    setEditingId('new');
   };
 
   const handleRemoveFromMenu = async (product) => {
@@ -563,6 +634,8 @@ export const MenuEditor = ({ eventBus }) => {
               setActiveCat(null);
               setQuery('');
               setEditingId(null);
+              setNewSeed(null);
+              setDuplicateSource(null);
             }}
           >
             {MENU_LABEL[type]} ({filterByMenu(products, type).length})
@@ -591,7 +664,10 @@ export const MenuEditor = ({ eventBus }) => {
             <button
               type="button"
               className={classes.addBtn}
-              onClick={() => setEditingId('new')}
+              onClick={() => {
+                setNewSeed(null);
+                setEditingId('new');
+              }}
               disabled={editingId === 'new'}
             >
               + הוסף מוצר לתפריט
@@ -646,7 +722,11 @@ export const MenuEditor = ({ eventBus }) => {
                 priceUsage={priceUsage}
                 isEditing
                 busy={busyId === 'new'}
-                onCancel={() => setEditingId(null)}
+                seedDraft={newSeed}
+                onCancel={() => {
+                  setEditingId(null);
+                  setNewSeed(null);
+                }}
                 onSave={(draft) => handleSave(null, draft)}
               />
             )}
@@ -663,6 +743,7 @@ export const MenuEditor = ({ eventBus }) => {
                 busy={busyId === product.id}
                 onEdit={() => setEditingId(product.id)}
                 onCancel={() => setEditingId(null)}
+                onDuplicate={() => setDuplicateSource(product)}
                 onSave={(draft) => handleSave(product, draft)}
                 onRemoveFromMenu={() => handleRemoveFromMenu(product)}
                 onDeleteForever={() => setConfirmDelete(product)}
@@ -677,6 +758,16 @@ export const MenuEditor = ({ eventBus }) => {
             </div>
           )}
         </>
+      )}
+
+      {duplicateSource && (
+        <DuplicateDialog
+          product={duplicateSource}
+          menuType={menuType}
+          priceUsage={priceUsage}
+          onCancel={() => setDuplicateSource(null)}
+          onConfirm={startDuplicate}
+        />
       )}
 
       <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)}>

@@ -53,6 +53,45 @@ export function buildDraft(product, menuType, sizeRowsFor, defaults = {}) {
     isMenuPesach: product ? !!product.isMenuPesach : menuType === 'pesach',
     priceId,
     sizePrices: sizeRowsFor(priceId),
+    // Set only while duplicating with "create a new price list": the Price row
+    // does not exist yet, so it is described here and created on save.
+    pendingPrice: null,
+  };
+}
+
+/**
+ * Seed for a duplicate. A product that sits in several menus at once cannot be
+ * repriced for just one of them, because the price lives on the shared Price
+ * row — so duplicating splits one copy off into the menu being edited, with
+ * (optionally) a price list of its own.
+ *
+ * `priceChoice` comes from the duplicate dialog:
+ *   { createNew: true,  displayName, priceType, rows }  -> new list, created on save
+ *   { createNew: false }                                -> keep the original's list
+ */
+export function buildDuplicateDraft(product, menuType, sizeRowsFor, priceChoice) {
+  const base = buildDraft(product, menuType, sizeRowsFor);
+  const single = {
+    isMenuWeekend: menuType === 'weekend',
+    isMenuTishray: menuType === 'tishray',
+    isMenuPesach: menuType === 'pesach',
+  };
+  if (!priceChoice || !priceChoice.createNew) return { ...base, ...single };
+  return {
+    ...base,
+    ...single,
+    priceId: '',
+    pendingPrice: {
+      displayName: priceChoice.displayName,
+      priceType: priceChoice.priceType,
+    },
+    // Fresh rows with no id: they are created under the new list on save, so
+    // the original's rows are never touched.
+    sizePrices: (priceChoice.rows || []).map((r) => ({
+      key: nextRowKey(),
+      size: r.size,
+      amount: r.amount,
+    })),
   };
 }
 
@@ -297,9 +336,11 @@ export const AdminProductCard = ({
   priceUsage,
   isEditing,
   busy,
+  seedDraft,
   onEdit,
   onCancel,
   onSave,
+  onDuplicate,
   onRemoveFromMenu,
   onDeleteForever,
 }) => {
@@ -312,22 +353,29 @@ export const AdminProductCard = ({
   // Keyed off `isEditing` rather than an effect so the form never renders a
   // frame with stale values.
   const [editKey, setEditKey] = useState(null);
-  const currentKey = isEditing ? `${product?.id ?? 'new'}` : null;
+  // The seed id is part of the key so duplicating a second product while the
+  // first duplicate form is still open re-seeds it instead of keeping stale
+  // values (both render under the id 'new').
+  const currentKey = isEditing
+    ? `${product?.id ?? 'new'}:${seedDraft?.seedId ?? ''}`
+    : null;
   if (isEditing && editKey !== currentKey) {
     setEditKey(currentKey);
-    setDraft(buildDraft(product, menuType, sizeRowsFor));
+    setDraft(seedDraft?.draft || buildDraft(product, menuType, sizeRowsFor));
     setErrors([]);
   }
   if (!isEditing && editKey !== null) {
     setEditKey(null);
   }
 
-  const selectedPrice = useMemo(
-    () =>
-      (prices || []).find((p) => String(p.id) === String(draft?.priceId)) ||
-      null,
-    [prices, draft]
-  );
+  // A pending list has no id yet, so it stands in for the selected Price and
+  // drives the row labels and the preview exactly as a saved one would.
+  const selectedPrice = useMemo(() => {
+    if (draft?.pendingPrice) return draft.pendingPrice;
+    return (
+      (prices || []).find((p) => String(p.id) === String(draft?.priceId)) || null
+    );
+  }, [prices, draft]);
 
   // What the customer would see once this draft is saved — computed with the
   // very same helper the menu grid uses, so the preview cannot drift from it.
@@ -352,7 +400,12 @@ export const AdminProductCard = ({
     // The rows belong to the price list, so switching lists swaps the rows for
     // that list's own — editing them would otherwise silently rewrite the
     // previous list's prices.
-    setDraft((d) => ({ ...d, priceId, sizePrices: sizeRowsFor(priceId) }));
+    setDraft((d) => ({
+      ...d,
+      priceId,
+      pendingPrice: null,
+      sizePrices: sizeRowsFor(priceId),
+    }));
   };
 
   const setRow = (key, patch) =>
@@ -474,6 +527,18 @@ export const AdminProductCard = ({
             >
               ערוך
             </button>
+            <Tooltip
+              title={`יוצר עותק שמשויך רק לתפריט ${MENU_LABEL[menuType]}, כדי שאפשר יהיה לתמחר אותו בנפרד`}
+            >
+              <button
+                type="button"
+                className={classes.btn}
+                onClick={onDuplicate}
+                disabled={busy}
+              >
+                שכפל
+              </button>
+            </Tooltip>
             <Tooltip title={`מכבה את הסימון של תפריט ${MENU_LABEL[menuType]}`}>
               <button
                 type="button"
@@ -596,13 +661,32 @@ export const AdminProductCard = ({
         <div className={classes.section}>
           <div className={classes.sectionTitle}>מחירון</div>
           <div className={classes.row}>
-            <Controls.Select
-              label="מחירון"
-              name="priceId"
-              value={draft.priceId}
-              options={prices || []}
-              onChange={(e) => changePriceList(e.target.value)}
-            />
+            {draft.pendingPrice ? (
+              <div>
+                <div className={classes.sectionTitle} style={{ marginBottom: 4 }}>
+                  {draft.pendingPrice.displayName}
+                </div>
+                <div className={classes.hint}>
+                  מחירון חדש — ייווצר בשמירה, ולא ישפיע על אף מוצר אחר.
+                </div>
+                <button
+                  type="button"
+                  className={classes.btn}
+                  style={{ marginTop: 8 }}
+                  onClick={() => changePriceList('')}
+                >
+                  בחר מחירון קיים במקום
+                </button>
+              </div>
+            ) : (
+              <Controls.Select
+                label="מחירון"
+                name="priceId"
+                value={draft.priceId}
+                options={prices || []}
+                onChange={(e) => changePriceList(e.target.value)}
+              />
+            )}
             <div>
               <div className={classes.preview}>כפי שיוצג ללקוח:</div>
               <div className={classes.previewPrice}>
@@ -616,7 +700,7 @@ export const AdminProductCard = ({
 
           {selectedPrice ? (
             <div style={{ marginTop: 12 }}>
-              {sharedWithOthers && (
+              {sharedWithOthers && !draft.pendingPrice && (
                 <div className={classes.warn} style={{ marginBottom: 8 }}>
                   שים לב: המחירון הזה משותף ל-{sharedCount} מוצרים. כל שינוי
                   בסכומים כאן ישנה את המחיר גם בכל שאר המוצרים שמשתמשים בו.
