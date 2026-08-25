@@ -16,16 +16,18 @@ import { ImageCloud } from '../../ImageCloud/ImageCloud';
 import {
   MENU_LABEL,
   measureUnitFor,
+  menuFlagFor,
   priceInfo,
 } from '../../../services/viewModel.service';
 import { colors, fonts, gradientFor, radii } from '../../../styles/designTokens';
+import {
+  MENU_TYPES,
+  amountLabelFor,
+  productCount,
+  sizeLabelFor,
+} from './priceFields';
 
-export const MENU_TYPES = ['weekend', 'tishray', 'pesach'];
-export const MENU_FLAG_OF = {
-  weekend: 'isMenuWeekend',
-  tishray: 'isMenuTishray',
-  pesach: 'isMenuPesach',
-};
+export { MENU_TYPES };
 
 // Local keys for the SizePrice rows. Rows that already exist in the DB are
 // keyed by their id; rows the admin just added have no id yet, so they get a
@@ -39,12 +41,12 @@ const nextRowKey = () => `new-${(newRowSeq += 1)}`;
  * rows of whichever price list is currently selected — those live on the Price
  * row, not the product, which is why they are pulled in through `sizeRowsFor`.
  */
-export function buildDraft(product, menuType, sizeRowsFor, defaults = {}) {
-  const priceId = product ? product.priceId ?? '' : defaults.priceId ?? '';
+export function buildDraft(product, menuType, sizeRowsFor) {
+  const priceId = product ? product.priceId ?? '' : '';
   return {
     displayName: product?.displayName ?? '',
     description: product?.description ?? '',
-    categoryId: product?.categoryId ?? defaults.categoryId ?? '',
+    categoryId: product?.categoryId ?? '',
     imgUrl: product?.imgUrl ?? '',
     inStock: product ? product.inStock !== false : true,
     kitniyot: !!product?.kitniyot,
@@ -310,17 +312,6 @@ const useStyles = makeStyles({
   },
 });
 
-const SIZE_LABEL = {
-  box: (unit) => `גודל (${unit})`,
-  unit: () => 'כמות יחידות',
-  weight: () => 'כמות מינימלית (גרם)',
-};
-const AMOUNT_LABEL = {
-  box: () => 'מחיר לקופסה (₪)',
-  unit: () => 'מחיר לכמות (₪)',
-  weight: () => 'מחיר ל-100 גרם (₪)',
-};
-
 /**
  * One product inside the menu editor: reads like the customer's card when
  * closed, turns into a full-width inline form when opened. Nothing here
@@ -441,6 +432,10 @@ export const AdminProductCard = ({
         errs.push(`שורת מחיר ${i + 1}: חובה למלא גם כמות וגם מחיר.`);
       else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
         errs.push(`שורת מחיר ${i + 1}: הכמות והמחיר חייבים להיות מספרים חיוביים.`);
+      // `size` is an INTEGER column; a decimal is silently truncated by the DB,
+      // which would quietly reprice the product.
+      else if (!Number.isInteger(Number(r.size)))
+        errs.push(`שורת מחיר ${i + 1}: הכמות חייבת להיות מספר שלם.`);
     });
     if (
       !draft.isMenuWeekend &&
@@ -508,7 +503,7 @@ export const AdminProductCard = ({
               <span
                 key={type}
                 className={`${classes.flag} ${
-                  product[MENU_FLAG_OF[type]] ? classes.flagOn : ''
+                  product[menuFlagFor(type)] ? classes.flagOn : ''
                 }`}
               >
                 {MENU_LABEL[type]}
@@ -567,8 +562,11 @@ export const AdminProductCard = ({
   if (!draft) return null;
   const unit = measureUnitFor({ categoryId: draft.categoryId });
   const priceType = selectedPrice?.priceType;
-  const sharedCount = draft.priceId ? priceUsage[draft.priceId] || 0 : 0;
-  const sharedWithOthers = sharedCount > (isNew ? 0 : 1);
+  const onList = draft.priceId ? priceUsage[String(draft.priceId)] || 0 : 0;
+  const alreadyCounted =
+    !isNew && String(product.priceId) === String(draft.priceId) ? 1 : 0;
+  const sharedCount = Math.max(onList - alreadyCounted, 0);
+  const sharedWithOthers = sharedCount > 0;
 
   return (
     <article className={`${classes.card} ${classes.cardEditing}`}>
@@ -647,9 +645,9 @@ export const AdminProductCard = ({
               key={type}
               control={
                 <Checkbox
-                  checked={draft[MENU_FLAG_OF[type]]}
+                  checked={draft[menuFlagFor(type)]}
                   onChange={(e) =>
-                    set({ [MENU_FLAG_OF[type]]: e.target.checked })
+                    set({ [menuFlagFor(type)]: e.target.checked })
                   }
                 />
               }
@@ -702,15 +700,15 @@ export const AdminProductCard = ({
             <div style={{ marginTop: 12 }}>
               {sharedWithOthers && !draft.pendingPrice && (
                 <div className={classes.warn} style={{ marginBottom: 8 }}>
-                  שים לב: המחירון הזה משותף ל-{sharedCount} מוצרים. כל שינוי
-                  בסכומים כאן ישנה את המחיר גם בכל שאר המוצרים שמשתמשים בו.
+                  שים לב: המחירון הזה משמש עוד {productCount(sharedCount)}. כל
+                  שינוי בסכומים כאן ישנה את המחיר גם שם.
                 </div>
               )}
               {draft.sizePrices.map((row, i) => (
                 <div className={classes.spRow} key={row.key}>
                   <TextField
                     className={classes.narrow}
-                    label={(SIZE_LABEL[priceType] || SIZE_LABEL.box)(unit)}
+                    label={sizeLabelFor(priceType, unit)}
                     variant="outlined"
                     size="small"
                     type="number"
@@ -720,7 +718,7 @@ export const AdminProductCard = ({
                   />
                   <TextField
                     className={classes.narrow}
-                    label={(AMOUNT_LABEL[priceType] || AMOUNT_LABEL.box)()}
+                    label={amountLabelFor(priceType)}
                     variant="outlined"
                     size="small"
                     type="number"

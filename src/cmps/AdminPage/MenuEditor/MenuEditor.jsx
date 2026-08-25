@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import {
   Button as MuiButton,
@@ -19,16 +19,13 @@ import {
   MENU_LABEL,
   categoriesPresent,
   filterByMenu,
+  menuFlagFor,
   searchProducts,
 } from '../../../services/viewModel.service';
 import { colors, fonts, radii } from '../../../styles/designTokens';
-import {
-  AdminProductCard,
-  MENU_FLAG_OF,
-  MENU_TYPES,
-  buildDuplicateDraft,
-} from './AdminProductCard';
+import { AdminProductCard, buildDuplicateDraft } from './AdminProductCard';
 import { DuplicateDialog } from './DuplicateDialog';
+import { MENU_TYPES, productCount } from './priceFields';
 
 const useStyles = makeStyles({
   wrap: {
@@ -195,10 +192,13 @@ let dupSeq = 0;
 
 /** SizePrice rows the form works on: same numbers, plus a stable React key. */
 let seedSeq = 0;
+// Deliberately NOT sorted. `priceInfo` reads SizePrices[0] verbatim for unit
+// and weight pricing, so the server's row order decides the price the customer
+// pays; reordering here made the form (and its preview) disagree with the
+// customer menu. Box pricing is unaffected — priceInfo sorts box options itself.
 const toFormRows = (rows) =>
   (rows || [])
     .slice()
-    .sort((a, b) => Number(a.size) - Number(b.size))
     .map((r) => ({
       key: `db-${r.id}-${(seedSeq += 1)}`,
       id: r.id,
@@ -231,13 +231,43 @@ export const MenuEditor = ({ eventBus }) => {
   const [query, setQuery] = useState('');
   const [activeCat, setActiveCat] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [busyId, setBusyId] = useState(null);
+  // A Set, not a single id: two cards can be mid-request at once, and with a
+  // single value the second action cleared the first card's spinner and
+  // re-enabled its buttons while its request was still in flight.
+  const [busyIds, setBusyIds] = useState(() => new Set());
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const lastDeleteName = useRef('');
+  if (confirmDelete) lastDeleteName.current = confirmDelete.displayName;
   const [duplicateSource, setDuplicateSource] = useState(null);
   // Seeds the 'new' card when it stands for a duplicate rather than a blank
   // product. `seedId` makes each seeding distinct so the form re-seeds when a
   // second product is duplicated while the first form is still open.
   const [newSeed, setNewSeed] = useState(null);
+
+  const markBusy = useCallback((id) => {
+    setBusyIds((cur) => new Set(cur).add(id));
+  }, []);
+  const clearBusy = useCallback((id) => {
+    setBusyIds((cur) => {
+      const next = new Set(cur);
+      next.delete(id);
+      return next;
+    });
+  }, []);
+
+  /**
+   * Every service in this app catches its own errors and resolves with
+   * `undefined` instead of rejecting (see productService/sizePriceService), so
+   * an await that "succeeds" proves nothing about the write. Without this, a
+   * failed PUT rendered as a green "עודכן בהצלחה" while the DB kept the old row.
+   * Note the resolved shapes differ: post() gives res.data, put()/delete() give
+   * the whole axios response — so truthiness is the only portable check.
+   */
+  const mustSucceed = async (promise, what) => {
+    const res = await promise;
+    if (!res) throw new Error(`${what} failed`);
+    return res;
+  };
 
   const notify = useCallback(
     (message, severity = 'success') => {
@@ -322,7 +352,7 @@ export const MenuEditor = ({ eventBus }) => {
     [menuProducts]
   );
 
-  const visible = useMemo(() => {
+  const filtered = useMemo(() => {
     const byCat =
       activeCat === null
         ? menuProducts
@@ -331,6 +361,17 @@ export const MenuEditor = ({ eventBus }) => {
           );
     return searchProducts(byCat, query);
   }, [menuProducts, activeCat, query]);
+
+  // The card being edited stays rendered even if the current search or
+  // category would filter it out. The form's draft lives inside the card, so
+  // letting the filter unmount it silently threw away everything the admin had
+  // typed. It keeps its place in the grid; only the filter is overridden.
+  const visible = useMemo(() => {
+    if (editingId === null || editingId === 'new') return filtered;
+    if (filtered.some((p) => p.id === editingId)) return filtered;
+    const open = menuProducts.find((p) => p.id === editingId);
+    return open ? [open, ...filtered] : filtered;
+  }, [filtered, editingId, menuProducts]);
 
   /** Attach the Category / Price shapes the cards read, for a freshly created row. */
   const enrich = useCallback(
@@ -365,6 +406,14 @@ export const MenuEditor = ({ eventBus }) => {
    * new row set. Rows are compared against what the DB holds for that price
    * list, so an untouched row costs no request.
    */
+  /**
+   * Push the draft's SizePrice rows to the server and return the price list's
+   * new row set. Rows are compared against what the DB holds for that price
+   * list, so an untouched row costs no request.
+   *
+   * Returns `{ rows, created }` — `created` lets the caller roll the new rows
+   * back if a later write in the same save fails.
+   */
   const syncSizePrices = async (priceId, draftRows) => {
     if (priceId === '' || priceId === null || priceId === undefined) return null;
     const key = String(priceId);
@@ -373,92 +422,105 @@ export const MenuEditor = ({ eventBus }) => {
       draftRows.filter((r) => r.id).map((r) => String(r.id))
     );
 
-    const deletions = original
-      .filter((r) => !keptIds.has(String(r.id)))
-      .map((r) => sizePriceService.removeSizePrice(r.id));
+    await Promise.all(
+      original
+        .filter((r) => !keptIds.has(String(r.id)))
+        .map((r) =>
+          mustSucceed(sizePriceService.removeSizePrice(r.id), 'remove size price')
+        )
+    );
 
-    const updates = draftRows
-      .filter((r) => {
-        if (!r.id) return false;
-        const before = original.find((o) => String(o.id) === String(r.id));
-        return (
-          !before ||
-          Number(before.size) !== Number(r.size) ||
-          Number(before.amount) !== Number(r.amount)
-        );
-      })
-      .map((r) =>
-        sizePriceService
-          .updateSizePrice({
-            id: r.id,
-            size: Number(r.size),
-            amount: Number(r.amount),
-            priceId: Number(priceId),
-          })
-          .then(() => ({
+    const updated = await Promise.all(
+      draftRows
+        .filter((r) => {
+          if (!r.id) return false;
+          const before = original.find((o) => String(o.id) === String(r.id));
+          return (
+            !before ||
+            Number(before.size) !== Number(r.size) ||
+            Number(before.amount) !== Number(r.amount)
+          );
+        })
+        .map((r) =>
+          mustSucceed(
+            sizePriceService.updateSizePrice({
+              id: r.id,
+              size: Number(r.size),
+              amount: Number(r.amount),
+              priceId: Number(priceId),
+            }),
+            'update size price'
+          ).then(() => ({
             id: r.id,
             size: Number(r.size),
             amount: Number(r.amount),
           }))
-      );
+        )
+    );
 
-    const creations = draftRows
-      .filter((r) => !r.id)
-      .map((r) =>
-        sizePriceService
-          .addSizePrice({
-            size: Number(r.size),
-            amount: Number(r.amount),
-            priceId: Number(priceId),
-          })
-          .then((created) => ({
-            id: created?.id,
-            size: Number(r.size),
-            amount: Number(r.amount),
-          }))
+    // Sequential, not Promise.all: rows are inserted in the order they are
+    // POSTed, and for unit/weight pricing the FIRST row of the list is the one
+    // priceInfo prices from. Racing the creates made that a coin flip.
+    const created = [];
+    for (const r of draftRows.filter((row) => !row.id)) {
+      const row = await mustSucceed(
+        sizePriceService.addSizePrice({
+          size: Number(r.size),
+          amount: Number(r.amount),
+          priceId: Number(priceId),
+        }),
+        'create size price'
       );
-
-    await Promise.all(deletions);
-    const [updated, created] = await Promise.all([
-      Promise.all(updates),
-      Promise.all(creations),
-    ]);
+      if (!row.id) throw new Error('create size price returned no id');
+      created.push({ id: row.id, size: Number(r.size), amount: Number(r.amount) });
+    }
 
     const byId = new Map(updated.map((r) => [String(r.id), r]));
     const kept = draftRows
       .filter((r) => r.id)
-      .map((r) => byId.get(String(r.id)) || {
-        id: r.id,
-        size: Number(r.size),
-        amount: Number(r.amount),
-      });
-    return [...kept, ...created];
+      .map(
+        (r) =>
+          byId.get(String(r.id)) || {
+            id: r.id,
+            size: Number(r.size),
+            amount: Number(r.amount),
+          }
+      );
+    return { rows: [...kept, ...created], created };
   };
 
   const handleSave = async (product, draft) => {
     const isNew = !product;
     // Only a duplicate carries a source; a blank new product does not.
     const duplicateOf = isNew ? newSeed?.source || null : null;
-    setBusyId(isNew ? 'new' : product.id);
+    const cardId = isNew ? 'new' : product.id;
+    markBusy(cardId);
+
+    let createdPrice = null;
+    let createdRows = [];
+    let productWritten = false;
     try {
       // A duplicate may have asked for a price list of its own. Until now it
       // existed only as a description, so create it before anything refers to
       // it — this is what lets the copy be repriced without touching the
       // original.
-      let createdPrice = null;
       let priceId = draft.priceId;
       if (draft.pendingPrice) {
-        createdPrice = await pricesService.addPrice({
-          displayName: draft.pendingPrice.displayName,
-          priceType: draft.pendingPrice.priceType,
-        });
-        if (!createdPrice || !createdPrice.id)
-          throw new Error('create price failed');
+        createdPrice = await mustSucceed(
+          pricesService.addPrice({
+            displayName: draft.pendingPrice.displayName,
+            priceType: draft.pendingPrice.priceType,
+          }),
+          'create price list'
+        );
+        if (!createdPrice.id) throw new Error('create price returned no id');
         priceId = createdPrice.id;
       }
       const pricesNow = createdPrice ? [...prices, createdPrice] : prices;
 
-      const newRows = await syncSizePrices(priceId, draft.sizePrices);
+      const sync = await syncSizePrices(priceId, draft.sizePrices);
+      const newRows = sync ? sync.rows : null;
+      createdRows = sync ? sync.created : [];
       const rowsByPrice = { ...sizeRowsByPrice };
       if (newRows) rowsByPrice[String(priceId)] = newRows;
 
@@ -477,23 +539,50 @@ export const MenuEditor = ({ eventBus }) => {
 
       let savedId;
       if (isNew) {
-        const created = await productService.addProduct(payload);
-        if (!created || !created.id) throw new Error('create failed');
+        const created = await mustSucceed(
+          productService.addProduct(payload),
+          'create product'
+        );
+        if (!created.id) throw new Error('create product returned no id');
         savedId = created.id;
       } else {
         savedId = product.id;
-        await productService.updateProduct({ ...payload, id: savedId });
+        await mustSucceed(
+          productService.updateProduct({ ...payload, id: savedId }),
+          'update product'
+        );
       }
+      productWritten = true;
 
       // Splitting a dish off into a single menu only works if the original
       // stops claiming that menu — otherwise both copies show up side by side.
-      // Skipped if the admin unticked the menu on the copy before saving, in
-      // which case removing the original would empty the menu of the dish.
-      const flag = MENU_FLAG_OF[menuType];
-      const detachOriginal = !!duplicateOf && !!payload[flag];
+      // Two things stop that: the admin may have unticked the menu on the copy,
+      // and the original may have no other menu to fall back to, in which case
+      // detaching would strand it in no menu at all and make it unreachable.
+      const flag = menuFlagFor(menuType);
+      const originalKeepsAMenu =
+        !!duplicateOf &&
+        MENU_TYPES.some(
+          (type) => type !== menuType && !!duplicateOf[menuFlagFor(type)]
+        );
+      const wantsDetach = !!duplicateOf && !!payload[flag];
+      const detachOriginal = wantsDetach && originalKeepsAMenu;
+
+      // Reported separately: by this point the copy exists, so failing here is
+      // not a failed save — it is a save that needs one manual follow-up.
+      let detachFailed = false;
       if (detachOriginal) {
-        await productService.updateProduct({ id: duplicateOf.id, [flag]: false });
+        try {
+          await mustSucceed(
+            productService.updateProduct({ id: duplicateOf.id, [flag]: false }),
+            'detach original'
+          );
+        } catch (err) {
+          console.error('detach original failed', err);
+          detachFailed = true;
+        }
       }
+      const detached = detachOriginal && !detachFailed;
 
       if (createdPrice) setPrices(pricesNow);
       setSizeRowsByPrice(rowsByPrice);
@@ -514,7 +603,7 @@ export const MenuEditor = ({ eventBus }) => {
               }
             : p
         );
-        const withOriginal = detachOriginal
+        const withOriginal = detached
           ? patched.map((p) =>
               p.id === duplicateOf.id ? { ...p, [flag]: false } : p
             )
@@ -526,24 +615,56 @@ export const MenuEditor = ({ eventBus }) => {
       });
 
       clearCatalogCache();
-      setEditingId(null);
-      setNewSeed(null);
-      notify(
-        duplicateOf
-          ? `${payload.displayName} שוכפל${
-              detachOriginal
-                ? `, והמקור הוסר מתפריט ${MENU_LABEL[menuType]}`
-                : ''
-            }`
-          : isNew
-          ? `${payload.displayName} נוסף בהצלחה`
-          : `${payload.displayName} עודכן בהצלחה`
-      );
+      // Close only if this save's own form is still the one open — a slow save
+      // used to close whichever card the admin had opened in the meantime,
+      // taking its unsaved edits with it.
+      setEditingId((cur) => (cur === cardId ? null : cur));
+      if (isNew) setNewSeed((cur) => (cur === newSeed ? null : cur));
+
+      if (duplicateOf) {
+        if (detachFailed) {
+          notify(
+            `${payload.displayName} שוכפל, אך הסרת המקור מתפריט ${MENU_LABEL[menuType]} נכשלה — הסר אותו ידנית.`,
+            'error'
+          );
+        } else if (detached) {
+          notify(
+            `${payload.displayName} שוכפל, והמקור הוסר מתפריט ${MENU_LABEL[menuType]}`
+          );
+        } else if (wantsDetach) {
+          notify(
+            `${payload.displayName} שוכפל. המקור נשאר בתפריט ${MENU_LABEL[menuType]} כי זה התפריט היחיד שלו.`
+          );
+        } else {
+          notify(`${payload.displayName} שוכפל`);
+        }
+      } else {
+        notify(
+          isNew
+            ? `${payload.displayName} נוסף בהצלחה`
+            : `${payload.displayName} עודכן בהצלחה`
+        );
+      }
     } catch (err) {
       console.error('save product failed', err);
-      notify('השמירה נכשלה. נסה שוב.', 'error');
+      // Undo whatever this attempt already wrote, so a retry does not leave a
+      // trail of unreferenced price lists behind. Best effort: a failed
+      // rollback must not mask the original error.
+      if (!productWritten && (createdPrice || createdRows.length)) {
+        try {
+          for (const row of createdRows) {
+            await sizePriceService.removeSizePrice(row.id);
+          }
+          if (createdPrice) await pricesService.removePrice(createdPrice.id);
+        } catch (cleanupErr) {
+          console.error('rollback after failed save failed', cleanupErr);
+        }
+      }
+      // Some writes may still have landed, so the customer pages must refetch.
+      clearCatalogCache();
+      notify('השמירה נכשלה. שום דבר לא נשמר — נסה שוב.', 'error');
     } finally {
-      setBusyId(null);
+      clearBusy(cardId);
     }
   };
 
@@ -560,38 +681,42 @@ export const MenuEditor = ({ eventBus }) => {
   };
 
   const handleRemoveFromMenu = async (product) => {
-    const flag = MENU_FLAG_OF[menuType];
-    setBusyId(product.id);
+    const flag = menuFlagFor(menuType);
+    markBusy(product.id);
     try {
-      await productService.updateProduct({ id: product.id, [flag]: false });
+      await mustSucceed(
+        productService.updateProduct({ id: product.id, [flag]: false }),
+        'remove from menu'
+      );
       setProducts((list) =>
         list.map((p) => (p.id === product.id ? { ...p, [flag]: false } : p))
       );
       clearCatalogCache();
-      notify(
-        `${product.displayName} הוסר מתפריט ${MENU_LABEL[menuType]}`
-      );
+      notify(`${product.displayName} הוסר מתפריט ${MENU_LABEL[menuType]}`);
     } catch (err) {
       console.error('remove from menu failed', err);
       notify('ההסרה נכשלה. נסה שוב.', 'error');
     } finally {
-      setBusyId(null);
+      clearBusy(product.id);
     }
   };
 
   const handleDeleteForever = async (product) => {
     setConfirmDelete(null);
-    setBusyId(product.id);
+    markBusy(product.id);
     try {
-      await productService.removeProduct(product.id);
+      await mustSucceed(
+        productService.removeProduct(product.id),
+        'delete product'
+      );
       setProducts((list) => list.filter((p) => p.id !== product.id));
       clearCatalogCache();
       notify(`${product.displayName} נמחק לצמיתות`);
     } catch (err) {
       console.error('delete product failed', err);
-      notify('המחיקה נכשלה. נסה שוב.', 'error');
+      notify('המחיקה נכשלה. המוצר עדיין קיים.', 'error');
     } finally {
-      setBusyId(null);
+      clearBusy(product.id);
     }
   };
 
@@ -672,7 +797,7 @@ export const MenuEditor = ({ eventBus }) => {
             >
               + הוסף מוצר לתפריט
             </button>
-            <span className={classes.count}>{visible.length} מוצרים</span>
+            <span className={classes.count}>{productCount(filtered.length)}</span>
           </div>
 
           {chipCategories.length > 0 && (
@@ -707,7 +832,7 @@ export const MenuEditor = ({ eventBus }) => {
           )}
 
           <div className={classes.srOnly} role="status" aria-live="polite">
-            {`נמצאו ${visible.length} מוצרים בתפריט ${MENU_LABEL[menuType]}`}
+            {`נמצאו ${productCount(filtered.length)} בתפריט ${MENU_LABEL[menuType]}`}
           </div>
 
           <div className={classes.grid}>
@@ -721,7 +846,7 @@ export const MenuEditor = ({ eventBus }) => {
                 sizeRowsFor={sizeRowsFor}
                 priceUsage={priceUsage}
                 isEditing
-                busy={busyId === 'new'}
+                busy={busyIds.has('new')}
                 seedDraft={newSeed}
                 onCancel={() => {
                   setEditingId(null);
@@ -740,7 +865,7 @@ export const MenuEditor = ({ eventBus }) => {
                 sizeRowsFor={sizeRowsFor}
                 priceUsage={priceUsage}
                 isEditing={editingId === product.id}
-                busy={busyId === product.id}
+                busy={busyIds.has(product.id)}
                 onEdit={() => setEditingId(product.id)}
                 onCancel={() => setEditingId(null)}
                 onDuplicate={() => setDuplicateSource(product)}
@@ -751,7 +876,7 @@ export const MenuEditor = ({ eventBus }) => {
             ))}
           </div>
 
-          {visible.length === 0 && editingId !== 'new' && (
+          {filtered.length === 0 && editingId !== 'new' && (
             <div className={classes.state}>
               <div className={classes.stateTitle}>אין מוצרים להצגה</div>
               <div>נסה חיפוש אחר, קטגוריה אחרת, או הוסף מוצר חדש.</div>
@@ -774,9 +899,13 @@ export const MenuEditor = ({ eventBus }) => {
         <DialogTitle>מחיקת מוצר לצמיתות</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {`למחוק את "${confirmDelete?.displayName}" מכל התפריטים ומהמסד? הפעולה
-            אינה הפיכה. אם המטרה היא רק להוריד את המוצר מהתפריט הנוכחי, השתמש
-            ב"הסר מהתפריט".`}
+            {`למחוק את "${
+              // Falls back to the last name shown: MUI keeps the dialog mounted
+              // through its fade-out, by which point confirmDelete is null and
+              // the text read  למחוק את "undefined".
+              confirmDelete?.displayName ?? lastDeleteName.current
+            }" מכל התפריטים ומהמסד? הפעולה אינה הפיכה. אם המטרה היא רק להוריד את
+            המוצר מהתפריט הנוכחי, השתמש ב"הסר מהתפריט".`}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -784,6 +913,7 @@ export const MenuEditor = ({ eventBus }) => {
           <MuiButton
             color="error"
             variant="contained"
+            disabled={!confirmDelete}
             onClick={() => handleDeleteForever(confirmDelete)}
           >
             מחק לצמיתות
