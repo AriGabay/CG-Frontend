@@ -64,8 +64,8 @@ const LegacyCategoryRedirect = () => {
 
 function App() {
   return (
-    <ThemeProvider theme={customTheme}>
-      <CssBaseline />
+    <CssBaseline>
+      <ThemeProvider theme={customTheme}>
         <BrowserRouter>
           <PageViewTracker />
           <AppHeader />
@@ -133,7 +133,8 @@ function App() {
           <SimpleSnackbar></SimpleSnackbar>
           <ConsentBanner />
         </BrowserRouter>
-    </ThemeProvider>
+      </ThemeProvider>
+    </CssBaseline>
   );
 }
 

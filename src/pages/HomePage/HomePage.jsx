@@ -163,11 +163,11 @@ const useStyles = makeStyles({
   /* ---------------- promo ---------------- */
   promoWrap: {
     maxWidth: layout.maxWidth,
-    // Padding, not a top margin: a margin on the first child of <main>
-    // collapses out of it and left a bare strip between the header and the
-    // page. Spacing belongs inside the cream area.
-    margin: '0 auto',
-    padding: '16px 22px 0',
+    // The top margin collapses out of <main>, so a band of the (white) body
+    // shows between the header and the cream page. Kept deliberately — the
+    // separation above the promo is wanted.
+    margin: '16px auto 0',
+    padding: '0 22px',
   },
   promo: {
     display: 'flex',
