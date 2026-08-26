@@ -1,0 +1,1 @@
+export { TishrayMenu } from './TishrayMenu';
