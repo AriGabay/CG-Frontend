@@ -22,26 +22,22 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import {
   MENU_LABEL,
   measureUnitFor,
+  menuFlagFor,
   priceInfo,
 } from '../../../services/viewModel.service';
 import { colors, fonts, radii } from '../../../styles/designTokens';
+import {
+  MENU_TYPES,
+  PRICE_TYPE_LABEL,
+  amountLabelFor,
+  productCount,
+  sizeLabelFor,
+} from './priceFields';
 
-const PRICE_TYPES = [
-  { value: 'box', label: 'קופסה' },
-  { value: 'unit', label: 'יחידה' },
-  { value: 'weight', label: 'משקל' },
-];
-
-const SIZE_LABEL = {
-  box: (unit) => `גודל (${unit})`,
-  unit: () => 'כמות יחידות',
-  weight: () => 'כמות מינימלית (גרם)',
-};
-const AMOUNT_LABEL = {
-  box: () => 'מחיר לקופסה (₪)',
-  unit: () => 'מחיר לכמות (₪)',
-  weight: () => 'מחיר ל-100 גרם (₪)',
-};
+const PRICE_TYPES = Object.entries(PRICE_TYPE_LABEL).map(([value, label]) => ({
+  value,
+  label,
+}));
 
 let rowSeq = 0;
 const nextKey = () => `dup-${(rowSeq += 1)}`;
@@ -135,10 +131,11 @@ export const DuplicateDialog = ({
   const sourcePrice = product?.Price || null;
   const sourceRows = useMemo(
     () =>
-      (sourcePrice?.SizePrices || [])
-        .slice()
-        .sort((a, b) => Number(a.size) - Number(b.size))
-        .map((r) => ({ key: nextKey(), size: r.size, amount: r.amount })),
+      (sourcePrice?.SizePrices || []).map((r) => ({
+        key: nextKey(),
+        size: r.size,
+        amount: r.amount,
+      })),
     [sourcePrice]
   );
 
@@ -151,6 +148,11 @@ export const DuplicateDialog = ({
   const [errors, setErrors] = useState([]);
 
   const unit = measureUnitFor(product || {});
+  // Drives the wording above: the save only detaches the original when it has
+  // somewhere else to live.
+  const otherMenus = MENU_TYPES.filter(
+    (t) => t !== menuType && !!(product || {})[menuFlagFor(t)]
+  );
   const sharedCount = product?.priceId
     ? priceUsage[String(product.priceId)] || 0
     : 0;
@@ -185,9 +187,21 @@ export const DuplicateDialog = ({
       (r) => String(r.size).trim() !== '' || String(r.amount).trim() !== ''
     );
     if (!filled.length) errs.push('חובה להזין לפחות שורת מחיר אחת.');
-    filled.forEach((r, i) => {
+    // Numbered by position in `rows`, not in the filtered list — the rows are
+    // labelled by their on-screen position, so counting the filtered subset
+    // pointed the admin at the wrong line.
+    rows.forEach((r, i) => {
+      const hasSize = String(r.size).trim() !== '';
+      const hasAmount = String(r.amount).trim() !== '';
+      if (!hasSize && !hasAmount) return;
       if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
-        errs.push(`שורת מחיר ${i + 1}: הכמות והמחיר חייבים להיות מספרים חיוביים.`);
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabelFor(priceType, unit)}" ו"${amountLabelFor(priceType)}" חייבים להיות מספרים חיוביים.`
+        );
+      else if (!Number.isInteger(Number(r.size)))
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabelFor(priceType, unit)}" חייב להיות מספר שלם.`
+        );
     });
     setErrors(errs);
     if (errs.length) return;
@@ -205,8 +219,27 @@ export const DuplicateDialog = ({
       <DialogContent>
         <div className={classes.intro}>
           ייווצר עותק של המוצר שמשויך רק לתפריט{' '}
-          <b>{MENU_LABEL[menuType]}</b>, והמוצר המקורי יוסר מתפריט זה (ויישאר
-          בשאר התפריטים שלו). העותק ייפתח לעריכה ולא יישמר עד שתלחץ שמור.
+          <b>{MENU_LABEL[menuType]}</b>. העותק ייפתח לעריכה ולא יישמר עד שתלחץ
+          שמור.
+          {otherMenus.length ? (
+            <>
+              {' '}
+              בשמירת העותק, המוצר המקורי יוסר מתפריט{' '}
+              {MENU_LABEL[menuType]} (כל עוד העותק משויך אליו) ויישאר{' '}
+              {otherMenus.length === 1 ? 'בתפריט' : 'בתפריטים'}{' '}
+              {otherMenus.map((t) => MENU_LABEL[t]).join(' ו')}.
+            </>
+          ) : (
+            <>
+              {' '}
+              <b>
+                {MENU_LABEL[menuType]} הוא התפריט היחיד של המקור, ולכן הוא יישאר
+                בו
+              </b>{' '}
+              — אחרת הוא לא היה מופיע באף תפריט. שני המוצרים יופיעו יחד עד
+              שתסיר את אחד מהם.
+            </>
+          )}
         </div>
 
         <FormControl>
@@ -262,7 +295,7 @@ export const DuplicateDialog = ({
               <div className={classes.row} key={row.key}>
                 <TextField
                   className={classes.narrow}
-                  label={(SIZE_LABEL[priceType] || SIZE_LABEL.box)(unit)}
+                  label={sizeLabelFor(priceType, unit)}
                   variant="outlined"
                   size="small"
                   type="number"
@@ -272,7 +305,7 @@ export const DuplicateDialog = ({
                 />
                 <TextField
                   className={classes.narrow}
-                  label={(AMOUNT_LABEL[priceType] || AMOUNT_LABEL.box)()}
+                  label={amountLabelFor(priceType)}
                   variant="outlined"
                   size="small"
                   type="number"
@@ -309,7 +342,7 @@ export const DuplicateDialog = ({
             <div className={classes.warn}>
               העותק יהיה מקושר לאותו מחירון כמו המקור
               {sourcePrice ? ` ("${sourcePrice.displayName}")` : ''}
-              {sharedCount > 1 ? `, שמשמש ${sharedCount} מוצרים` : ''}. כל שינוי
+              {sharedCount > 1 ? `, שמשמש ${productCount(sharedCount)}` : ''}. כל שינוי
               של הסכומים ישנה את המחיר גם במקור ובכל מוצר אחר שמשתמש בו — כלומר
               לא תוכל לתמחר את העותק בנפרד.
             </div>
