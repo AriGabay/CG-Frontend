@@ -8,9 +8,9 @@ import { utcToZonedTime } from 'date-fns-tz';
 
 import BasicModal from '../../cmps/BasicModal/BasicModal';
 import { ImageCloud } from '../../cmps/ImageCloud/ImageCloud';
-import { PdfViewerPopup } from '../../cmps/PdfViewerPopup';
 import { ProductCard } from '../../cmps/design/ProductCard';
 import { QuickAddModal } from '../../cmps/design/QuickAddModal';
+import { HolidayWelcomeModal } from '../../cmps/HolidayWelcomeModal';
 import { useCatalog } from '../../hooks/useCatalog';
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import {
@@ -163,6 +163,9 @@ const useStyles = makeStyles({
   /* ---------------- promo ---------------- */
   promoWrap: {
     maxWidth: layout.maxWidth,
+    // The top margin collapses out of <main>, so a band of the (white) body
+    // shows between the header and the cream page. Kept deliberately — the
+    // separation above the promo is wanted.
     margin: '16px auto 0',
     padding: '0 22px',
   },
@@ -715,6 +718,11 @@ export const HomePage = () => {
         />
       </Helmet>
 
+      <HolidayWelcomeModal
+        menuEnables={menuEnables}
+        ready={isMenuEnablesLoaded}
+      />
+
       {/* ---------------- holiday promo (only for a non-weekend menu) --------------- */}
       {showPesachPromo && (
         <div className={classes.promoWrap}>
@@ -730,7 +738,14 @@ export const HomePage = () => {
       )}
       {showTishrayPromo && (
         <div className={classes.promoWrap}>
-          <PdfViewerPopup />
+          <Link
+            to="/menu/tishray"
+            className={classes.promo}
+            aria-label="צפייה בתפריט חגי תשרי"
+          >
+            <span>🍎 תפריט חגי תשרי פורסם</span>
+            <span aria-hidden="true">לצפייה בתפריט ←</span>
+          </Link>
         </div>
       )}
 

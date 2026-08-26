@@ -10,7 +10,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { isMenuEnableService } from '../../services/isMenuEnableService';
 import { colors, fonts, radii } from '../../styles/designTokens';
-import pdfFile from '../../cmps/PdfViewerPopup/Menu_RoshHashana_2026.pdf';
+import { PDF_MENUS } from '../../services/pdfMenus';
+
+const { pdf: pdfFile } = PDF_MENUS.tishray;
 
 const PHONE = '04-6734949';
 const PHONE_HREF = 'tel:046734949';

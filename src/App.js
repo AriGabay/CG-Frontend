@@ -28,6 +28,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { NotFound } from './pages/NotFound';
 import { NotEnable } from './pages/NotEnable';
 import { TishrayMenu } from './pages/TishrayMenu';
+import { SiteLockGate } from './cmps/PdfMenuLock';
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
@@ -67,6 +68,10 @@ function App() {
     <CssBaseline>
       <ThemeProvider theme={customTheme}>
         <BrowserRouter>
+          {/* A menu that is published as a PDF cannot be ordered online, so
+              while one is switched on it takes the whole site over — see
+              services/pdfMenus.js. The admin routes stay reachable. */}
+          <SiteLockGate>
           <PageViewTracker />
           <AppHeader />
           <div className="App">
@@ -132,6 +137,7 @@ function App() {
           <Footer />
           <SimpleSnackbar></SimpleSnackbar>
           <ConsentBanner />
+          </SiteLockGate>
         </BrowserRouter>
       </ThemeProvider>
     </CssBaseline>
