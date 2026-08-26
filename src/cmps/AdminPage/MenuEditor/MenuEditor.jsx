@@ -290,6 +290,11 @@ export const MenuEditor = ({ eventBus }) => {
   // whatever it was when the save started.
   const editingIdRef = useRef(null);
   const newSeedRef = useRef(null);
+  // A blank new product has newSeed === null, so comparing seed objects
+  // degraded to null === null and matched ANY later blank session. Every
+  // opening of the 'new' card gets its own token instead, bumped at click time
+  // so it is current before the next render.
+  const newTokenRef = useRef(0);
   useEffect(() => {
     editingIdRef.current = editingId;
   }, [editingId]);
@@ -588,6 +593,7 @@ export const MenuEditor = ({ eventBus }) => {
     const isNew = !product;
     const duplicateOf = isNew ? newSeed?.source || null : null;
     const cardId = isNew ? 'new' : product.id;
+    const myToken = newTokenRef.current;
     markBusy(cardId);
 
     let createdPrice = null;
@@ -649,6 +655,9 @@ export const MenuEditor = ({ eventBus }) => {
       }
 
       const rowsByPrice = { ...sizeRowsByPrice };
+      // Set only when the reconciliation refetch below replaces the whole map;
+      // otherwise this save must commit nothing but its own price list.
+      let rowsAreAuthoritative = false;
       if (rowsFailed) {
         // Some rows may have landed and some not. Rather than guess, take the
         // server's word for the whole list.
@@ -662,6 +671,7 @@ export const MenuEditor = ({ eventBus }) => {
               rebuilt[k].push({ id: row.id, size: row.size, amount: row.amount });
             });
             Object.assign(rowsByPrice, rebuilt);
+            rowsAreAuthoritative = true;
             // A list the refetch has no key for has no rows left; without this
             // it kept the stale entry and the card went on showing a price the
             // server no longer has.
@@ -702,6 +712,12 @@ export const MenuEditor = ({ eventBus }) => {
         }
       }
       const detached = detachOriginal && !detachFailed;
+      // Detaching the original drops it out of this menu, so `visible` will no
+      // longer find it and its card unmounts — taking any open form on it with
+      // it, silently. Close that form explicitly and say so, rather than let it
+      // vanish. Keeping it rendered instead would be worse: its draft still has
+      // this menu's flag set, so saving it would quietly undo the detach.
+      const originalWasOpen = detached && editingIdRef.current === duplicateOf.id;
 
       // Functional updaters: two saves can be in flight at once, and writing a
       // whole map captured before the awaits threw away whatever the other one
@@ -712,7 +728,17 @@ export const MenuEditor = ({ eventBus }) => {
             ? cur
             : [...cur, createdPrice]
         );
-      setSizeRowsByPrice((cur) => ({ ...cur, ...rowsByPrice }));
+      setSizeRowsByPrice((cur) => {
+        // Spreading the whole of `rowsByPrice` here defeated the functional
+        // updater it looks like: that object is a copy of the entire map taken
+        // before the awaits, so a concurrent save's committed rows were rolled
+        // back under it. Commit only the list this save actually touched —
+        // except after the refetch, which read every list from the server and
+        // is therefore newer than anything in `cur`.
+        if (rowsAreAuthoritative) return { ...cur, ...rowsByPrice };
+        if (!newRows || priceId === '' || priceId === null) return cur;
+        return { ...cur, [String(priceId)]: newRows };
+      });
       setProducts((list) => {
         // Every product on the edited price list gets the new rows, not just
         // this one — they all read their price off the same Price row.
@@ -745,11 +771,15 @@ export const MenuEditor = ({ eventBus }) => {
       // Close only if this save's own form is still the one open — a slow save
       // used to close whichever card the admin had opened in the meantime,
       // taking its unsaved edits with it.
+      if (originalWasOpen) {
+        setEditingId(null);
+      }
+
       // Close only if this save's own form is still the one open. For the
       // 'new' card the id alone is not enough — a second duplicate reuses it —
       // so the seed identity has to match too.
       const stillMine = isNew
-        ? editingIdRef.current === 'new' && newSeedRef.current === newSeed
+        ? editingIdRef.current === 'new' && newTokenRef.current === myToken
         : editingIdRef.current === cardId;
       if (stillMine) {
         setEditingId(null);
@@ -760,7 +790,12 @@ export const MenuEditor = ({ eventBus }) => {
         }
       }
 
-      if (rowsFailed) {
+      if (originalWasOpen) {
+        notify(
+          `${payload.displayName} שוכפל. הטופס הפתוח של המקור נסגר, כי הוא הוסר מתפריט ${MENU_LABEL[menuType]} — שינויים שלא נשמרו בו אבדו.`,
+          'error'
+        );
+      } else if (rowsFailed) {
         notify(
           `${payload.displayName} נשמר, אך חלק משינויי המחירון לא הוחלו. בדוק את המחירון ונסה שוב.`,
           'error'
@@ -807,16 +842,21 @@ export const MenuEditor = ({ eventBus }) => {
     }
   };
 
+  const openNewCard = (seed) => {
+    newTokenRef.current += 1;
+    setNewSeed(seed);
+    setEditingId('new');
+  };
+
   const startDuplicate = (priceChoice) => {
     const source = duplicateSource;
     setDuplicateSource(null);
     if (!source) return;
-    setNewSeed({
+    openNewCard({
       seedId: `${source.id}-${(dupSeq += 1)}`,
       source,
       draft: buildDuplicateDraft(source, menuType, sizeRowsFor, priceChoice),
     });
-    setEditingId('new');
   };
 
   const handleRemoveFromMenu = async (product) => {
@@ -935,10 +975,7 @@ export const MenuEditor = ({ eventBus }) => {
               ref={addBtnRef}
               className={classes.addBtn}
               onClick={() =>
-                guardEditor(() => {
-                  setNewSeed(null);
-                  setEditingId('new');
-                })
+                guardEditor(() => openNewCard(null))
               }
               disabled={editingId === 'new'}
             >

@@ -37,6 +37,24 @@ let newRowSeq = 0;
 const nextRowKey = () => `new-${(newRowSeq += 1)}`;
 
 /**
+ * Draft signature for the unsaved-changes check, with the render-only row `key`
+ * stripped. `sizeRowsFor` mints a fresh key on every call (toFormRows bumps a
+ * module counter), so re-picking the SAME price list produced identical rows
+ * under different keys and latched the form as dirty for a change that was
+ * never made — the guard then challenged the admin on the way out of an
+ * untouched form.
+ */
+const dirtySignature = (d) =>
+  JSON.stringify({
+    ...d,
+    sizePrices: (d.sizePrices || []).map((r) => ({
+      id: r.id,
+      size: r.size,
+      amount: r.amount,
+    })),
+  });
+
+/**
  * The card's editable state. Mirrors the Product columns plus the SizePrice
  * rows of whichever price list is currently selected — those live on the Price
  * row, not the product, which is why they are pulled in through `sizeRowsFor`.
@@ -395,7 +413,8 @@ export const AdminProductCard = ({
   const isDirty =
     isEditing &&
     !!draft &&
-    (!!seedDraft || JSON.stringify(draft) !== JSON.stringify(initialDraft));
+    !!initialDraft &&
+    (!!seedDraft || dirtySignature(draft) !== dirtySignature(initialDraft));
 
   useEffect(() => {
     // Only the open card may report, and it reports WHO it is: the flag is
