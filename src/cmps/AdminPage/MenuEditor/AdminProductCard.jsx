@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import {
   Checkbox,
@@ -16,16 +16,18 @@ import { ImageCloud } from '../../ImageCloud/ImageCloud';
 import {
   MENU_LABEL,
   measureUnitFor,
+  menuFlagFor,
   priceInfo,
 } from '../../../services/viewModel.service';
 import { colors, fonts, gradientFor, radii } from '../../../styles/designTokens';
+import {
+  MENU_TYPES,
+  amountLabelFor,
+  productCount,
+  sizeLabelFor,
+} from './priceFields';
 
-export const MENU_TYPES = ['weekend', 'tishray', 'pesach'];
-export const MENU_FLAG_OF = {
-  weekend: 'isMenuWeekend',
-  tishray: 'isMenuTishray',
-  pesach: 'isMenuPesach',
-};
+export { MENU_TYPES };
 
 // Local keys for the SizePrice rows. Rows that already exist in the DB are
 // keyed by their id; rows the admin just added have no id yet, so they get a
@@ -35,16 +37,34 @@ let newRowSeq = 0;
 const nextRowKey = () => `new-${(newRowSeq += 1)}`;
 
 /**
+ * Draft signature for the unsaved-changes check, with the render-only row `key`
+ * stripped. `sizeRowsFor` mints a fresh key on every call (toFormRows bumps a
+ * module counter), so re-picking the SAME price list produced identical rows
+ * under different keys and latched the form as dirty for a change that was
+ * never made — the guard then challenged the admin on the way out of an
+ * untouched form.
+ */
+const dirtySignature = (d) =>
+  JSON.stringify({
+    ...d,
+    sizePrices: (d.sizePrices || []).map((r) => ({
+      id: r.id,
+      size: r.size,
+      amount: r.amount,
+    })),
+  });
+
+/**
  * The card's editable state. Mirrors the Product columns plus the SizePrice
  * rows of whichever price list is currently selected — those live on the Price
  * row, not the product, which is why they are pulled in through `sizeRowsFor`.
  */
-export function buildDraft(product, menuType, sizeRowsFor, defaults = {}) {
-  const priceId = product ? product.priceId ?? '' : defaults.priceId ?? '';
+export function buildDraft(product, menuType, sizeRowsFor) {
+  const priceId = product ? product.priceId ?? '' : '';
   return {
     displayName: product?.displayName ?? '',
     description: product?.description ?? '',
-    categoryId: product?.categoryId ?? defaults.categoryId ?? '',
+    categoryId: product?.categoryId ?? '',
     imgUrl: product?.imgUrl ?? '',
     inStock: product ? product.inStock !== false : true,
     kitniyot: !!product?.kitniyot,
@@ -53,6 +73,45 @@ export function buildDraft(product, menuType, sizeRowsFor, defaults = {}) {
     isMenuPesach: product ? !!product.isMenuPesach : menuType === 'pesach',
     priceId,
     sizePrices: sizeRowsFor(priceId),
+    // Set only while duplicating with "create a new price list": the Price row
+    // does not exist yet, so it is described here and created on save.
+    pendingPrice: null,
+  };
+}
+
+/**
+ * Seed for a duplicate. A product that sits in several menus at once cannot be
+ * repriced for just one of them, because the price lives on the shared Price
+ * row — so duplicating splits one copy off into the menu being edited, with
+ * (optionally) a price list of its own.
+ *
+ * `priceChoice` comes from the duplicate dialog:
+ *   { createNew: true,  displayName, priceType, rows }  -> new list, created on save
+ *   { createNew: false }                                -> keep the original's list
+ */
+export function buildDuplicateDraft(product, menuType, sizeRowsFor, priceChoice) {
+  const base = buildDraft(product, menuType, sizeRowsFor);
+  const single = {
+    isMenuWeekend: menuType === 'weekend',
+    isMenuTishray: menuType === 'tishray',
+    isMenuPesach: menuType === 'pesach',
+  };
+  if (!priceChoice || !priceChoice.createNew) return { ...base, ...single };
+  return {
+    ...base,
+    ...single,
+    priceId: '',
+    pendingPrice: {
+      displayName: priceChoice.displayName,
+      priceType: priceChoice.priceType,
+    },
+    // Fresh rows with no id: they are created under the new list on save, so
+    // the original's rows are never touched.
+    sizePrices: (priceChoice.rows || []).map((r) => ({
+      key: nextRowKey(),
+      size: r.size,
+      amount: r.amount,
+    })),
   };
 }
 
@@ -260,6 +319,19 @@ const useStyles = makeStyles({
     color: colors.danger,
   },
   narrow: { width: 130 },
+  // The busy overlay only covers the form visually — every field underneath
+  // stayed tabbable and editable, and those keystrokes were thrown away when
+  // the save landed. A disabled fieldset takes all of them out of the tab order
+  // natively; these resets keep it invisible to the layout.
+  fieldset: {
+    border: 0,
+    padding: 0,
+    margin: 0,
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 14,
+  },
   spinnerWrap: {
     position: 'absolute',
     inset: 0,
@@ -270,17 +342,6 @@ const useStyles = makeStyles({
     zIndex: 4,
   },
 });
-
-const SIZE_LABEL = {
-  box: (unit) => `גודל (${unit})`,
-  unit: () => 'כמות יחידות',
-  weight: () => 'כמות מינימלית (גרם)',
-};
-const AMOUNT_LABEL = {
-  box: () => 'מחיר לקופסה (₪)',
-  unit: () => 'מחיר לכמות (₪)',
-  weight: () => 'מחיר ל-100 גרם (₪)',
-};
 
 /**
  * One product inside the menu editor: reads like the customer's card when
@@ -297,37 +358,112 @@ export const AdminProductCard = ({
   priceUsage,
   isEditing,
   busy,
+  seedDraft,
   onEdit,
   onCancel,
   onSave,
+  onDirtyChange,
+  onDuplicate,
   onRemoveFromMenu,
   onDeleteForever,
 }) => {
   const classes = useStyles();
   const isNew = !product;
   const [draft, setDraft] = useState(null);
+  const [initialDraft, setInitialDraft] = useState(null);
   const [errors, setErrors] = useState([]);
+  // Which fields the current errors refer to, so each one can carry
+  // aria-invalid and point at the summary instead of leaving a screen-reader
+  // user to match prose against inputs.
+  const [badFields, setBadFields] = useState(() => new Map());
+  const cardRef = useRef(null);
+  const cardId = isNew ? 'new' : product.id;
+  const errorSummaryId = `menu-editor-errors-${product?.id ?? 'new'}`;
+  const headingRef = useRef(null);
+  const editBtnRef = useRef(null);
+  const errorRef = useRef(null);
+  const focusedKey = useRef(null);
 
   // Entering edit mode seeds the draft from the product as it stands now.
   // Keyed off `isEditing` rather than an effect so the form never renders a
   // frame with stale values.
   const [editKey, setEditKey] = useState(null);
-  const currentKey = isEditing ? `${product?.id ?? 'new'}` : null;
+  // The seed id is part of the key so duplicating a second product while the
+  // first duplicate form is still open re-seeds it instead of keeping stale
+  // values (both render under the id 'new').
+  const currentKey = isEditing
+    ? `${product?.id ?? 'new'}:${seedDraft?.seedId ?? ''}`
+    : null;
   if (isEditing && editKey !== currentKey) {
+    const seeded = seedDraft?.draft || buildDraft(product, menuType, sizeRowsFor);
     setEditKey(currentKey);
-    setDraft(buildDraft(product, menuType, sizeRowsFor));
+    setDraft(seeded);
+    setInitialDraft(seeded);
     setErrors([]);
+    setBadFields(new Map());
   }
   if (!isEditing && editKey !== null) {
     setEditKey(null);
   }
 
-  const selectedPrice = useMemo(
-    () =>
-      (prices || []).find((p) => String(p.id) === String(draft?.priceId)) ||
-      null,
-    [prices, draft]
-  );
+  // A pending list has no id yet, so it stands in for the selected Price and
+  // drives the row labels and the preview exactly as a saved one would.
+  // A duplicate carries the dialog's answers, so it is worth protecting from
+  // the moment it opens; the other forms only once something actually changed.
+  const isDirty =
+    isEditing &&
+    !!draft &&
+    !!initialDraft &&
+    (!!seedDraft || dirtySignature(draft) !== dirtySignature(initialDraft));
+
+  useEffect(() => {
+    // Only the open card may report, and it reports WHO it is: the flag is
+    // shared by the whole grid, so an untagged report from a card that is no
+    // longer the open one silently disarmed the guard.
+    if (isEditing && onDirtyChange) onDirtyChange(cardId, isDirty);
+  }, [isEditing, isDirty, onDirtyChange, cardId]);
+
+  // Opening the form used to leave focus on the body, and a duplicate opens at
+  // the top of the grid — often off-screen. Scroll it into view and put focus
+  // on its heading: that announces which product is being edited without
+  // skipping past any field. On close, focus goes back to the button that
+  // opened it.
+  // `editKey` is in the deps so re-seeding the shared 'new' card for a second
+  // duplicate scrolls and focuses again instead of sitting still.
+  useEffect(() => {
+    // Keyed on `editKey`, not a boolean: the 'new' card stays mounted and open
+    // when a second duplicate re-seeds it, and a plain "was I open?" flag would
+    // leave focus and scroll on the previous seed's form.
+    if (isEditing && focusedKey.current !== editKey) {
+      focusedKey.current = editKey;
+      const node = headingRef.current;
+      if (node) {
+        node.scrollIntoView({ block: 'nearest' });
+        node.focus({ preventScroll: true });
+      }
+    } else if (!isEditing && focusedKey.current !== null) {
+      focusedKey.current = null;
+      const active = document.activeElement;
+      // When one card closes because another opened, the other card has already
+      // taken focus — pulling it back would undo that. Only restore when focus
+      // was left inside this card or nowhere in particular.
+      const ours = cardRef.current?.contains(active);
+      if (active && active !== document.body && !ours) return;
+      // The edit button is disabled while the save that closed the form is
+      // still in flight, and focusing a disabled button is a no-op.
+      requestAnimationFrame(() => {
+        const btn = editBtnRef.current;
+        if (btn && !btn.disabled) btn.focus();
+      });
+    }
+  }, [isEditing, editKey]);
+
+  const selectedPrice = useMemo(() => {
+    if (draft?.pendingPrice) return draft.pendingPrice;
+    return (
+      (prices || []).find((p) => String(p.id) === String(draft?.priceId)) || null
+    );
+  }, [prices, draft]);
 
   // What the customer would see once this draft is saved — computed with the
   // very same helper the menu grid uses, so the preview cannot drift from it.
@@ -346,13 +482,23 @@ export const AdminProductCard = ({
     });
   }, [draft, selectedPrice]);
 
-  const set = (patch) => setDraft((d) => ({ ...d, ...patch }));
+  const set = (patch) => {
+    // Editing anything clears the previous round's field errors, so a field the
+    // admin has already corrected stops carrying aria-invalid.
+    if (badFields.size) setBadFields(new Map());
+    setDraft((d) => ({ ...d, ...patch }));
+  };
 
   const changePriceList = (priceId) => {
     // The rows belong to the price list, so switching lists swaps the rows for
     // that list's own — editing them would otherwise silently rewrite the
     // previous list's prices.
-    setDraft((d) => ({ ...d, priceId, sizePrices: sizeRowsFor(priceId) }));
+    setDraft((d) => ({
+      ...d,
+      priceId,
+      pendingPrice: null,
+      sizePrices: sizeRowsFor(priceId),
+    }));
   };
 
   const setRow = (key, patch) =>
@@ -377,34 +523,57 @@ export const AdminProductCard = ({
 
   const validate = () => {
     const errs = [];
-    if (!draft.displayName.trim()) errs.push('חובה להזין שם מוצר.');
-    if (draft.categoryId === '' || draft.categoryId === null)
+    const bad = new Map();
+    // Built from the same helpers that label the inputs, so an error always
+    // names the field the admin is looking at ("גודל (גרם)", not "כמות").
+    const unitNow = measureUnitFor({ categoryId: draft.categoryId });
+    const sizeLabel = sizeLabelFor(selectedPrice?.priceType, unitNow);
+    const amountLabel = amountLabelFor(selectedPrice?.priceType);
+    if (!draft.displayName.trim()) {
+      errs.push('חובה להזין שם מוצר.');
+      bad.set('displayName', 'חובה להזין שם מוצר.');
+    }
+    if (draft.categoryId === '' || draft.categoryId === null) {
       errs.push('חובה לבחור קטגוריה.');
+      bad.set('categoryId', 'חובה לבחור קטגוריה.');
+    }
     draft.sizePrices.forEach((r, i) => {
       const hasSize = String(r.size).trim() !== '';
       const hasAmount = String(r.amount).trim() !== '';
       if (!hasSize && !hasAmount) return;
-      if (!hasSize || !hasAmount)
-        errs.push(`שורת מחיר ${i + 1}: חובה למלא גם כמות וגם מחיר.`);
-      else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
-        errs.push(`שורת מחיר ${i + 1}: הכמות והמחיר חייבים להיות מספרים חיוביים.`);
+      if (!hasSize || !hasAmount) {
+        errs.push(
+          `שורת מחיר ${i + 1}: חובה למלא גם "${sizeLabel}" וגם "${amountLabel}".`
+        );
+        bad.set(`row-${r.key}`, 'חובה למלא את שני השדות.');
+      }
+      else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0)) {
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabel}" ו"${amountLabel}" חייבים להיות מספרים חיוביים.`
+        );
+        bad.set(`row-${r.key}`, 'ערך לא תקין.');
+      }
+      // `size` is an INTEGER column; a decimal is silently truncated by the DB,
+      // which would quietly reprice the product.
+      else if (!Number.isInteger(Number(r.size))) {
+        errs.push(`שורת מחיר ${i + 1}: "${sizeLabel}" חייב להיות מספר שלם.`);
+        bad.set(`row-${r.key}`, 'ערך לא תקין.');
+      }
     });
-    if (
-      !draft.isMenuWeekend &&
-      !draft.isMenuTishray &&
-      !draft.isMenuPesach
-    )
-      errs.push('המוצר לא משויך לאף תפריט — הוא לא יוצג ללקוחות.');
-    return errs;
+    return { errs, bad };
   };
 
   const handleSave = () => {
-    const errs = validate();
-    // The "not in any menu" note is a warning, not a blocker: unchecking every
-    // menu is exactly how the admin parks a product.
-    const blocking = errs.filter((e) => !e.startsWith('המוצר לא משויך'));
+    const { errs, bad } = validate();
     setErrors(errs);
-    if (blocking.length) return;
+    setBadFields(bad);
+    if (errs.length) {
+      // Without this the rejection was silent for anyone not looking at the
+      // bottom of the form. role="alert" announces it; the focus move makes it
+      // reachable.
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
     onSave({
       ...draft,
       displayName: draft.displayName.trim(),
@@ -421,7 +590,7 @@ export const AdminProductCard = ({
     const info = priceInfo(product);
     const grad = gradientFor(product.categoryId);
     return (
-      <article className={classes.card}>
+      <article className={classes.card} ref={cardRef}>
         {busy && (
           <div className={classes.spinnerWrap}>
             <CircularProgress size={30} />
@@ -451,22 +620,26 @@ export const AdminProductCard = ({
           <div className={classes.serving}>{info.servingLabel || ' '}</div>
           <div className={classes.price}>{info.priceLabel}</div>
           <div className={classes.flags}>
-            {MENU_TYPES.map((type) => (
-              <span
-                key={type}
-                className={`${classes.flag} ${
-                  product[MENU_FLAG_OF[type]] ? classes.flagOn : ''
-                }`}
-              >
-                {MENU_LABEL[type]}
-              </span>
-            ))}
+            {/* Only the menus this product is actually in. Listing the other
+                two greyed out read as though they were options on the card
+                rather than facts about the product. */}
+            {MENU_TYPES.filter((type) => product[menuFlagFor(type)]).map(
+              (type) => (
+                <span
+                  key={type}
+                  className={`${classes.flag} ${classes.flagOn}`}
+                >
+                  {MENU_LABEL[type]}
+                </span>
+              )
+            )}
             {product.kitniyot ? (
               <span className={classes.flag}>קיטניות</span>
             ) : null}
           </div>
           <div className={classes.actions}>
             <button
+              ref={editBtnRef}
               type="button"
               className={`${classes.btn} ${classes.btnPrimary}`}
               onClick={onEdit}
@@ -474,6 +647,18 @@ export const AdminProductCard = ({
             >
               ערוך
             </button>
+            <Tooltip
+              title={`פותח חלון שכפול: העותק ישויך רק לתפריט ${MENU_LABEL[menuType]} ואפשר לתת לו מחירון משלו. בשמירה המקור יוסר מתפריט זה, אם יש לו תפריט אחר להישאר בו`}
+            >
+              <button
+                type="button"
+                className={classes.btn}
+                onClick={onDuplicate}
+                disabled={busy}
+              >
+                שכפל
+              </button>
+            </Tooltip>
             <Tooltip title={`מכבה את הסימון של תפריט ${MENU_LABEL[menuType]}`}>
               <button
                 type="button"
@@ -502,8 +687,13 @@ export const AdminProductCard = ({
   if (!draft) return null;
   const unit = measureUnitFor({ categoryId: draft.categoryId });
   const priceType = selectedPrice?.priceType;
-  const sharedCount = draft.priceId ? priceUsage[draft.priceId] || 0 : 0;
-  const sharedWithOthers = sharedCount > (isNew ? 0 : 1);
+  const noMenuSelected =
+    !draft.isMenuWeekend && !draft.isMenuTishray && !draft.isMenuPesach;
+  const onList = draft.priceId ? priceUsage[String(draft.priceId)] || 0 : 0;
+  const alreadyCounted =
+    !isNew && String(product.priceId) === String(draft.priceId) ? 1 : 0;
+  const sharedCount = Math.max(onList - alreadyCounted, 0);
+  const sharedWithOthers = sharedCount > 0;
 
   return (
     <article className={`${classes.card} ${classes.cardEditing}`}>
@@ -512,10 +702,11 @@ export const AdminProductCard = ({
           <CircularProgress size={30} />
         </div>
       )}
-      <div className={classes.form}>
-        <h3 className={classes.formHead}>
+      <div className={classes.form} aria-busy={busy || undefined}>
+        <h3 className={classes.formHead} ref={headingRef} tabIndex={-1}>
           {isNew ? 'מוצר חדש' : `עריכת ${product.displayName}`}
         </h3>
+        <fieldset className={classes.fieldset} disabled={busy}>
 
         <div className={classes.row}>
           <TextField
@@ -526,6 +717,13 @@ export const AdminProductCard = ({
             onChange={(e) => set({ displayName: e.target.value })}
             style={{ minWidth: 240 }}
             InputLabelProps={{ shrink: true }}
+            error={badFields.has('displayName')}
+            inputProps={{
+              'aria-invalid': badFields.has('displayName') || undefined,
+              'aria-describedby': badFields.has('displayName')
+                ? errorSummaryId
+                : undefined,
+            }}
           />
           <Controls.Select
             label="קטגוריה"
@@ -533,6 +731,7 @@ export const AdminProductCard = ({
             value={draft.categoryId}
             options={categories || []}
             onChange={(e) => set({ categoryId: e.target.value })}
+            error={badFields.get('categoryId') || null}
           />
           <TextField
             label="שם התמונה בענן"
@@ -582,9 +781,9 @@ export const AdminProductCard = ({
               key={type}
               control={
                 <Checkbox
-                  checked={draft[MENU_FLAG_OF[type]]}
+                  checked={draft[menuFlagFor(type)]}
                   onChange={(e) =>
-                    set({ [MENU_FLAG_OF[type]]: e.target.checked })
+                    set({ [menuFlagFor(type)]: e.target.checked })
                   }
                 />
               }
@@ -596,13 +795,32 @@ export const AdminProductCard = ({
         <div className={classes.section}>
           <div className={classes.sectionTitle}>מחירון</div>
           <div className={classes.row}>
-            <Controls.Select
-              label="מחירון"
-              name="priceId"
-              value={draft.priceId}
-              options={prices || []}
-              onChange={(e) => changePriceList(e.target.value)}
-            />
+            {draft.pendingPrice ? (
+              <div>
+                <div className={classes.sectionTitle} style={{ marginBottom: 4 }}>
+                  {draft.pendingPrice.displayName}
+                </div>
+                <div className={classes.hint}>
+                  מחירון חדש — ייווצר בשמירה, ולא ישפיע על אף מוצר אחר.
+                </div>
+                <button
+                  type="button"
+                  className={classes.btn}
+                  style={{ marginTop: 8 }}
+                  onClick={() => changePriceList('')}
+                >
+                  בחר מחירון קיים במקום
+                </button>
+              </div>
+            ) : (
+              <Controls.Select
+                label="מחירון"
+                name="priceId"
+                value={draft.priceId}
+                options={prices || []}
+                onChange={(e) => changePriceList(e.target.value)}
+              />
+            )}
             <div>
               <div className={classes.preview}>כפי שיוצג ללקוח:</div>
               <div className={classes.previewPrice}>
@@ -616,33 +834,47 @@ export const AdminProductCard = ({
 
           {selectedPrice ? (
             <div style={{ marginTop: 12 }}>
-              {sharedWithOthers && (
+              {sharedWithOthers && !draft.pendingPrice && (
                 <div className={classes.warn} style={{ marginBottom: 8 }}>
-                  שים לב: המחירון הזה משותף ל-{sharedCount} מוצרים. כל שינוי
-                  בסכומים כאן ישנה את המחיר גם בכל שאר המוצרים שמשתמשים בו.
+                  שים לב: המחירון הזה משמש עוד {productCount(sharedCount)}. כל
+                  שינוי בסכומים כאן ישנה את המחיר גם שם.
                 </div>
               )}
               {draft.sizePrices.map((row, i) => (
                 <div className={classes.spRow} key={row.key}>
                   <TextField
                     className={classes.narrow}
-                    label={(SIZE_LABEL[priceType] || SIZE_LABEL.box)(unit)}
+                    label={sizeLabelFor(priceType, unit)}
                     variant="outlined"
                     size="small"
                     type="number"
                     value={row.size}
                     onChange={(e) => setRow(row.key, { size: e.target.value })}
                     InputLabelProps={{ shrink: true }}
+                    error={badFields.has(`row-${row.key}`)}
+                    inputProps={{
+                      'aria-invalid': badFields.has(`row-${row.key}`) || undefined,
+                      'aria-describedby': badFields.has(`row-${row.key}`)
+                        ? errorSummaryId
+                        : undefined,
+                    }}
                   />
                   <TextField
                     className={classes.narrow}
-                    label={(AMOUNT_LABEL[priceType] || AMOUNT_LABEL.box)()}
+                    label={amountLabelFor(priceType)}
                     variant="outlined"
                     size="small"
                     type="number"
                     value={row.amount}
                     onChange={(e) => setRow(row.key, { amount: e.target.value })}
                     InputLabelProps={{ shrink: true }}
+                    error={badFields.has(`row-${row.key}`)}
+                    inputProps={{
+                      'aria-invalid': badFields.has(`row-${row.key}`) || undefined,
+                      'aria-describedby': badFields.has(`row-${row.key}`)
+                        ? errorSummaryId
+                        : undefined,
+                    }}
                   />
                   <IconButton
                     aria-label={`מחק שורת מחיר ${i + 1}`}
@@ -675,8 +907,15 @@ export const AdminProductCard = ({
           )}
         </div>
 
+        {noMenuSelected && (
+          <div className={classes.hint}>
+            שים לב: המוצר לא משויך לאף תפריט ולכן לא יוצג ללקוחות. השמירה תתבצע
+            בכל זאת.
+          </div>
+        )}
+
         {errors.length > 0 && (
-          <div>
+          <div role="alert" ref={errorRef} tabIndex={-1} id={errorSummaryId}>
             {errors.map((e) => (
               <div key={e} className={classes.err}>
                 {e}
@@ -703,6 +942,7 @@ export const AdminProductCard = ({
             בטל
           </button>
         </div>
+        </fieldset>
       </div>
     </article>
   );
