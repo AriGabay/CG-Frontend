@@ -238,6 +238,30 @@ export const MenuEditor = ({ eventBus }) => {
   const [confirmDelete, setConfirmDelete] = useState(null);
   const lastDeleteName = useRef('');
   if (confirmDelete) lastDeleteName.current = confirmDelete.displayName;
+
+  // The open card owns its draft, so anything that closes or replaces that card
+  // throws the draft away. The card reports whether it holds unsaved work, and
+  // every such transition goes through `guardEditor`.
+  const dirtyRef = useRef(false);
+  const [confirmLeave, setConfirmLeave] = useState(null);
+  const handleDirtyChange = useCallback((dirty) => {
+    dirtyRef.current = dirty;
+  }, []);
+  const guardEditor = (action) => {
+    if (editingId !== null && dirtyRef.current) {
+      // Held as an object: passing a bare function to a setter would be read as
+      // a state updater and invoked immediately.
+      setConfirmLeave({ run: action });
+      return;
+    }
+    action();
+  };
+  const runPendingLeave = () => {
+    const pending = confirmLeave;
+    setConfirmLeave(null);
+    dirtyRef.current = false;
+    if (pending) pending.run();
+  };
   const [duplicateSource, setDuplicateSource] = useState(null);
   // Seeds the 'new' card when it stands for a duplicate rather than a blank
   // product. `seedId` makes each seeding distinct so the form re-seeds when a
@@ -411,8 +435,8 @@ export const MenuEditor = ({ eventBus }) => {
    * new row set. Rows are compared against what the DB holds for that price
    * list, so an untouched row costs no request.
    *
-   * Returns `{ rows, created }` — `created` lets the caller roll the new rows
-   * back if a later write in the same save fails.
+   * Runs after the product write (see handleSave): a failure here is a partial
+   * success, reconciled from the server rather than rolled back.
    */
   const syncSizePrices = async (priceId, draftRows) => {
     if (priceId === '' || priceId === null || priceId === undefined) return null;
@@ -486,24 +510,29 @@ export const MenuEditor = ({ eventBus }) => {
             amount: Number(r.amount),
           }
       );
-    return { rows: [...kept, ...created], created };
+    return [...kept, ...created];
   };
 
+  /**
+   * Order matters and is deliberate: create the price list, then write the
+   * product, and only then touch the SizePrice rows.
+   *
+   * The rows are the one destructive step — deletes and overwrites on a price
+   * list that other products share cannot be undone without guessing. Running
+   * them last means the "nothing was saved" failure is genuinely clean (only a
+   * just-created price list can exist, and that is deleted again), and any
+   * partial state is confined to the row sync, where it is reported honestly
+   * and reconciled from the server rather than assumed.
+   */
   const handleSave = async (product, draft) => {
     const isNew = !product;
-    // Only a duplicate carries a source; a blank new product does not.
     const duplicateOf = isNew ? newSeed?.source || null : null;
     const cardId = isNew ? 'new' : product.id;
     markBusy(cardId);
 
     let createdPrice = null;
-    let createdRows = [];
     let productWritten = false;
     try {
-      // A duplicate may have asked for a price list of its own. Until now it
-      // existed only as a description, so create it before anything refers to
-      // it — this is what lets the copy be repriced without touching the
-      // original.
       let priceId = draft.priceId;
       if (draft.pendingPrice) {
         createdPrice = await mustSucceed(
@@ -517,12 +546,6 @@ export const MenuEditor = ({ eventBus }) => {
         priceId = createdPrice.id;
       }
       const pricesNow = createdPrice ? [...prices, createdPrice] : prices;
-
-      const sync = await syncSizePrices(priceId, draft.sizePrices);
-      const newRows = sync ? sync.rows : null;
-      createdRows = sync ? sync.created : [];
-      const rowsByPrice = { ...sizeRowsByPrice };
-      if (newRows) rowsByPrice[String(priceId)] = newRows;
 
       const payload = {
         displayName: draft.displayName,
@@ -554,6 +577,40 @@ export const MenuEditor = ({ eventBus }) => {
       }
       productWritten = true;
 
+      // From here on the product is saved. Anything that fails below is
+      // reported as a partial success, never as "nothing was saved".
+      let rowsFailed = false;
+      let newRows = null;
+      try {
+        newRows = await syncSizePrices(priceId, draft.sizePrices);
+      } catch (rowErr) {
+        console.error('size price sync failed', rowErr);
+        rowsFailed = true;
+      }
+
+      const rowsByPrice = { ...sizeRowsByPrice };
+      if (rowsFailed) {
+        // Some rows may have landed and some not. Rather than guess, take the
+        // server's word for the whole list.
+        try {
+          const fresh = await sizePriceService.getSizePrices();
+          if (Array.isArray(fresh)) {
+            const rebuilt = {};
+            fresh.forEach((row) => {
+              const k = String(row.priceId);
+              if (!rebuilt[k]) rebuilt[k] = [];
+              rebuilt[k].push({ id: row.id, size: row.size, amount: row.amount });
+            });
+            Object.assign(rowsByPrice, rebuilt);
+            newRows = rowsByPrice[String(priceId)] || [];
+          }
+        } catch (refetchErr) {
+          console.error('size price refetch failed', refetchErr);
+        }
+      } else if (newRows) {
+        rowsByPrice[String(priceId)] = newRows;
+      }
+
       // Splitting a dish off into a single menu only works if the original
       // stops claiming that menu — otherwise both copies show up side by side.
       // Two things stop that: the admin may have unticked the menu on the copy,
@@ -568,8 +625,6 @@ export const MenuEditor = ({ eventBus }) => {
       const wantsDetach = !!duplicateOf && !!payload[flag];
       const detachOriginal = wantsDetach && originalKeepsAMenu;
 
-      // Reported separately: by this point the copy exists, so failing here is
-      // not a failed save — it is a save that needs one manual follow-up.
       let detachFailed = false;
       if (detachOriginal) {
         try {
@@ -620,14 +675,20 @@ export const MenuEditor = ({ eventBus }) => {
       // taking its unsaved edits with it.
       setEditingId((cur) => (cur === cardId ? null : cur));
       if (isNew) setNewSeed((cur) => (cur === newSeed ? null : cur));
+      dirtyRef.current = false;
 
-      if (duplicateOf) {
-        if (detachFailed) {
-          notify(
-            `${payload.displayName} שוכפל, אך הסרת המקור מתפריט ${MENU_LABEL[menuType]} נכשלה — הסר אותו ידנית.`,
-            'error'
-          );
-        } else if (detached) {
+      if (rowsFailed) {
+        notify(
+          `${payload.displayName} נשמר, אך חלק משינויי המחירון לא הוחלו. בדוק את המחירון ונסה שוב.`,
+          'error'
+        );
+      } else if (detachFailed) {
+        notify(
+          `${payload.displayName} שוכפל, אך הסרת המקור מתפריט ${MENU_LABEL[menuType]} נכשלה — הסר אותו ידנית.`,
+          'error'
+        );
+      } else if (duplicateOf) {
+        if (detached) {
           notify(
             `${payload.displayName} שוכפל, והמקור הוסר מתפריט ${MENU_LABEL[menuType]}`
           );
@@ -647,21 +708,16 @@ export const MenuEditor = ({ eventBus }) => {
       }
     } catch (err) {
       console.error('save product failed', err);
-      // Undo whatever this attempt already wrote, so a retry does not leave a
-      // trail of unreferenced price lists behind. Best effort: a failed
-      // rollback must not mask the original error.
-      if (!productWritten && (createdPrice || createdRows.length)) {
+      // Nothing but the price list can have been written at this point, and it
+      // is referenced by nothing, so removing it again leaves no trace. Best
+      // effort: a failed rollback must not mask the original error.
+      if (!productWritten && createdPrice) {
         try {
-          for (const row of createdRows) {
-            await sizePriceService.removeSizePrice(row.id);
-          }
-          if (createdPrice) await pricesService.removePrice(createdPrice.id);
+          await pricesService.removePrice(createdPrice.id);
         } catch (cleanupErr) {
-          console.error('rollback after failed save failed', cleanupErr);
+          console.error('rollback of created price list failed', cleanupErr);
         }
       }
-      // Some writes may still have landed, so the customer pages must refetch.
-      clearCatalogCache();
       notify('השמירה נכשלה. שום דבר לא נשמר — נסה שוב.', 'error');
     } finally {
       clearBusy(cardId);
@@ -754,14 +810,16 @@ export const MenuEditor = ({ eventBus }) => {
               type === menuType ? classes.tabActive : ''
             }`}
             aria-current={type === menuType ? 'true' : undefined}
-            onClick={() => {
-              setMenuType(type);
-              setActiveCat(null);
-              setQuery('');
-              setEditingId(null);
-              setNewSeed(null);
-              setDuplicateSource(null);
-            }}
+            onClick={() =>
+              guardEditor(() => {
+                setMenuType(type);
+                setActiveCat(null);
+                setQuery('');
+                setEditingId(null);
+                setNewSeed(null);
+                setDuplicateSource(null);
+              })
+            }
           >
             {MENU_LABEL[type]} ({filterByMenu(products, type).length})
           </button>
@@ -789,10 +847,12 @@ export const MenuEditor = ({ eventBus }) => {
             <button
               type="button"
               className={classes.addBtn}
-              onClick={() => {
-                setNewSeed(null);
-                setEditingId('new');
-              }}
+              onClick={() =>
+                guardEditor(() => {
+                  setNewSeed(null);
+                  setEditingId('new');
+                })
+              }
               disabled={editingId === 'new'}
             >
               + הוסף מוצר לתפריט
@@ -832,7 +892,11 @@ export const MenuEditor = ({ eventBus }) => {
           )}
 
           <div className={classes.srOnly} role="status" aria-live="polite">
-            {`נמצאו ${productCount(filtered.length)} בתפריט ${MENU_LABEL[menuType]}`}
+            {filtered.length === 0
+              ? `לא נמצאו מוצרים בתפריט ${MENU_LABEL[menuType]}`
+              : `${filtered.length === 1 ? 'נמצא' : 'נמצאו'} ${productCount(
+                  filtered.length
+                )} בתפריט ${MENU_LABEL[menuType]}`}
           </div>
 
           <div className={classes.grid}>
@@ -846,9 +910,11 @@ export const MenuEditor = ({ eventBus }) => {
                 sizeRowsFor={sizeRowsFor}
                 priceUsage={priceUsage}
                 isEditing
+                onDirtyChange={handleDirtyChange}
                 busy={busyIds.has('new')}
                 seedDraft={newSeed}
                 onCancel={() => {
+                  dirtyRef.current = false;
                   setEditingId(null);
                   setNewSeed(null);
                 }}
@@ -865,10 +931,14 @@ export const MenuEditor = ({ eventBus }) => {
                 sizeRowsFor={sizeRowsFor}
                 priceUsage={priceUsage}
                 isEditing={editingId === product.id}
+                onDirtyChange={handleDirtyChange}
                 busy={busyIds.has(product.id)}
-                onEdit={() => setEditingId(product.id)}
-                onCancel={() => setEditingId(null)}
-                onDuplicate={() => setDuplicateSource(product)}
+                onEdit={() => guardEditor(() => setEditingId(product.id))}
+                onCancel={() => {
+                  dirtyRef.current = false;
+                  setEditingId(null);
+                }}
+                onDuplicate={() => guardEditor(() => setDuplicateSource(product))}
                 onSave={(draft) => handleSave(product, draft)}
                 onRemoveFromMenu={() => handleRemoveFromMenu(product)}
                 onDeleteForever={() => setConfirmDelete(product)}
@@ -894,6 +964,23 @@ export const MenuEditor = ({ eventBus }) => {
           onConfirm={startDuplicate}
         />
       )}
+
+      <Dialog open={!!confirmLeave} onClose={() => setConfirmLeave(null)}>
+        <DialogTitle>שינויים שלא נשמרו</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            בטופס הפתוח יש שינויים שעדיין לא נשמרו. אם תמשיך הם יאבדו.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <MuiButton onClick={() => setConfirmLeave(null)}>
+            חזור לעריכה
+          </MuiButton>
+          <MuiButton color="error" variant="contained" onClick={runPendingLeave}>
+            המשך בלי לשמור
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)}>
         <DialogTitle>מחיקת מוצר לצמיתות</DialogTitle>

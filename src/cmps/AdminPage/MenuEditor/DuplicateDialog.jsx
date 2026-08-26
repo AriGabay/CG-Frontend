@@ -187,9 +187,21 @@ export const DuplicateDialog = ({
       (r) => String(r.size).trim() !== '' || String(r.amount).trim() !== ''
     );
     if (!filled.length) errs.push('חובה להזין לפחות שורת מחיר אחת.');
-    filled.forEach((r, i) => {
+    // Numbered by position in `rows`, not in the filtered list — the rows are
+    // labelled by their on-screen position, so counting the filtered subset
+    // pointed the admin at the wrong line.
+    rows.forEach((r, i) => {
+      const hasSize = String(r.size).trim() !== '';
+      const hasAmount = String(r.amount).trim() !== '';
+      if (!hasSize && !hasAmount) return;
       if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
-        errs.push(`שורת מחיר ${i + 1}: הכמות והמחיר חייבים להיות מספרים חיוביים.`);
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabelFor(priceType, unit)}" ו"${amountLabelFor(priceType)}" חייבים להיות מספרים חיוביים.`
+        );
+      else if (!Number.isInteger(Number(r.size)))
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabelFor(priceType, unit)}" חייב להיות מספר שלם.`
+        );
     });
     setErrors(errs);
     if (errs.length) return;
@@ -212,8 +224,9 @@ export const DuplicateDialog = ({
           {otherMenus.length ? (
             <>
               {' '}
-              המוצר המקורי יוסר מתפריט זה ויישאר ב
-              {otherMenus.map((t) => MENU_LABEL[t]).join(' וב')}.
+              בשמירת העותק, המוצר המקורי יוסר מתפריט{' '}
+              {MENU_LABEL[menuType]} (כל עוד העותק משויך אליו) ויישאר בתפריטי{' '}
+              {otherMenus.map((t) => MENU_LABEL[t]).join(' ו')}.
             </>
           ) : (
             <>

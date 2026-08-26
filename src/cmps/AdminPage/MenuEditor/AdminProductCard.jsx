@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { makeStyles } from '@mui/styles';
 import {
   Checkbox,
@@ -301,6 +301,19 @@ const useStyles = makeStyles({
     color: colors.danger,
   },
   narrow: { width: 130 },
+  // The busy overlay only covers the form visually — every field underneath
+  // stayed tabbable and editable, and those keystrokes were thrown away when
+  // the save landed. A disabled fieldset takes all of them out of the tab order
+  // natively; these resets keep it invisible to the layout.
+  fieldset: {
+    border: 0,
+    padding: 0,
+    margin: 0,
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 14,
+  },
   spinnerWrap: {
     position: 'absolute',
     inset: 0,
@@ -331,6 +344,7 @@ export const AdminProductCard = ({
   onEdit,
   onCancel,
   onSave,
+  onDirtyChange,
   onDuplicate,
   onRemoveFromMenu,
   onDeleteForever,
@@ -338,7 +352,13 @@ export const AdminProductCard = ({
   const classes = useStyles();
   const isNew = !product;
   const [draft, setDraft] = useState(null);
+  const [initialDraft, setInitialDraft] = useState(null);
   const [errors, setErrors] = useState([]);
+  const cardRef = useRef(null);
+  const headingRef = useRef(null);
+  const editBtnRef = useRef(null);
+  const errorRef = useRef(null);
+  const wasEditing = useRef(false);
 
   // Entering edit mode seeds the draft from the product as it stands now.
   // Keyed off `isEditing` rather than an effect so the form never renders a
@@ -351,8 +371,10 @@ export const AdminProductCard = ({
     ? `${product?.id ?? 'new'}:${seedDraft?.seedId ?? ''}`
     : null;
   if (isEditing && editKey !== currentKey) {
+    const seeded = seedDraft?.draft || buildDraft(product, menuType, sizeRowsFor);
     setEditKey(currentKey);
-    setDraft(seedDraft?.draft || buildDraft(product, menuType, sizeRowsFor));
+    setDraft(seeded);
+    setInitialDraft(seeded);
     setErrors([]);
   }
   if (!isEditing && editKey !== null) {
@@ -361,6 +383,49 @@ export const AdminProductCard = ({
 
   // A pending list has no id yet, so it stands in for the selected Price and
   // drives the row labels and the preview exactly as a saved one would.
+  // A duplicate carries the dialog's answers, so it is worth protecting from
+  // the moment it opens; the other forms only once something actually changed.
+  const isDirty =
+    isEditing &&
+    !!draft &&
+    (!!seedDraft || JSON.stringify(draft) !== JSON.stringify(initialDraft));
+
+  useEffect(() => {
+    // Only the open card may report: the flag it writes is shared by the whole
+    // grid, and a closed card has nothing to say about unsaved work.
+    if (isEditing && onDirtyChange) onDirtyChange(isDirty);
+  }, [isEditing, isDirty, onDirtyChange]);
+
+  // Opening the form used to leave focus on the body, and a duplicate opens at
+  // the top of the grid — often off-screen. Scroll it into view and put focus
+  // on its heading: that announces which product is being edited without
+  // skipping past any field. On close, focus goes back to the button that
+  // opened it.
+  useEffect(() => {
+    if (isEditing && !wasEditing.current) {
+      wasEditing.current = true;
+      const node = headingRef.current;
+      if (node) {
+        node.scrollIntoView({ block: 'nearest' });
+        node.focus({ preventScroll: true });
+      }
+    } else if (!isEditing && wasEditing.current) {
+      wasEditing.current = false;
+      const active = document.activeElement;
+      // When one card closes because another opened, the other card has already
+      // taken focus — pulling it back would undo that. Only restore when focus
+      // was left inside this card or nowhere in particular.
+      const ours = cardRef.current?.contains(active);
+      if (active && active !== document.body && !ours) return;
+      // The edit button is disabled while the save that closed the form is
+      // still in flight, and focusing a disabled button is a no-op.
+      requestAnimationFrame(() => {
+        const btn = editBtnRef.current;
+        if (btn && !btn.disabled) btn.focus();
+      });
+    }
+  }, [isEditing]);
+
   const selectedPrice = useMemo(() => {
     if (draft?.pendingPrice) return draft.pendingPrice;
     return (
@@ -421,6 +486,11 @@ export const AdminProductCard = ({
 
   const validate = () => {
     const errs = [];
+    // Built from the same helpers that label the inputs, so an error always
+    // names the field the admin is looking at ("גודל (גרם)", not "כמות").
+    const unitNow = measureUnitFor({ categoryId: draft.categoryId });
+    const sizeLabel = sizeLabelFor(selectedPrice?.priceType, unitNow);
+    const amountLabel = amountLabelFor(selectedPrice?.priceType);
     if (!draft.displayName.trim()) errs.push('חובה להזין שם מוצר.');
     if (draft.categoryId === '' || draft.categoryId === null)
       errs.push('חובה לבחור קטגוריה.');
@@ -429,30 +499,31 @@ export const AdminProductCard = ({
       const hasAmount = String(r.amount).trim() !== '';
       if (!hasSize && !hasAmount) return;
       if (!hasSize || !hasAmount)
-        errs.push(`שורת מחיר ${i + 1}: חובה למלא גם כמות וגם מחיר.`);
+        errs.push(
+          `שורת מחיר ${i + 1}: חובה למלא גם "${sizeLabel}" וגם "${amountLabel}".`
+        );
       else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
-        errs.push(`שורת מחיר ${i + 1}: הכמות והמחיר חייבים להיות מספרים חיוביים.`);
+        errs.push(
+          `שורת מחיר ${i + 1}: "${sizeLabel}" ו"${amountLabel}" חייבים להיות מספרים חיוביים.`
+        );
       // `size` is an INTEGER column; a decimal is silently truncated by the DB,
       // which would quietly reprice the product.
       else if (!Number.isInteger(Number(r.size)))
-        errs.push(`שורת מחיר ${i + 1}: הכמות חייבת להיות מספר שלם.`);
+        errs.push(`שורת מחיר ${i + 1}: "${sizeLabel}" חייב להיות מספר שלם.`);
     });
-    if (
-      !draft.isMenuWeekend &&
-      !draft.isMenuTishray &&
-      !draft.isMenuPesach
-    )
-      errs.push('המוצר לא משויך לאף תפריט — הוא לא יוצג ללקוחות.');
     return errs;
   };
 
   const handleSave = () => {
     const errs = validate();
-    // The "not in any menu" note is a warning, not a blocker: unchecking every
-    // menu is exactly how the admin parks a product.
-    const blocking = errs.filter((e) => !e.startsWith('המוצר לא משויך'));
     setErrors(errs);
-    if (blocking.length) return;
+    if (errs.length) {
+      // Without this the rejection was silent for anyone not looking at the
+      // bottom of the form. role="alert" announces it; the focus move makes it
+      // reachable.
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
     onSave({
       ...draft,
       displayName: draft.displayName.trim(),
@@ -469,7 +540,7 @@ export const AdminProductCard = ({
     const info = priceInfo(product);
     const grad = gradientFor(product.categoryId);
     return (
-      <article className={classes.card}>
+      <article className={classes.card} ref={cardRef}>
         {busy && (
           <div className={classes.spinnerWrap}>
             <CircularProgress size={30} />
@@ -515,6 +586,7 @@ export const AdminProductCard = ({
           </div>
           <div className={classes.actions}>
             <button
+              ref={editBtnRef}
               type="button"
               className={`${classes.btn} ${classes.btnPrimary}`}
               onClick={onEdit}
@@ -523,7 +595,7 @@ export const AdminProductCard = ({
               ערוך
             </button>
             <Tooltip
-              title={`יוצר עותק שמשויך רק לתפריט ${MENU_LABEL[menuType]}, כדי שאפשר יהיה לתמחר אותו בנפרד`}
+              title={`פותח חלון שכפול: העותק ישויך רק לתפריט ${MENU_LABEL[menuType]}, אפשר לתת לו מחירון משלו, והמקור יוסר מתפריט זה בשמירה`}
             >
               <button
                 type="button"
@@ -562,6 +634,8 @@ export const AdminProductCard = ({
   if (!draft) return null;
   const unit = measureUnitFor({ categoryId: draft.categoryId });
   const priceType = selectedPrice?.priceType;
+  const noMenuSelected =
+    !draft.isMenuWeekend && !draft.isMenuTishray && !draft.isMenuPesach;
   const onList = draft.priceId ? priceUsage[String(draft.priceId)] || 0 : 0;
   const alreadyCounted =
     !isNew && String(product.priceId) === String(draft.priceId) ? 1 : 0;
@@ -575,10 +649,11 @@ export const AdminProductCard = ({
           <CircularProgress size={30} />
         </div>
       )}
-      <div className={classes.form}>
-        <h3 className={classes.formHead}>
+      <div className={classes.form} aria-busy={busy || undefined}>
+        <h3 className={classes.formHead} ref={headingRef} tabIndex={-1}>
           {isNew ? 'מוצר חדש' : `עריכת ${product.displayName}`}
         </h3>
+        <fieldset className={classes.fieldset} disabled={busy}>
 
         <div className={classes.row}>
           <TextField
@@ -757,8 +832,15 @@ export const AdminProductCard = ({
           )}
         </div>
 
+        {noMenuSelected && (
+          <div className={classes.hint}>
+            שים לב: המוצר לא משויך לאף תפריט ולכן לא יוצג ללקוחות. השמירה תתבצע
+            בכל זאת.
+          </div>
+        )}
+
         {errors.length > 0 && (
-          <div>
+          <div role="alert" ref={errorRef} tabIndex={-1}>
             {errors.map((e) => (
               <div key={e} className={classes.err}>
                 {e}
@@ -785,6 +867,7 @@ export const AdminProductCard = ({
             בטל
           </button>
         </div>
+        </fieldset>
       </div>
     </article>
   );
