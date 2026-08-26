@@ -225,7 +225,8 @@ export const DuplicateDialog = ({
             <>
               {' '}
               בשמירת העותק, המוצר המקורי יוסר מתפריט{' '}
-              {MENU_LABEL[menuType]} (כל עוד העותק משויך אליו) ויישאר בתפריטי{' '}
+              {MENU_LABEL[menuType]} (כל עוד העותק משויך אליו) ויישאר{' '}
+              {otherMenus.length === 1 ? 'בתפריט' : 'בתפריטים'}{' '}
               {otherMenus.map((t) => MENU_LABEL[t]).join(' ו')}.
             </>
           ) : (

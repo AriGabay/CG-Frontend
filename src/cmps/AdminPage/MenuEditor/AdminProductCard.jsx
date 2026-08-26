@@ -359,11 +359,12 @@ export const AdminProductCard = ({
   // user to match prose against inputs.
   const [badFields, setBadFields] = useState(() => new Map());
   const cardRef = useRef(null);
+  const cardId = isNew ? 'new' : product.id;
   const errorSummaryId = `menu-editor-errors-${product?.id ?? 'new'}`;
   const headingRef = useRef(null);
   const editBtnRef = useRef(null);
   const errorRef = useRef(null);
-  const wasEditing = useRef(false);
+  const focusedKey = useRef(null);
 
   // Entering edit mode seeds the draft from the product as it stands now.
   // Keyed off `isEditing` rather than an effect so the form never renders a
@@ -397,26 +398,32 @@ export const AdminProductCard = ({
     (!!seedDraft || JSON.stringify(draft) !== JSON.stringify(initialDraft));
 
   useEffect(() => {
-    // Only the open card may report: the flag it writes is shared by the whole
-    // grid, and a closed card has nothing to say about unsaved work.
-    if (isEditing && onDirtyChange) onDirtyChange(isDirty);
-  }, [isEditing, isDirty, onDirtyChange]);
+    // Only the open card may report, and it reports WHO it is: the flag is
+    // shared by the whole grid, so an untagged report from a card that is no
+    // longer the open one silently disarmed the guard.
+    if (isEditing && onDirtyChange) onDirtyChange(cardId, isDirty);
+  }, [isEditing, isDirty, onDirtyChange, cardId]);
 
   // Opening the form used to leave focus on the body, and a duplicate opens at
   // the top of the grid — often off-screen. Scroll it into view and put focus
   // on its heading: that announces which product is being edited without
   // skipping past any field. On close, focus goes back to the button that
   // opened it.
+  // `editKey` is in the deps so re-seeding the shared 'new' card for a second
+  // duplicate scrolls and focuses again instead of sitting still.
   useEffect(() => {
-    if (isEditing && !wasEditing.current) {
-      wasEditing.current = true;
+    // Keyed on `editKey`, not a boolean: the 'new' card stays mounted and open
+    // when a second duplicate re-seeds it, and a plain "was I open?" flag would
+    // leave focus and scroll on the previous seed's form.
+    if (isEditing && focusedKey.current !== editKey) {
+      focusedKey.current = editKey;
       const node = headingRef.current;
       if (node) {
         node.scrollIntoView({ block: 'nearest' });
         node.focus({ preventScroll: true });
       }
-    } else if (!isEditing && wasEditing.current) {
-      wasEditing.current = false;
+    } else if (!isEditing && focusedKey.current !== null) {
+      focusedKey.current = null;
       const active = document.activeElement;
       // When one card closes because another opened, the other card has already
       // taken focus — pulling it back would undo that. Only restore when focus
@@ -430,7 +437,7 @@ export const AdminProductCard = ({
         if (btn && !btn.disabled) btn.focus();
       });
     }
-  }, [isEditing]);
+  }, [isEditing, editKey]);
 
   const selectedPrice = useMemo(() => {
     if (draft?.pendingPrice) return draft.pendingPrice;
@@ -456,7 +463,12 @@ export const AdminProductCard = ({
     });
   }, [draft, selectedPrice]);
 
-  const set = (patch) => setDraft((d) => ({ ...d, ...patch }));
+  const set = (patch) => {
+    // Editing anything clears the previous round's field errors, so a field the
+    // admin has already corrected stops carrying aria-invalid.
+    if (badFields.size) setBadFields(new Map());
+    setDraft((d) => ({ ...d, ...patch }));
+  };
 
   const changePriceList = (priceId) => {
     // The rows belong to the price list, so switching lists swaps the rows for
@@ -614,7 +626,7 @@ export const AdminProductCard = ({
               ערוך
             </button>
             <Tooltip
-              title={`פותח חלון שכפול: העותק ישויך רק לתפריט ${MENU_LABEL[menuType]}, אפשר לתת לו מחירון משלו, והמקור יוסר מתפריט זה בשמירה`}
+              title={`פותח חלון שכפול: העותק ישויך רק לתפריט ${MENU_LABEL[menuType]} ואפשר לתת לו מחירון משלו. בשמירה המקור יוסר מתפריט זה, אם יש לו תפריט אחר להישאר בו`}
             >
               <button
                 type="button"

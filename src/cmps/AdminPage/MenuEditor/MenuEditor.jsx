@@ -245,16 +245,27 @@ export const MenuEditor = ({ eventBus }) => {
   // The open card owns its draft, so anything that closes or replaces that card
   // throws the draft away. The card reports whether it holds unsaved work, and
   // every such transition goes through `guardEditor`.
-  const dirtyRef = useRef(false);
+  // Tagged with the card that reported it, and never cleared by hand. Earlier
+  // this was a bare boolean that several places reset, and every one of those
+  // resets turned out to be a way to silently disarm the guard: a save landing
+  // while a different card was open cleared it, and so did confirming a leave
+  // for an action (שכפל) that does not actually close the form. Pairing the
+  // flag with its owner makes a stale entry unusable instead of dangerous —
+  // it simply stops matching whichever card is open.
+  const dirtyRef = useRef({ cardId: null, dirty: false });
   // The 'new' card has no edit button to hand focus back to when it closes, so
   // focus returns to the control that opened it.
   const addBtnRef = useRef(null);
   const [confirmLeave, setConfirmLeave] = useState(null);
-  const handleDirtyChange = useCallback((dirty) => {
-    dirtyRef.current = dirty;
+  const handleDirtyChange = useCallback((cardId, dirty) => {
+    dirtyRef.current = { cardId, dirty };
   }, []);
+  const hasUnsavedDraft = () => {
+    const d = dirtyRef.current;
+    return editingId !== null && d.cardId === editingId && d.dirty;
+  };
   const guardEditor = (action) => {
-    if (editingId !== null && dirtyRef.current) {
+    if (hasUnsavedDraft()) {
       // Held as an object: passing a bare function to a setter would be read as
       // a state updater and invoked immediately.
       setConfirmLeave({ run: action });
@@ -265,7 +276,9 @@ export const MenuEditor = ({ eventBus }) => {
   const runPendingLeave = () => {
     const pending = confirmLeave;
     setConfirmLeave(null);
-    dirtyRef.current = false;
+    // Deliberately does not clear dirtyRef: some guarded actions leave the form
+    // open (שכפל only opens a dialog, which can then be cancelled). The flag
+    // stops applying on its own once the open card changes.
     if (pending) pending.run();
   };
   const [duplicateSource, setDuplicateSource] = useState(null);
@@ -273,6 +286,16 @@ export const MenuEditor = ({ eventBus }) => {
   // product. `seedId` makes each seeding distinct so the form re-seeds when a
   // second product is duplicated while the first form is still open.
   const [newSeed, setNewSeed] = useState(null);
+  // Read after awaits in handleSave, where the state captured in the closure is
+  // whatever it was when the save started.
+  const editingIdRef = useRef(null);
+  const newSeedRef = useRef(null);
+  useEffect(() => {
+    editingIdRef.current = editingId;
+  }, [editingId]);
+  useEffect(() => {
+    newSeedRef.current = newSeed;
+  }, [newSeed]);
 
   useEffect(() => {
     const id = setTimeout(() => setAnnounceQuery(query), 500);
@@ -639,7 +662,11 @@ export const MenuEditor = ({ eventBus }) => {
               rebuilt[k].push({ id: row.id, size: row.size, amount: row.amount });
             });
             Object.assign(rowsByPrice, rebuilt);
-            newRows = rowsByPrice[String(priceId)] || [];
+            // A list the refetch has no key for has no rows left; without this
+            // it kept the stale entry and the card went on showing a price the
+            // server no longer has.
+            if (!rebuilt[String(priceId)]) rowsByPrice[String(priceId)] = [];
+            newRows = rowsByPrice[String(priceId)];
           }
         } catch (refetchErr) {
           console.error('size price refetch failed', refetchErr);
@@ -676,8 +703,16 @@ export const MenuEditor = ({ eventBus }) => {
       }
       const detached = detachOriginal && !detachFailed;
 
-      if (createdPrice) setPrices(pricesNow);
-      setSizeRowsByPrice(rowsByPrice);
+      // Functional updaters: two saves can be in flight at once, and writing a
+      // whole map captured before the awaits threw away whatever the other one
+      // had already committed.
+      if (createdPrice)
+        setPrices((cur) =>
+          cur.some((p) => String(p.id) === String(createdPrice.id))
+            ? cur
+            : [...cur, createdPrice]
+        );
+      setSizeRowsByPrice((cur) => ({ ...cur, ...rowsByPrice }));
       setProducts((list) => {
         // Every product on the edited price list gets the new rows, not just
         // this one — they all read their price off the same Price row.
@@ -710,9 +745,20 @@ export const MenuEditor = ({ eventBus }) => {
       // Close only if this save's own form is still the one open — a slow save
       // used to close whichever card the admin had opened in the meantime,
       // taking its unsaved edits with it.
-      setEditingId((cur) => (cur === cardId ? null : cur));
-      if (isNew) setNewSeed((cur) => (cur === newSeed ? null : cur));
-      dirtyRef.current = false;
+      // Close only if this save's own form is still the one open. For the
+      // 'new' card the id alone is not enough — a second duplicate reuses it —
+      // so the seed identity has to match too.
+      const stillMine = isNew
+        ? editingIdRef.current === 'new' && newSeedRef.current === newSeed
+        : editingIdRef.current === cardId;
+      if (stillMine) {
+        setEditingId(null);
+        if (isNew) {
+          setNewSeed(null);
+          // The 'new' card has no edit button to return focus to.
+          requestAnimationFrame(() => addBtnRef.current?.focus());
+        }
+      }
 
       if (rowsFailed) {
         notify(
@@ -852,6 +898,9 @@ export const MenuEditor = ({ eventBus }) => {
                 setMenuType(type);
                 setActiveCat(null);
                 setQuery('');
+                // Skip the debounce here: the announcement should describe the
+                // menu just switched to, not the previous menu's search.
+                setAnnounceQuery('');
                 setEditingId(null);
                 setNewSeed(null);
                 setDuplicateSource(null);
@@ -952,7 +1001,6 @@ export const MenuEditor = ({ eventBus }) => {
                 busy={busyIds.has('new')}
                 seedDraft={newSeed}
                 onCancel={() => {
-                  dirtyRef.current = false;
                   setEditingId(null);
                   setNewSeed(null);
                   requestAnimationFrame(() => addBtnRef.current?.focus());
@@ -973,10 +1021,7 @@ export const MenuEditor = ({ eventBus }) => {
                 onDirtyChange={handleDirtyChange}
                 busy={busyIds.has(product.id)}
                 onEdit={() => guardEditor(() => setEditingId(product.id))}
-                onCancel={() => {
-                  dirtyRef.current = false;
-                  setEditingId(null);
-                }}
+                onCancel={() => setEditingId(null)}
                 onDuplicate={() => guardEditor(() => setDuplicateSource(product))}
                 onSave={(draft) => handleSave(product, draft)}
                 onRemoveFromMenu={() => handleRemoveFromMenu(product)}
