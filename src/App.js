@@ -27,6 +27,7 @@ import { AccessibilityAnnouncement } from './pages/AccessibilityAnnouncement';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { NotFound } from './pages/NotFound';
 import { NotEnable } from './pages/NotEnable';
+import { TishrayMenu } from './pages/TishrayMenu';
 const customTheme = getCustomTheme();
 
 const Loading = (props) => {
@@ -83,8 +84,12 @@ function App() {
               <Route path="/menu/weekend">
                 <Menu menuType="weekend" />
               </Route>
+              {/* חגי תשרי is view-only: a PDF, not an orderable grid. Handled
+                  by its own page so every route into it — the menu tab strip,
+                  the footer link, a bookmark, the legacy /products redirect —
+                  lands on the PDF rather than on something addable to a cart. */}
               <Route path="/menu/tishray">
-                <Menu menuType="tishray" />
+                <TishrayMenu />
               </Route>
               <Route path="/menu/pesach">
                 <Menu menuType="pesach" />

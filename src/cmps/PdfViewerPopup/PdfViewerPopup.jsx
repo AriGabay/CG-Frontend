@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import pdfFile from './Menu_Peacha_2025.pdf';
+import pdfFile from './Menu_RoshHashana_2026.pdf';
 
 const customTheme = getCustomTheme();
 
@@ -90,7 +90,7 @@ export const PdfViewerPopup = () => {
               src={`${pdfFile}#pagemode=none`}
               width="100%"
               height="500px"
-              title="Menu_Peacha_2025.pdf"
+              title="תפריט ראש השנה"
               aria-label="תפריט ראש השנה קובץ pdf"
             ></iframe>
           )}
