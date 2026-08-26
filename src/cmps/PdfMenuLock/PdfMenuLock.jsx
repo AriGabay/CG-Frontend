@@ -9,6 +9,11 @@ import { colors, fonts, radii, shadows } from '../../styles/designTokens';
 const PHONE = '04-6734949';
 const PHONE_HREF = 'tel:046734949';
 
+// Shown only until the admin sets their own text. Kept deliberately generic:
+// the previous hard-coded pickup hours were wrong for this menu, which is why
+// the line is editable at all.
+const DEFAULT_NOTICE = 'לפרטים על מועדי האיסוף וההזמנה — חייגו אלינו.';
+
 const useStyles = makeStyles({
   backdrop: {
     position: 'fixed',
@@ -117,9 +122,14 @@ const useStyles = makeStyles({
  * would only lead them to a shop they cannot use. The way out is the admin
  * switching that menu off.
  */
-export const PdfMenuLock = ({ menu }) => {
+export const PdfMenuLock = ({ menu, notice }) => {
   const classes = useStyles();
   if (!menu) return null;
+
+  // An empty string is a deliberate "show nothing", so only a missing value
+  // falls back to the default.
+  const noticeText =
+    notice === undefined || notice === null ? DEFAULT_NOTICE : notice;
 
   return (
     <>
@@ -159,9 +169,9 @@ export const PdfMenuLock = ({ menu }) => {
           <a className={classes.phoneBtn} href={PHONE_HREF}>
             {`להזמנות: ${PHONE}`}
           </a>
-          <div className={classes.hours}>
-            איסוף בימי שישי 7:00-14:00 · המברג 10, טבריה
-          </div>
+          {noticeText ? (
+            <div className={classes.hours}>{noticeText}</div>
+          ) : null}
         </div>
 
         <div className={classes.frameWrap}>
