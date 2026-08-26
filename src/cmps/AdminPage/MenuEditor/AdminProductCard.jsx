@@ -601,16 +601,19 @@ export const AdminProductCard = ({
           <div className={classes.serving}>{info.servingLabel || ' '}</div>
           <div className={classes.price}>{info.priceLabel}</div>
           <div className={classes.flags}>
-            {MENU_TYPES.map((type) => (
-              <span
-                key={type}
-                className={`${classes.flag} ${
-                  product[menuFlagFor(type)] ? classes.flagOn : ''
-                }`}
-              >
-                {MENU_LABEL[type]}
-              </span>
-            ))}
+            {/* Only the menus this product is actually in. Listing the other
+                two greyed out read as though they were options on the card
+                rather than facts about the product. */}
+            {MENU_TYPES.filter((type) => product[menuFlagFor(type)]).map(
+              (type) => (
+                <span
+                  key={type}
+                  className={`${classes.flag} ${classes.flagOn}`}
+                >
+                  {MENU_LABEL[type]}
+                </span>
+              )
+            )}
             {product.kitniyot ? (
               <span className={classes.flag}>קיטניות</span>
             ) : null}
