@@ -229,6 +229,9 @@ export const MenuEditor = ({ eventBus }) => {
   const [loadError, setLoadError] = useState(false);
 
   const [query, setQuery] = useState('');
+  // Announced separately from `query` so a screen reader hears the result count
+  // once the admin stops typing, instead of after every character.
+  const [announceQuery, setAnnounceQuery] = useState('');
   const [activeCat, setActiveCat] = useState(null);
   const [editingId, setEditingId] = useState(null);
   // A Set, not a single id: two cards can be mid-request at once, and with a
@@ -243,6 +246,9 @@ export const MenuEditor = ({ eventBus }) => {
   // throws the draft away. The card reports whether it holds unsaved work, and
   // every such transition goes through `guardEditor`.
   const dirtyRef = useRef(false);
+  // The 'new' card has no edit button to hand focus back to when it closes, so
+  // focus returns to the control that opened it.
+  const addBtnRef = useRef(null);
   const [confirmLeave, setConfirmLeave] = useState(null);
   const handleDirtyChange = useCallback((dirty) => {
     dirtyRef.current = dirty;
@@ -267,6 +273,11 @@ export const MenuEditor = ({ eventBus }) => {
   // product. `seedId` makes each seeding distinct so the form re-seeds when a
   // second product is duplicated while the first form is still open.
   const [newSeed, setNewSeed] = useState(null);
+
+  useEffect(() => {
+    const id = setTimeout(() => setAnnounceQuery(query), 500);
+    return () => clearTimeout(id);
+  }, [query]);
 
   const markBusy = useCallback((id) => {
     setBusyIds((cur) => new Set(cur).add(id));
@@ -310,6 +321,20 @@ export const MenuEditor = ({ eventBus }) => {
     ])
       .then(([allProducts, cats, priceList, sizePrices]) => {
         if (!alive) return;
+        // The read services swallow their rejections and resolve with
+        // `undefined` (same reason `mustSucceed` exists for the writes), so the
+        // .catch below never fires. Without this the screen rendered an empty
+        // catalogue as though the menus were genuinely empty.
+        if (
+          !Array.isArray(allProducts) ||
+          !Array.isArray(cats) ||
+          !Array.isArray(priceList) ||
+          !Array.isArray(sizePrices)
+        ) {
+          setLoadError(true);
+          setLoading(false);
+          return;
+        }
         setProducts(Array.isArray(allProducts) ? allProducts : []);
         setCategories(Array.isArray(cats) ? cats : []);
         setPrices(Array.isArray(priceList) ? priceList : []);
@@ -390,6 +415,18 @@ export const MenuEditor = ({ eventBus }) => {
   // category would filter it out. The form's draft lives inside the card, so
   // letting the filter unmount it silently threw away everything the admin had
   // typed. It keeps its place in the grid; only the filter is overridden.
+  // What the live region reports: the same filter, but against the settled
+  // query, so the announcement matches what was actually spoken.
+  const announcedCount = useMemo(() => {
+    const byCat =
+      activeCat === null
+        ? menuProducts
+        : menuProducts.filter(
+            (p) => Number(p.Category?.id ?? p.categoryId) === activeCat
+          );
+    return searchProducts(byCat, announceQuery).length;
+  }, [menuProducts, activeCat, announceQuery]);
+
   const visible = useMemo(() => {
     if (editingId === null || editingId === 'new') return filtered;
     if (filtered.some((p) => p.id === editingId)) return filtered;
@@ -846,6 +883,7 @@ export const MenuEditor = ({ eventBus }) => {
             />
             <button
               type="button"
+              ref={addBtnRef}
               className={classes.addBtn}
               onClick={() =>
                 guardEditor(() => {
@@ -892,10 +930,10 @@ export const MenuEditor = ({ eventBus }) => {
           )}
 
           <div className={classes.srOnly} role="status" aria-live="polite">
-            {filtered.length === 0
+            {announcedCount === 0
               ? `לא נמצאו מוצרים בתפריט ${MENU_LABEL[menuType]}`
-              : `${filtered.length === 1 ? 'נמצא' : 'נמצאו'} ${productCount(
-                  filtered.length
+              : `${announcedCount === 1 ? 'נמצא' : 'נמצאו'} ${productCount(
+                  announcedCount
                 )} בתפריט ${MENU_LABEL[menuType]}`}
           </div>
 
@@ -917,6 +955,7 @@ export const MenuEditor = ({ eventBus }) => {
                   dirtyRef.current = false;
                   setEditingId(null);
                   setNewSeed(null);
+                  requestAnimationFrame(() => addBtnRef.current?.focus());
                 }}
                 onSave={(draft) => handleSave(null, draft)}
               />

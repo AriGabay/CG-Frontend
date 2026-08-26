@@ -354,7 +354,12 @@ export const AdminProductCard = ({
   const [draft, setDraft] = useState(null);
   const [initialDraft, setInitialDraft] = useState(null);
   const [errors, setErrors] = useState([]);
+  // Which fields the current errors refer to, so each one can carry
+  // aria-invalid and point at the summary instead of leaving a screen-reader
+  // user to match prose against inputs.
+  const [badFields, setBadFields] = useState(() => new Map());
   const cardRef = useRef(null);
+  const errorSummaryId = `menu-editor-errors-${product?.id ?? 'new'}`;
   const headingRef = useRef(null);
   const editBtnRef = useRef(null);
   const errorRef = useRef(null);
@@ -376,6 +381,7 @@ export const AdminProductCard = ({
     setDraft(seeded);
     setInitialDraft(seeded);
     setErrors([]);
+    setBadFields(new Map());
   }
   if (!isEditing && editKey !== null) {
     setEditKey(null);
@@ -486,37 +492,50 @@ export const AdminProductCard = ({
 
   const validate = () => {
     const errs = [];
+    const bad = new Map();
     // Built from the same helpers that label the inputs, so an error always
     // names the field the admin is looking at ("גודל (גרם)", not "כמות").
     const unitNow = measureUnitFor({ categoryId: draft.categoryId });
     const sizeLabel = sizeLabelFor(selectedPrice?.priceType, unitNow);
     const amountLabel = amountLabelFor(selectedPrice?.priceType);
-    if (!draft.displayName.trim()) errs.push('חובה להזין שם מוצר.');
-    if (draft.categoryId === '' || draft.categoryId === null)
+    if (!draft.displayName.trim()) {
+      errs.push('חובה להזין שם מוצר.');
+      bad.set('displayName', 'חובה להזין שם מוצר.');
+    }
+    if (draft.categoryId === '' || draft.categoryId === null) {
       errs.push('חובה לבחור קטגוריה.');
+      bad.set('categoryId', 'חובה לבחור קטגוריה.');
+    }
     draft.sizePrices.forEach((r, i) => {
       const hasSize = String(r.size).trim() !== '';
       const hasAmount = String(r.amount).trim() !== '';
       if (!hasSize && !hasAmount) return;
-      if (!hasSize || !hasAmount)
+      if (!hasSize || !hasAmount) {
         errs.push(
           `שורת מחיר ${i + 1}: חובה למלא גם "${sizeLabel}" וגם "${amountLabel}".`
         );
-      else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0))
+        bad.set(`row-${r.key}`, 'חובה למלא את שני השדות.');
+      }
+      else if (!(Number(r.size) > 0) || !(Number(r.amount) > 0)) {
         errs.push(
           `שורת מחיר ${i + 1}: "${sizeLabel}" ו"${amountLabel}" חייבים להיות מספרים חיוביים.`
         );
+        bad.set(`row-${r.key}`, 'ערך לא תקין.');
+      }
       // `size` is an INTEGER column; a decimal is silently truncated by the DB,
       // which would quietly reprice the product.
-      else if (!Number.isInteger(Number(r.size)))
+      else if (!Number.isInteger(Number(r.size))) {
         errs.push(`שורת מחיר ${i + 1}: "${sizeLabel}" חייב להיות מספר שלם.`);
+        bad.set(`row-${r.key}`, 'ערך לא תקין.');
+      }
     });
-    return errs;
+    return { errs, bad };
   };
 
   const handleSave = () => {
-    const errs = validate();
+    const { errs, bad } = validate();
     setErrors(errs);
+    setBadFields(bad);
     if (errs.length) {
       // Without this the rejection was silent for anyone not looking at the
       // bottom of the form. role="alert" announces it; the focus move makes it
@@ -664,6 +683,13 @@ export const AdminProductCard = ({
             onChange={(e) => set({ displayName: e.target.value })}
             style={{ minWidth: 240 }}
             InputLabelProps={{ shrink: true }}
+            error={badFields.has('displayName')}
+            inputProps={{
+              'aria-invalid': badFields.has('displayName') || undefined,
+              'aria-describedby': badFields.has('displayName')
+                ? errorSummaryId
+                : undefined,
+            }}
           />
           <Controls.Select
             label="קטגוריה"
@@ -671,6 +697,7 @@ export const AdminProductCard = ({
             value={draft.categoryId}
             options={categories || []}
             onChange={(e) => set({ categoryId: e.target.value })}
+            error={badFields.get('categoryId') || null}
           />
           <TextField
             label="שם התמונה בענן"
@@ -790,6 +817,13 @@ export const AdminProductCard = ({
                     value={row.size}
                     onChange={(e) => setRow(row.key, { size: e.target.value })}
                     InputLabelProps={{ shrink: true }}
+                    error={badFields.has(`row-${row.key}`)}
+                    inputProps={{
+                      'aria-invalid': badFields.has(`row-${row.key}`) || undefined,
+                      'aria-describedby': badFields.has(`row-${row.key}`)
+                        ? errorSummaryId
+                        : undefined,
+                    }}
                   />
                   <TextField
                     className={classes.narrow}
@@ -800,6 +834,13 @@ export const AdminProductCard = ({
                     value={row.amount}
                     onChange={(e) => setRow(row.key, { amount: e.target.value })}
                     InputLabelProps={{ shrink: true }}
+                    error={badFields.has(`row-${row.key}`)}
+                    inputProps={{
+                      'aria-invalid': badFields.has(`row-${row.key}`) || undefined,
+                      'aria-describedby': badFields.has(`row-${row.key}`)
+                        ? errorSummaryId
+                        : undefined,
+                    }}
                   />
                   <IconButton
                     aria-label={`מחק שורת מחיר ${i + 1}`}
@@ -840,7 +881,7 @@ export const AdminProductCard = ({
         )}
 
         {errors.length > 0 && (
-          <div role="alert" ref={errorRef} tabIndex={-1}>
+          <div role="alert" ref={errorRef} tabIndex={-1} id={errorSummaryId}>
             {errors.map((e) => (
               <div key={e} className={classes.err}>
                 {e}
