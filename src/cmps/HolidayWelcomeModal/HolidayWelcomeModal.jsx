@@ -25,9 +25,12 @@ const HOLIDAYS = {
   },
 };
 
-// Once per browser session. A modal that reappears on every visit to the home
-// page during the same visit is noise, but a new session is a new visitor for
-// this purpose and the announcement is the point of the feature.
+// Once per browser session PER MENU. Storing a bare "seen" flag meant that
+// anyone already browsing when the admin published a menu never saw it
+// announced at all, and that switching from one holiday menu to another went
+// unannounced to everyone mid-session. Recording which menu was announced
+// keeps the no-nagging behaviour while letting a genuinely new announcement
+// through.
 const SEEN_KEY = 'cg_holiday_notice_seen';
 
 const useStyles = makeStyles({
@@ -122,8 +125,10 @@ export const HolidayWelcomeModal = ({ menuEnables, ready }) => {
   // orderable menu is the more useful thing to point at.
   const holiday = HOLIDAYS[active.includes('pesach') ? 'pesach' : active[0]];
 
+  const holidayKey = active.includes('pesach') ? 'pesach' : active[0];
+
   useEffect(() => {
-    if (!ready || !holiday) return;
+    if (!ready || !holidayKey) return;
     let seen = null;
     try {
       seen = sessionStorage.getItem(SEEN_KEY);
@@ -132,13 +137,13 @@ export const HolidayWelcomeModal = ({ menuEnables, ready }) => {
       // is better than crashing the home page over it.
       seen = null;
     }
-    if (!seen) setOpen(true);
-  }, [ready, holiday]);
+    if (seen !== holidayKey) setOpen(true);
+  }, [ready, holidayKey]);
 
   const close = () => {
     setOpen(false);
     try {
-      sessionStorage.setItem(SEEN_KEY, '1');
+      sessionStorage.setItem(SEEN_KEY, holidayKey);
     } catch (err) {
       /* nothing to do — the notice simply shows again next navigation */
     }
