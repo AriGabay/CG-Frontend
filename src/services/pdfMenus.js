@@ -1,4 +1,6 @@
 import roshHashana2026 from '../cmps/PdfViewerPopup/Menu_RoshHashana_2026.pdf';
+import roshHashanaPage1 from '../cmps/PdfMenuLock/pages/rosh-hashana-2026-1.jpg';
+import roshHashanaPage2 from '../cmps/PdfMenuLock/pages/rosh-hashana-2026-2.jpg';
 
 /**
  * Menus that are presented as a PDF rather than as an orderable grid.
@@ -14,7 +16,12 @@ import roshHashana2026 from '../cmps/PdfViewerPopup/Menu_RoshHashana_2026.pdf';
 export const PDF_MENUS = {
   tishray: {
     label: 'חגי תשרי',
+    // The PDF is still offered for download and print, but the menu is
+    // DISPLAYED from these page images. iOS Safari renders a PDF in an iframe
+    // as a single non-scrollable page, so an embedded PDF silently hid every
+    // page after the first on iPhone.
     pdf: roshHashana2026,
+    pages: [roshHashanaPage1, roshHashanaPage2],
   },
 };
 
