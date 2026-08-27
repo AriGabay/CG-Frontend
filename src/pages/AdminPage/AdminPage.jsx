@@ -92,7 +92,7 @@ export const AdminPage = () => {
           />
           <Button
             className={classes.marginLeft}
-            text="טקסט הודעת תפריט"
+            text="תפריט PDF ונעילה"
             onClick={() => handleClick('PdfMenuNotice')}
           />
           <Button
