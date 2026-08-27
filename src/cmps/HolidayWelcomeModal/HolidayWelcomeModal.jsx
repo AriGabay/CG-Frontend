@@ -12,7 +12,11 @@ const HOLIDAYS = {
   tishray: {
     emoji: '🍎',
     title: 'תפריט חגי תשרי פורסם',
-    body: 'התפריט המלא לראש השנה מוכן לצפייה. ההזמנות מתבצעות טלפונית.',
+    // Deliberately says nothing about how it is sold. This used to claim
+    // orders were taken by phone; the menu is in fact bought in person, and
+    // the arrangement changes per holiday. The details are on the menu page,
+    // where the admin's own text is shown.
+    body: 'התפריט המלא לראש השנה מוכן לצפייה, יחד עם פרטי הרכישה.',
     cta: 'לצפייה בתפריט',
     to: '/menu/tishray',
   },

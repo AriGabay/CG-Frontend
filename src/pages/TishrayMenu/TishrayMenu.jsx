@@ -9,10 +9,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { isMenuEnableService } from '../../services/isMenuEnableService';
+import {
+  SETTING_KEYS,
+  siteSettingService,
+} from '../../services/siteSettingService';
+import { PdfMenuPages } from '../../cmps/PdfMenuLock/PdfMenuPages';
 import { colors, fonts, radii } from '../../styles/designTokens';
 import { PDF_MENUS } from '../../services/pdfMenus';
 
-const { pdf: pdfFile } = PDF_MENUS.tishray;
+const MENU = PDF_MENUS.tishray;
+
+// Says nothing about how the menu is sold — the admin owns that sentence.
+const DEFAULT_NOTICE = 'לפרטים נוספים חייגו אלינו.';
 
 const PHONE = '04-6734949';
 const PHONE_HREF = 'tel:046734949';
@@ -30,10 +38,15 @@ const useStyles = makeStyles({
   },
   note: {
     fontFamily: fonts.body,
-    fontSize: 14.5,
+    fontSize: 15,
     color: colors.textSoft,
-    lineHeight: 1.6,
+    lineHeight: 1.7,
     padding: '0 24px 8px',
+  },
+  notice: {
+    // The admin writes several lines; keep them.
+    whiteSpace: 'pre-line',
+    marginBottom: 10,
   },
   phone: {
     color: colors.greenLink,
@@ -98,20 +111,30 @@ export const TishrayMenu = () => {
   const classes = useStyles();
   const history = useHistory();
   const [checking, setChecking] = useState(true);
+  // Same text the lock screen shows. This page had its own hard-coded line
+  // claiming orders were taken by phone, which was wrong and, worse, meant
+  // the admin's text never appeared unless the site lock happened to be on.
+  const [notice, setNotice] = useState(undefined);
 
   // Same gate the orderable menus use: a menu the admin has switched off is not
   // reachable, and asking for it goes to /notEnable.
   useEffect(() => {
     let alive = true;
-    isMenuEnableService
-      .getAllMenuEnables()
-      .then((menus) => {
+    Promise.all([
+      isMenuEnableService.getAllMenuEnables(),
+      siteSettingService.getSettings(),
+    ])
+      .then(([menus, settings]) => {
         if (!alive) return;
         const enabled = (menus || []).some(
           (menu) => menu.menuType === 'tishray' && menu.enable
         );
-        if (!enabled) history.replace('/notEnable');
-        else setChecking(false);
+        if (!enabled) {
+          history.replace('/notEnable');
+          return;
+        }
+        setNotice(settings?.[SETTING_KEYS.pdfMenuNotice]);
+        setChecking(false);
       })
       .catch((err) => {
         // Fail open, exactly as pages/Menu/Menu.jsx does: a flaky settings call
@@ -123,6 +146,10 @@ export const TishrayMenu = () => {
       alive = false;
     };
   }, [history]);
+
+  // An empty string is a deliberate "show nothing".
+  const noticeText =
+    notice === undefined || notice === null ? DEFAULT_NOTICE : notice;
 
   const close = () => history.push('/');
 
@@ -149,27 +176,16 @@ export const TishrayMenu = () => {
             תפריט חגי תשרי
           </DialogTitle>
           <div className={classes.note}>
-            התפריט מוצג לצפייה בלבד. להזמנות ולפרטים חייגו{' '}
-            <a className={classes.phone} href={PHONE_HREF}>
-              {PHONE}
-            </a>
-            .
+            {noticeText ? <div className={classes.notice}>{noticeText}</div> : null}
+            <div>
+              לפרטים:{' '}
+              <a className={classes.phone} href={PHONE_HREF}>
+                {PHONE}
+              </a>
+            </div>
           </div>
           <DialogContent>
-            <iframe
-              className={classes.frame}
-              src={`${pdfFile}#pagemode=none`}
-              title="תפריט חגי תשרי"
-              aria-label="תפריט חגי תשרי, קובץ PDF"
-            />
-            <a
-              className={classes.fallback}
-              href={pdfFile}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              לא רואים את התפריט? פתחו אותו בחלון חדש
-            </a>
+            <PdfMenuPages menu={MENU} />
           </DialogContent>
           <DialogActions>
             <button type="button" className={classes.btn} onClick={close}>

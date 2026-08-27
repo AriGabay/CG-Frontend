@@ -4,15 +4,17 @@ import Dialog from '@mui/material/Dialog';
 import { Helmet } from 'react-helmet';
 
 import { ImageCloud } from '../ImageCloud/ImageCloud';
+import { PdfMenuPages } from './PdfMenuPages';
 import { colors, fonts, radii, shadows } from '../../styles/designTokens';
 
 const PHONE = '04-6734949';
 const PHONE_HREF = 'tel:046734949';
 
-// Shown only until the admin sets their own text. Kept deliberately generic:
-// the previous hard-coded pickup hours were wrong for this menu, which is why
-// the line is editable at all.
-const DEFAULT_NOTICE = 'לפרטים על מועדי האיסוף וההזמנה — חייגו אלינו.';
+// Shown only until the admin sets their own text. Says nothing about HOW the
+// menu is sold: hard-coded claims here have been wrong twice (pickup hours,
+// then "orders by phone" when the menu is in fact sold in person), and only
+// the admin knows the arrangement for a given holiday.
+const DEFAULT_NOTICE = 'לפרטים נוספים חייגו אלינו.';
 
 const useStyles = makeStyles({
   backdrop: {
@@ -81,9 +83,14 @@ const useStyles = makeStyles({
   },
   hours: {
     fontFamily: fonts.body,
-    fontSize: 14,
-    color: colors.textFaint,
-    marginTop: 10,
+    fontSize: 15.5,
+    color: colors.textSoft,
+    marginTop: 14,
+    lineHeight: 1.75,
+    // The admin writes this as several lines; without this they collapse into
+    // one run-on paragraph.
+    whiteSpace: 'pre-line',
+    textAlign: 'center',
   },
   frameWrap: {
     padding: '16px 20px 22px',
@@ -158,16 +165,14 @@ export const PdfMenuLock = ({ menu, notice }) => {
             />
           </span>
           <h1 className={classes.title} id="pdf-lock-title">
-            {`תפריט ${menu.label} — הזמנות בטלפון`}
+            {`תפריט ${menu.label}`}
           </h1>
-          <div className={classes.sub}>
-            התפריט מוצג כאן לצפייה. ההזמנות מתבצעות טלפונית בלבד.
-          </div>
+          <div className={classes.sub}>התפריט מוצג כאן לצפייה.</div>
         </div>
 
         <div className={classes.phoneWrap}>
           <a className={classes.phoneBtn} href={PHONE_HREF}>
-            {`להזמנות: ${PHONE}`}
+            {`לפרטים: ${PHONE}`}
           </a>
           {noticeText ? (
             <div className={classes.hours}>{noticeText}</div>
@@ -175,20 +180,7 @@ export const PdfMenuLock = ({ menu, notice }) => {
         </div>
 
         <div className={classes.frameWrap}>
-          <iframe
-            className={classes.frame}
-            src={`${menu.pdf}#pagemode=none`}
-            title={`תפריט ${menu.label}`}
-            aria-label={`תפריט ${menu.label}, קובץ PDF`}
-          />
-          <a
-            className={classes.openLink}
-            href={menu.pdf}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            לא רואים את התפריט? פתחו אותו בחלון חדש
-          </a>
+          <PdfMenuPages menu={menu} />
         </div>
       </Dialog>
     </>
