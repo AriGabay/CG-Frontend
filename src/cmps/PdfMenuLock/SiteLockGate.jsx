@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { isMenuEnableService } from '../../services/isMenuEnableService';
-import { activePdfMenu } from '../../services/pdfMenus';
+import { activePdfMenu, isSiteLockOn } from '../../services/pdfMenus';
 import {
   SETTING_KEYS,
   siteSettingService,
@@ -17,7 +17,10 @@ const isAdminRoute = (pathname) =>
   ALWAYS_OPEN.some((p) => (pathname || '').toLowerCase().startsWith(p));
 
 /**
- * Replaces the whole site with the PDF notice while a PDF-only menu is open.
+ * Replaces the whole site with the PDF notice while a PDF-only menu is open —
+ * but only if the admin has switched that lock on. A PDF menu and an orderable
+ * menu can run side by side, so the lock is a separate decision from publishing
+ * the menu.
  *
  * Fails OPEN. If the settings call fails we render the site rather than lock
  * customers out on a flaky request — the rest of the app already treats that
@@ -44,7 +47,10 @@ export const SiteLockGate = ({ children }) => {
         (menus || []).forEach((m) => {
           map[m.menuType] = m.enable;
         });
-        setMenu(activePdfMenu(map));
+        // Both conditions: a PDF menu is open AND the admin has asked for the
+        // site to be locked while one is. Without the second, publishing a
+        // holiday menu would silently close the orderable shop too.
+        setMenu(isSiteLockOn(map) ? activePdfMenu(map) : null);
         setNotice(settings?.[SETTING_KEYS.pdfMenuNotice]);
         setChecked(true);
       })

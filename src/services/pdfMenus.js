@@ -21,6 +21,19 @@ export const PDF_MENUS = {
 export const isPdfMenu = (menuType) => !!PDF_MENUS[menuType];
 
 /**
+ * Whether an open PDF menu takes the whole site over.
+ *
+ * Stored as a row in the same isMenuEnable table the menu switches use, so it
+ * needs no schema change and is managed from the admin panel. Absent means OFF:
+ * a PDF menu can perfectly well run alongside an orderable one, and defaulting
+ * to a site-wide lock would take the shop down the moment a holiday menu is
+ * published.
+ */
+export const LOCK_FLAG = 'lock_site_pdf_menu';
+
+export const isSiteLockOn = (menuEnables) => !!menuEnables?.[LOCK_FLAG];
+
+/**
  * The PDF menu that should take over the site, given the admin's menu switches.
  * `menuEnables` is the { menuType: enabled } map the app already builds from
  * isMenuEnableService.
