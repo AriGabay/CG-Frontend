@@ -8,6 +8,9 @@ export const SETTING_KEYS = {
   // Replaces the pickup line in the PDF-menu notice. The admin owns this text
   // because only they know the arrangement for the holiday being announced.
   pdfMenuNotice: 'pdf_menu_notice',
+  // JSON blob of single-date exceptions to the Fridays-only ordering rule.
+  // Read and written through orderDatesService, which owns its shape.
+  orderDateExceptions: 'order_date_exceptions',
 };
 
 /**

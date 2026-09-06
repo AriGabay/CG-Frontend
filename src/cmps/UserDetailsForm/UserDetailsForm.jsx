@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Controls from '../Controls/Controls';
 import { useForm, Form } from '../../hooks/useForm';
@@ -23,6 +23,11 @@ import { isFriday } from 'date-fns';
 import isToday from 'date-fns/isToday';
 import { nextFriday } from 'date-fns';
 import { colors, fonts, radii, shadows } from '../../styles/designTokens';
+import { useOrderDateExceptions } from '../../hooks/useOrderDateExceptions';
+import {
+  isOrderableDate,
+  nextOrderableDate,
+} from '../../services/orderDatesService';
 const initialDate = new Date();
 const initialFValues = {
   id: 0,
@@ -35,6 +40,8 @@ const initialFValues = {
   idPersonal: '',
   pickup: '',
   street: '',
+  // A placeholder only. The real default is picked in the component once the
+  // admin's date exceptions load, since the coming Friday may be closed.
   pickUpDate: isFriday(initialDate) ? initialDate : nextFriday(initialDate),
 };
 
@@ -253,6 +260,7 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
   const [open, setOpen] = useState(false);
   const requiredInputStr = 'שדה חובה';
   const classes = useFormStyles();
+  const { exceptions, loading: exceptionsLoading } = useOrderDateExceptions();
 
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
@@ -281,6 +289,15 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
         fieldValues.mobileTow.length > 9 ? '' : 'מספר פלאפון לא תקין';
     if ('pickup' in fieldValues)
       temp.pickup = fieldValues.pickup.length ? '' : 'נא לבחור שעת אסיפה';
+    // The calendar already refuses a closed date, but the value can also be the
+    // default the form filled in, so it is checked here too rather than trusted.
+    if ('pickUpDate' in fieldValues)
+      temp.pickUpDate = isOrderableDate(
+        new Date(fieldValues.pickUpDate),
+        exceptions
+      )
+        ? ''
+        : 'לא ניתן להזמין לתאריך זה, נא לבחור תאריך אחר';
     if ('idPersonal' in fieldValues)
       temp.idPersonal =
         fieldValues.idPersonal.length >= 9 && fieldValues.idPersonal.length <= 9
@@ -298,11 +315,20 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
       return Object.values(temp).every((x) => x === '');
   };
 
-  const { values, errors, setErrors, handleInputChange, resetForm } = useForm(
-    initialFValues,
-    true,
-    validate
-  );
+  const { values, setValues, errors, setErrors, handleInputChange, resetForm } =
+    useForm(initialFValues, true, validate);
+
+  // The default pickup date used to be "the coming Friday", which is wrong once
+  // the admin can close a specific Friday. Correct it to the first date that is
+  // actually orderable, but only once the exceptions are known — acting on the
+  // empty default would just re-pick the same Friday.
+  useEffect(() => {
+    if (exceptionsLoading) return;
+    setValues((prev) => {
+      if (isOrderableDate(new Date(prev.pickUpDate), exceptions)) return prev;
+      return { ...prev, pickUpDate: nextOrderableDate(new Date(), exceptions) };
+    });
+  }, [exceptionsLoading, exceptions, setValues]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -437,7 +463,7 @@ export const UserDetailsForm = ({ checkOutTotal }) => {
         />
       </div>
       <p className={classes.dateNote}>
-        אם לא נבחר תאריך ההזמנה תבוצע ליום שישי של אותו השבוע
+        אם לא נבחר תאריך, ההזמנה תבוצע למועד האיסוף הקרוב הפתוח להזמנות
       </p>
       <div className={classes.fields}>
         <Controls.DatePicker

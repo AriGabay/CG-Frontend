@@ -5,9 +5,10 @@ import { DatePicker as DatePickerMui } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider, PickersDay } from '@mui/x-date-pickers';
 import TextField from '@mui/material/TextField';
 import FormHelperText from '@mui/material/FormHelperText';
-import isFriday from 'date-fns/isFriday';
 import he from 'date-fns/locale/he';
 import { makeStyles } from '@mui/styles';
+import { useOrderDateExceptions } from '../../hooks/useOrderDateExceptions';
+import { isOrderableDate } from '../../services/orderDatesService';
 
 const useStyles = makeStyles({
   '.Mui-selected': {
@@ -19,18 +20,14 @@ const useStyles = makeStyles({
   },
 });
 
-const isSpecialDate = (date) => {
-  return (
-    (date.getDate() === 31 && date.getMonth() === 2 && date.getFullYear() === 2026) || // 31.3.2026
-    (date.getDate() === 1 && date.getMonth() === 3 && date.getFullYear() === 2026)    // 1.4.2026
-  );
-};
-
 export default function DatePicker(props) {
   let { name, label, value, onChange, required = false, error } = props;
-  const [selectedDate] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const classes = useStyles();
+  // Which dates are orderable is no longer "every Friday": the admin can close
+  // a single Friday or open a single other day. Until this loads the plain
+  // Fridays-only rule applies, which is what the exceptions default to.
+  const { exceptions } = useOrderDateExceptions();
   const convertToDefEventPara = (name, value) => ({
     target: { name, value },
   });
@@ -38,7 +35,7 @@ export default function DatePicker(props) {
   const dateToStr = (date) => String(date).slice(0, 16);
 
   const daysPreview = ({ day, outsideCurrentMonth, ...other }) => {
-    const isSelected = isFriday(day) || isSpecialDate(day);
+    const isSelected = isOrderableDate(day, exceptions);
     return (
       <PickersDay
         {...other}
@@ -78,7 +75,10 @@ export default function DatePicker(props) {
           DialogProps={{ className: 'mui-datepicker' }}
           inputFormat="dd/MM/yyyy"
           name={name}
-          value={selectedDate}
+          // Controlled by the parent on purpose: the checkout form corrects the
+          // default pickup date once the admin's exceptions load, and a value
+          // captured at mount would keep showing a Friday that is now closed.
+          value={value}
           required={required}
           slotProps={{
             textField: {
@@ -104,7 +104,7 @@ export default function DatePicker(props) {
             setIsOpen(false);
             onChange(convertToDefEventPara(name, dateToStr(day)));
           }}
-          shouldDisableDate={(date) => date.getDay() !== 5 && !isSpecialDate(date)}
+          shouldDisableDate={(date) => !isOrderableDate(date, exceptions)}
           open={isOpen}
         />
         {error?.pickUpDate && (

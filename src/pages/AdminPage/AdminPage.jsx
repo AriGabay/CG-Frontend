@@ -7,6 +7,7 @@ import { Product as AdminPageProduct } from '../../cmps/AdminPage/Product';
 import { Menu as AdminMenu } from '../../cmps/AdminPage/Menu';
 import { MenuEditor } from '../../cmps/AdminPage/MenuEditor';
 import { PdfMenuNotice } from '../../cmps/AdminPage/PdfMenuNotice';
+import { OrderDates } from '../../cmps/AdminPage/OrderDates';
 import { Orders as AdminPageOrders } from '../../cmps/AdminPage/Orders';
 import { OrderByDate as AdminPageOrderByDate } from '../../cmps/AdminPage/OrderByDate';
 import { GetOrdersByData as AdminPageGetOrdersByData } from '../../cmps/AdminPage/GetOrdersByData';
@@ -97,6 +98,11 @@ export const AdminPage = () => {
           />
           <Button
             className={classes.marginLeft}
+            text="תאריכי הזמנה חריגים"
+            onClick={() => handleClick('OrderDates')}
+          />
+          <Button
+            className={classes.marginLeft}
             text="הזמנות על פי תאריך"
             onClick={() => handleClick('GetOrdersByData')}
           />
@@ -153,6 +159,11 @@ export const AdminPage = () => {
           {status && status === 'PdfMenuNotice' ? (
             <Grid mt={2}>
               <PdfMenuNotice eventBus={eventBus}></PdfMenuNotice>
+            </Grid>
+          ) : null}
+          {status && status === 'OrderDates' ? (
+            <Grid mt={2}>
+              <OrderDates eventBus={eventBus}></OrderDates>
             </Grid>
           ) : null}
           {status && status === 'Menu' ? (
